@@ -2,35 +2,40 @@
 @{
     ViewData["Title"] = "Login";
 }
-<div class="container">
-    <form method="post" role="form" autocomplete="off">
-        <input asp-for="ReturnUrl" type="hidden" />
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="w-100" style="max-width: 400px;">
+        <div class="text-center mb-4">
+            <h2 class="text-success fw-normal">Accedi al tuo account</h2>
+            <div class="mb-2 text-secondary">Bentornato! Inserisci le credenziali, per accedere.</div>
+        </div>
+        <form method="post" role="form" autocomplete="off">
+            <input asp-for="ReturnUrl" type="hidden" />
 
-        <div class="form-group">
-            <label asp-for=Email class="onit-label-required"></label>
-            <div class="input-group onit-input-group-union">
-                <input asp-for="Email" class="form-control" type="text" />
+            <div class="mb-3">
+                <label asp-for=Email class="form-label">Nome</label>
+                <input asp-for="Email" class="form-control text-secondary" type="text" placeholder="Inserisci la tua mail" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
 
-        <div class="form-group">
-            <label asp-for=Password class="onit-label-required"></label>
-            <div class="input-group onit-input-group-union">
-                <input asp-for="Password" class="form-control" type="password" />
+            <div class="mb-3">
+                <label asp-for=Password class="form-label">Password</label>
+                <div class="input-group">
+                    <input asp-for="Password" class="form-control text-secondary" type="password" placeholder="inserisci la Password" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
 
-        <div class="form-group">
-            <div class="form-check form-switch">
-                <input asp-for="RememberMe" class="form-check-input" role="switch">
-                <label asp-for="RememberMe" class="form-check-label">Rimani Connesso</label>
+            <div class="mb-3 form-check ">
+                <input asp-for="RememberMe" class="form-check-input" id="rememberMeCheck">
+                <label asp-for="RememberMe" class="form-check-label text-secondary" for="rememberMeCheck">Rimani Connesso</label>
             </div>
-        </div>
 
-        <div class="form-group text-center mt-4">
-            <button type="submit" class="btn btn-primary">Accedi</button>
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-success btn-md">Accedi</button>
+            </div>
+        </form>
+        <div class="text-center mt-3 text-secondary" style="font-size: 0.95em;">
+            Non sei registrato, contatta la tua cooperativa per ricevere gli accessi
         </div>
-    </form>
+    </div>
 </div>
