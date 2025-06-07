@@ -1,0 +1,25 @@
+@{
+    Layout = "_LayoutHtml";
+}
+@section metas{
+    @RenderSection("metas", false)
+}
+@section styles{
+    @RenderSection("styles", false)
+}
+<div class="min-vh-100">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="position-absolute top-0 end-0 p-3">
+            <form method="post" action="@Url.Action("Logout", "Login")" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </form>
+        </div>
+    }
+    @RenderBody()
+</div>
+@section scripts{
+    @RenderSection("scripts", false)
+} 
