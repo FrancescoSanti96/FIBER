@@ -15,37 +15,35 @@
 <div id="pageId" class="onit-page d-flex flex-column min-vh-100">
     <div class="onit-page-sticky-top" id="onit-page-sticky-top">
         <nav class="navbar navbar-expand-lg navbar-dark bg-success onit-page-menu">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">FIBER</a>
+    <div class="container d-flex justify-content-between align-items-center">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fa-solid fa-bars"></i>
         </button>
-        <div class="collapse navbar-collapse flex-wrap" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav m-auto mb-2 mb-lg-0 align-items-center">
+                <a class="navbar-brand" href="/">FIBER</a>
                 <li class="nav-item">
                     <a class="nav-link" href="/Bollettini">Bollettini</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/Impostazioni">Impostazioni</a>
                 </li>
-            </ul>
-            <ul class="nav navbar-nav ms-auto onit-page-menu-user">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <li class="nav-item">
-                            <form method="post" action="/Login/Logout" class="nav-link m-0 p-0">
-                                <button type="submit" class="btn btn-link text-white-50 text-decoration-none">
-                                    <i class="fa-solid fa-right-from-bracket"></i> Logout
-                                </button>
-                            </form>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Login/Login">Login</a>
-                        </li>
-                    }
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item">
+                        <form method="post" action="/Login/Logout" class="nav-link m-0 p-0">
+                            <button type="submit" class="btn btn-link text-white-50 text-decoration-none">
+                                 Logout
+                            </button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Login/Login">Login</a>
+                    </li>
+                }
             </ul>
         </div>
     </div>
