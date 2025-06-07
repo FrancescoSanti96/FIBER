@@ -112,7 +112,6 @@ namespace Template.Web
                 // ROUTING PER HUB
                 endpoints.MapHub<TemplateHub>("/templateHub");
 
-                endpoints.MapAreaControllerRoute("Example", "Example", "Example/{controller=Users}/{action=Index}/{id?}");
                 endpoints.MapAreaControllerRoute("Agricoltore", "Agricoltore", "Agricoltore/{controller=Agricoltore}/{action=BollettiniAgricoltore}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Login}/{action=Login}");
             });
