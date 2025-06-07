@@ -1,63 +1,100 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Bollettini Agricoltore</title>
-</head>
-<body>
-    <h1>Bollettini Fitosanitari</h1>
-    <p>Bollettini di tuo interesse in questo momento</p>
+@{
+    ViewData["Title"] = "Bollettini Agricoltore";
 
-    <div class="filter-section">
-        <label for="cultura-interesse">Filtra le colture di interesse</label>
-        <select id="cultura-interesse">
-            <option value="">Seleziona</option>
-        </select>
+    var card1 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    {
+        Title = "Bollettino 1",
+        Tag1 = "Fragola",
+        Tag2 = "Modena",
+        Description = "Si consiglia in questa settimana di mangiare tante fragole",
+        ViewLink = "/Agricoltore/Agricoltore/Bollettino",
+        DownloadLink = "#"
+    };
+
+    var card2 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    {
+        Title = "Bollettino 2",
+        Tag1 = "Fragola",
+        Tag2 = "Modena",
+        Description = "Si consiglia in questa settimana di mangiare tante fragole",
+        ViewLink = "/Agricoltore/Agricoltore/Bollettino",
+        DownloadLink = "#"
+    };
+
+    var card3 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    {
+        Title = "Bollettino 3",
+        Tag1 = "Fragola",
+        Tag2 = "Modena",
+        Description = "Si consiglia in questa settimana di mangiare tante fragole",
+        ViewLink = "/Agricoltore/Agricoltore/Bollettino",
+        DownloadLink = "#"
+    };
+
+    var card4 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    {
+        Title = "Bollettino 4",
+        Tag1 = "Fragola",
+        Tag2 = "Modena",
+        Description = "Si consiglia in questa settimana di mangiare tante fragole",
+        ViewLink = "/Agricoltore/Agricoltore/Bollettino",
+        DownloadLink = "#"
+    };
+
+    var card5 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    {
+        Title = "Bollettino 5",
+        Tag1 = "Fragola",
+        Tag2 = "Modena",
+        Description = "Si consiglia in questa settimana di mangiare tante fragole",
+        ViewLink = "/Agricoltore/Agricoltore/Bollettino",
+        DownloadLink = "#"
+    };
+
+    var card6 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    {
+        Title = "Bollettino 6",
+        Tag1 = "Fragola",
+        Tag2 = "Modena",
+        Description = "Si consiglia in questa settimana di mangiare tante fragole",
+        ViewLink = "/Agricoltore/Agricoltore/Bollettino",
+        DownloadLink = "#"
+    };
+}
+
+<h1 class="text-center mt-5">Bollettini Fitosanitari</h1>
+<p class="text-center text-success mb-4">Bollettini di tuo interesse in questo momento</p>
+
+<div class="container d-flex justify-content-center mb-5">
+    <div class="col-md-6">
+        <div class="input-group">
+            <label for="cultura-interesse" class="visually-hidden">Filtra le colture di interesse</label>
+            <select id="cultura-interesse" class="form-select">
+                <option value="">Filtra le colture di interesse</option>
+            </select>
+        </div>
     </div>
+</div>
 
-    <div class="bulletins-grid">
-        <div class="bulletin-card">
-            <h2>Bollettino 1</h2>
-            <p>Fragola | Malattie</p>
-            <p>Si consiglia in questa settimana di mangiare tante fragole</p>
-            <button>Visualizza</button>
-            <button>Scarica pdf</button>
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card1" />
         </div>
-        <div class="bulletin-card">
-            <h2>Bollettino 2</h2>
-            <p>Fragola | Malattie</p>
-            <p>Si consiglia in questa settimana di mangiare tante fragole</p>
-            <button>Visualizza</button>
-            <button>Scarica pdf</button>
+        <div class="col">
+            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card2" />
         </div>
-        <div class="bulletin-card">
-            <h2>Bollettino 3</h2>
-            <p>Fragola | Malattie</p>
-            <p>Si consiglia in questa settimana di mangiare tante fragole</p>
-            <button>Visualizza</button>
-            <button>Scarica pdf</button>
+        <div class="col">
+            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card3" />
         </div>
-        <div class="bulletin-card">
-            <h2>Bollettino 4</h2>
-            <p>Fragola | Malattie</p>
-            <p>Si consiglia in questa settimana di mangiare tante fragole</p>
-            <button>Visualizza</button>
-            <button>Scarica pdf</button>
+        <div class="col">
+            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card4" />
         </div>
-        <div class="bulletin-card">
-            <h2>Bollettino 5</h2>
-            <p>Fragola | Malattie</p>
-            <p>Si consiglia in questa settimana di mangiare tante fragole</p>
-            <button>Visualizza</button>
-            <button>Scarica pdf</button>
+        <div class="col">
+            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card5" />
         </div>
-        <div class="bulletin-card">
-            <h2>Bollettino 6</h2>
-            <p>Fragola | Malattie</p>
-            <p>Si consiglia in questa settimana di mangiare tante fragole</p>
-            <button>Visualizza</button>
-            <button>Scarica pdf</button>
+        <div class="col">
+            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card6" />
         </div>
     </div>
-
-</body>
-</html> 
+</div> 

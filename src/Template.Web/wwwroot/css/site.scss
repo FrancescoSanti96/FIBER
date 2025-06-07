@@ -4,3 +4,34 @@
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 @import "site.layout.scss";
+
+// Custom styles for Agricoltore area
+.bulletin-card {
+    .badge-fragola {
+        background-color: $badge-fragola-bg !important;
+        color: $badge-fragola-color !important;
+    }
+    .badge-modena {
+        background-color: $badge-modena-bg !important;
+        color: $badge-modena-color !important;
+    }
+    .btn-outline-secondary {
+        border-color: #dee2e6; /* Light gray border for Visualizza button */
+        color: #6c757d; /* Darker gray text */
+        &:hover {
+            background-color: #e2e6ea; /* Lighter background on hover */
+            border-color: #dae0e5;
+            color: #6c757d;
+        }
+    }
+    .btn-light {
+        background-color: #f8f9fa; /* Light background for Scarica pdf button */
+        border-color: #f8f9fa;
+        color: #212529; /* Dark text */
+        &:hover {
+            background-color: #e2e6ea;
+            border-color: #e2e6ea;
+            color: #212529;
+        }
+    }
+}

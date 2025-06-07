@@ -7,6 +7,11 @@ $color-background-dark: #373737;
 $color-background-title: #E4E4E4;
 $color-background-subtitle: #EFEFEF;
 
+$badge-fragola-bg: #E6FAE6; // Light green for 'Fragola'
+$badge-fragola-color: #337F33; // Darker green for text
+$badge-modena-bg: #E6F2FF; // Light blue for 'Modena'
+$badge-modena-color: #0056B3; // Darker blue for text
+
 // Used to be able to edit values of bootstrap scss and css variables
 @import "../../node_modules/bootstrap/scss/_functions";
 @import "../../node_modules/bootstrap/scss/_variables";
