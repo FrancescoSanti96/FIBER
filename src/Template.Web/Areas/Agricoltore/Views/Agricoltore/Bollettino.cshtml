@@ -1,38 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Bollettino</title>
-</head>
-<body>
-    <button>&leftarrow; Torna ai bollettini</button>
-    <h1>Bollettino Test1</h1>
+@{
+    ViewData["Title"] = "Bollettino";
+}
 
-    <p>29/05/2025 Redatto dal: Tecnico Mario Rossi</p>
-    <p>mail: test@test.it</p>
-
-    <h2>Situazione</h2>
-    <p>Le condizioni climatiche delle ultime settimane hanno favorito lo sviluppo di infezioni secondarie.</p>
-
-    <h3>Peronospora</h3>
-    <p>Si consiglia di monitorare attentamente i vigneti. In presenza di sintomi, intervenire con prodotti a base di rame o altri fungicidi specifici. Nelle zone a maggior rischio, si consiglia un trattamento preventivo.</p>
-
-    <h3>Oidio</h3>
-    <p>Il rischio di infezioni è moderato. Si consiglia di intervenire con zolfo nelle ore più fresche della giornata, evitando le ore più calde.</p>
-
-    <h3>Tignoletta</h3>
-    <p>Il monitoraggio con trappole a feromoni indica un aumento delle catture. Si prevede l'inizio dei voli della prima generazione. In caso di superamento della soglia di intervento, si consiglia un trattamento con prodotti specifici.</p>
-
-    <div class="actions">
-        <div class="download-section">
-            <h3>Download</h3>
-            <button>Scarica pdf</button>
+<div class="container mt-4">
+    <div class="row mb-3 align-items-center">
+        <div class="col-auto me-3">
+            <a href="/Agricoltore/Agricoltore/BollettiniAgricoltore" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini</a>
         </div>
-
-        <div class="share-section">
-            <h3>Condividi</h3>
-            <button>Copia</button>
+        <div class="col">
+            <h1 class="mb-0">Bollettino Test1</h1>
+            <p class="mt-1 mb-0"><div class="d-flex gap-2">
+                        <span class="badge bg-success">Fragola</span>
+                        <span class="badge bg-info">Modena</span>
+                    </div></p>
         </div>
     </div>
 
-</body>
-</html> 
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <h2>Situazione</h2>
+            <p class="mb-3">Le condizioni climatiche delle ultime settimane hanno favorito lo sviluppo di infezioni fungine, in particolare di peronospora. Si osservano i primi sintomi su foglia in diverse zone del territorio.</p>
+            <p class="fw-bold mb-2">Previsioni meteo</p>
+            <p class="mb-3">Per i prossimi giorni si prevedono temperature in aumento e precipitazioni sparse, condizioni che potrebbero favorire lo sviluppo di infezioni secondarie.</p>
+
+            <h3>Peronospora</h3>
+            <p class="mb-3">Si consiglia di monitorare attentamente i vigneti. In presenza di sintomi, intervenire con prodotti a base di rame o altri fungicidi specifici. Nelle zone a maggior rischio, si consiglia un trattamento preventivo.</p>
+
+            <h3>Oidio</h3>
+            <p class="mb-3">Il rischio di infezioni è moderato. Si consiglia di intervenire con zolfo nelle ore più fresche della giornata, evitando le ore più calde.</p>
+
+            <h3>Tignoletta</h3>
+            <p class="mb-3">Il monitoraggio con trappole a feromoni indica un aumento delle catture. Si prevede l'inizio dei voli della prima generazione. In caso di superamento della soglia di intervento, si consiglia un trattamento con prodotti specifici.</p>
+        </div>
+
+        <div class="col-md-4">
+            <p class="text-secondary mb-1">29/05/2025 Redatto dal: Tecnico Mario Rossi</p>
+            <p class="text-secondary mb-4">mail: <a href="mailto:test@test.it" class="text-secondary">test@test.it</a></p>
+
+            <div class="card shadow-sm p-3 mb-4">
+                <h3 class="h5 card-title">Download</h3>
+                <button class="btn btn-light w-100">Scarica pdf</button>
+            </div>
+
+            <div class="card shadow-sm p-3">
+                <h3 class="h5 card-title">Condividi</h3>
+                <button class="btn btn-light w-100">Copia</button>
+            </div>
+        </div>
+    </div>
+</div> 
