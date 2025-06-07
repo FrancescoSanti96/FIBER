@@ -1,0 +1,80 @@
+﻿@inject IHtmlLocalizer<Template.Web.SharedResource> SharedLocalizer
+@inject Microsoft.Extensions.Options.IOptions<AppSettings> appSettings
+@{
+    Layout = "_LayoutHtml";
+    var version = System.Reflection.Assembly.GetAssembly(typeof(Startup)).GetName().Version;
+
+    var identitaCorrente = (Template.Web.Areas.IdentitaViewModel)ViewData[Template.Web.Areas.IdentitaViewModel.VIEWDATA_IDENTITACORRENTE_KEY];
+}
+@section metas{
+    @RenderSection("metas", false)
+}
+@section styles{
+    @RenderSection("styles", false)
+}
+<div id="pageId" class="onit-page d-flex flex-column min-vh-100">
+    <div class="onit-page-sticky-top" id="onit-page-sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-success onit-page-menu">
+    <div class="container d-flex justify-content-between align-items-center">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav m-auto mb-2 mb-lg-0 align-items-center">
+                <a class="navbar-brand" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">FIBER</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">Bollettini</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Agricoltore/Agricoltore/ImpostazioniAgricoltore">Impostazioni</a>
+                </li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item">
+                        <form method="post" action="/Login/Logout" class="nav-link m-0 p-0">
+                            <button type="submit" class="btn btn-link text-white-50 text-decoration-none">
+                                 Logout
+                            </button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Login/Login">Login</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav> 
+        @RenderSection("pageTitle", false)
+    </div>
+    @RenderSection("pageSubtitle", false)
+    @RenderBody()
+    <footer class="bg-success text-white py-4 mt-auto" style="height: 133px;">
+        <div class="container d-flex flex-column flex-md-row justify-content-md-end align-items-md-center h-100">
+            <div class="ms-md-auto text-end">
+                <div class="fw-bold">Rimaniamo in contatto</div>
+                <div><i class="bi bi-telephone"></i> (+39) 1111-0103</div>
+                <div><i class="bi bi-envelope"></i> fiber@gmail.com</div>
+            </div>
+        </div>
+    </footer>
+</div>
+@section googlehead{
+    @*<script async src="https://www.googletagmanager.com/gtag/js?id=UA-"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'UA-', { 'anonymize_ip': true });    // Ricordarsi di anonimizzare per fare ricadere il cookie tra quelli tecnici ed evitare l'obbligo del banner
+    </script>*@
+    }
+@section scripts{
+    <script type="text/javascript">
+        @this.RenderAlertsWithToastify()
+    </script>
+
+    @RenderSection("scripts", false)
+}
