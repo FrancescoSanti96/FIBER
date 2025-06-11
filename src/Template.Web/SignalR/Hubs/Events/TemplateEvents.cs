@@ -6,7 +6,7 @@ namespace Template.Web.SignalR.Hubs.Events
     {
         public Guid IdGroup { get; set; }
 
-        public Guid IdUser { get; set; }
+        public int IdUser { get; set; }
         public Guid IdMessage { get; set; }
     }
 }

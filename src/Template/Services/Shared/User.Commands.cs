@@ -2,21 +2,22 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Template.EntityModel.Models;
 
 namespace Template.Services.Shared
 {
     public class AddOrUpdateUserCommand
     {
-        public Guid? Id { get; set; }
+        public int Id { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string NickName { get; set; }
+        public int RoleId { get; set; }
     }
 
     public partial class SharedService
     {
-        public async Task<Guid> Handle(AddOrUpdateUserCommand cmd)
+        public async Task<int> Handle(AddOrUpdateUserCommand cmd)
         {
             var user = await _dbContext.Users
                 .Where(x => x.Id == cmd.Id)
@@ -24,16 +25,19 @@ namespace Template.Services.Shared
 
             if (user == null)
             {
-                user = new User
+                user = new EntityModel.Models.User
                 {
+                    Id = cmd.Id,
                     Email = cmd.Email,
+                    FirstName = cmd.FirstName,
+                    LastName = cmd.LastName,
+                    RoleId = cmd.RoleId
                 };
                 _dbContext.Users.Add(user);
             }
 
             user.FirstName = cmd.FirstName;
             user.LastName = cmd.LastName;
-            user.NickName = cmd.NickName;
 
             await _dbContext.SaveChangesAsync();
 

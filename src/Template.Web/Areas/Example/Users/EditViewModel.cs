@@ -12,7 +12,7 @@ namespace Template.Web.Areas.Example.Users
         {
         }
 
-        public Guid? Id { get; set; }
+        public int Id { get; set; }
         public string Email { get; set; }
 
         [Display(Name = "Nome")]
@@ -35,7 +35,6 @@ namespace Template.Web.Areas.Example.Users
                 Email = userDetailDTO.Email;
                 FirstName = userDetailDTO.FirstName;
                 LastName = userDetailDTO.LastName;
-                NickName = userDetailDTO.NickName;
             }
         }
 
@@ -47,7 +46,6 @@ namespace Template.Web.Areas.Example.Users
                 Email = Email,
                 FirstName = FirstName,
                 LastName = LastName,
-                NickName = NickName
             };
         }
     }

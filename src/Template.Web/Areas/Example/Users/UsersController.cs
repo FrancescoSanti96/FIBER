@@ -41,7 +41,7 @@ namespace Template.Web.Areas.Example.Users
         }
 
         [HttpGet]
-        public virtual async Task<IActionResult> Edit(Guid? id)
+        public virtual async Task<IActionResult> Edit(int? id)
         {
             var model = new EditViewModel();
 
@@ -68,14 +68,6 @@ namespace Template.Web.Areas.Example.Users
                     model.Id = await _sharedService.Handle(model.ToAddOrUpdateUserCommand());
 
                     Alerts.AddSuccess(this, "Informazioni aggiornate");
-
-                    // Esempio lancio di un evento SignalR
-                    await _publisher.Publish(new NewMessageEvent
-                    {
-                        IdGroup = model.Id.Value,
-                        IdUser = model.Id.Value,
-                        IdMessage = Guid.NewGuid()
-                    });
                 }
                 catch (Exception e)
                 {

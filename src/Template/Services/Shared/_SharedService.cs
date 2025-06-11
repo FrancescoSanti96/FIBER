@@ -1,10 +1,12 @@
-﻿namespace Template.Services.Shared
+﻿using Template.EntityModel;
+
+namespace Template.Services.Shared
 {
     public partial class SharedService
     {
-        TemplateDbContext _dbContext;
+        FiberDbContext _dbContext;
 
-        public SharedService(TemplateDbContext dbContext)
+        public SharedService(FiberDbContext dbContext)
         {
             _dbContext = dbContext;
         }

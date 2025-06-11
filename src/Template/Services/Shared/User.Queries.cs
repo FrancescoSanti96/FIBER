@@ -9,7 +9,7 @@ namespace Template.Services.Shared
 {
     public class UsersSelectQuery
     {
-        public Guid IdCurrentUser { get; set; }
+        public int IdCurrentUser { get; set; }
         public string Filter { get; set; }
     }
 
@@ -20,14 +20,14 @@ namespace Template.Services.Shared
 
         public class User
         {
-            public Guid Id { get; set; }
+            public int Id { get; set; }
             public string Email { get; set; }
         }
     }
 
     public class UsersIndexQuery
     {
-        public Guid IdCurrentUser { get; set; }
+        public int IdCurrentUser { get; set; }
         public string Filter { get; set; }
 
         public Paging Paging { get; set; }
@@ -40,7 +40,7 @@ namespace Template.Services.Shared
 
         public class User
         {
-            public Guid Id { get; set; }
+            public int Id { get; set; }
             public string Email { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
@@ -49,16 +49,15 @@ namespace Template.Services.Shared
 
     public class UserDetailQuery
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
     }
 
     public class UserDetailDTO
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string NickName { get; set; }
     }
 
     public class CheckLoginCredentialsQuery
@@ -143,7 +142,6 @@ namespace Template.Services.Shared
                     Email = x.Email,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
-                    NickName = x.NickName
                 })
                 .FirstOrDefaultAsync();
         }
@@ -169,7 +167,6 @@ namespace Template.Services.Shared
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                NickName = user.NickName
             };
         }
     }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Template.EntityModel;
 using Template.Services;
 using Template.Web.Infrastructure;
 using Template.Web.SignalR.Hubs;
@@ -32,9 +33,9 @@ namespace Template.Web
         {
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
-            services.AddDbContext<TemplateDbContext>(options =>
+            services.AddDbContext<FiberDbContext>(options =>
             {
-                options.UseInMemoryDatabase(databaseName: "Template");
+                options.UseInMemoryDatabase(databaseName: "Fiber");
             });
 
             // SERVICES FOR AUTHENTICATION
@@ -101,17 +102,14 @@ namespace Template.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-            var node_modules = new CompositePhysicalFileProvider(Directory.GetCurrentDirectory(), "node_modules");
+            //var node_modules = new CompositePhysicalFileProvider(Directory.GetCurrentDirectory(), "node_modules");
             var areas = new CompositePhysicalFileProvider(Directory.GetCurrentDirectory(), "Areas");
-            var compositeFp = new CustomCompositeFileProvider(env.WebRootFileProvider, node_modules, areas);
+            var compositeFp = new CustomCompositeFileProvider(env.WebRootFileProvider, areas);
             env.WebRootFileProvider = compositeFp;
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
-                // ROUTING PER HUB
-                endpoints.MapHub<TemplateHub>("/templateHub");
-
                 endpoints.MapAreaControllerRoute("Agricoltore", "Agricoltore", "Agricoltore/{controller=Agricoltore}/{action=BollettiniAgricoltore}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Login}/{action=Login}");
             });
