@@ -5,18 +5,18 @@
 
     var bollettiniCaricati = new List<BollettinoCardViewModel>
     {
-        new BollettinoCardViewModel { Title = "Bollettino 1", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
-        new BollettinoCardViewModel { Title = "Bollettino 2", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
-        new BollettinoCardViewModel { Title = "Bollettino 3", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
-        new BollettinoCardViewModel { Title = "Bollettino 4", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
-        new BollettinoCardViewModel { Title = "Bollettino 5", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
-        new BollettinoCardViewModel { Title = "Bollettino 6", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" }
+        new BollettinoCardViewModel { Title = "Bollettino 1", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 2", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 3", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 4", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 5", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 6", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" }
     };
 
     var bozze = new List<BollettinoCardViewModel>
     {
-        new BollettinoCardViewModel { Title = "Bozza 1", Tag1 = "Uva", Tag2 = "Pera", Description = "Questa è una bozza di bollettino", ViewLink = "#", DownloadLink = "#", Date = "1/1/1", Email = "draft@email.com", IsDraft = true },
-        new BollettinoCardViewModel { Title = "Bozza 2", Tag1 = "Mela", Tag2 = "Banana", Description = "Questa è un\'altra bozza di bollettino", ViewLink = "#", DownloadLink = "#", Date = "2/2/2", Email = "draft@email.com", IsDraft = true }
+        new BollettinoCardViewModel { Title = "Bozza 1", Tag1 = "Uva", Tag2 = "Pera", Description = "Questa è una bozza di bollettino", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "1/1/1", Email = "draft@email.com", IsDraft = true },
+        new BollettinoCardViewModel { Title = "Bozza 2", Tag1 = "Mela", Tag2 = "Banana", Description = "Questa è un\'altra bozza di bollettino", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "2/2/2", Email = "draft@email.com", IsDraft = true }
     };
 
     var currentBulletins = activeTab == "caricati" ? bollettiniCaricati : bozze;
@@ -37,7 +37,7 @@
         @foreach (var bulletin in currentBulletins)
         {
             <div class="col">
-                <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="bulletin" />
+                <partial name="~/Views/Shared/_BollettinoCard.cshtml" model="bulletin" />
             </div>
         }
     </div>

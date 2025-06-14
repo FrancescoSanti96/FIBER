@@ -17,7 +17,7 @@
         </div>
         <p class="text-secondary mb-3">@Model.Description</p>
         <div class="d-flex justify-content-between pt-3 border-top">
-            <a href="@Model.ViewLink" class="btn btn-outline-secondary btn-sm">Visualizza</a>
+            <a href="@Model.ViewLink" class="btn btn-outline-secondary btn-sm">@(Model.IsDraft ? "Anteprima" : "Visualizza")</a>
             @if (Model.IsDraft)
             {
                 <a href="@Model.DownloadLink" class="btn btn-light btn-sm">Modifica</a>

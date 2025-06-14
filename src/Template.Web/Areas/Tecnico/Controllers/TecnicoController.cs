@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Template.Web.Areas;
+using Template.Web.Models;
 
 namespace Template.Web.Areas.Tecnico.Controllers
 {
@@ -23,6 +24,19 @@ namespace Template.Web.Areas.Tecnico.Controllers
         public virtual IActionResult Bozze()
         {
             return View("HomeTecnico");
+        }
+
+        // GET: Tecnico/Tecnico/BollettinoTecnico
+        public virtual IActionResult BollettinoTecnico(int id, bool isDraft = false)
+        {
+            // In un'applicazione reale, qui recupereresti i dati del bollettino dal database
+            // usando l'id e creeresti un ViewModel più completo.
+            var model = new BollettinoTecnicoViewModel
+            {
+                IsDraft = isDraft
+                // Popola altre proprietà del bollettino qui
+            };
+            return View(model);
         }
     }
 } 
