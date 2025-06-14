@@ -1,4 +1,4 @@
-﻿@inject IHtmlLocalizer<Template.Web.SharedResource> SharedLocalizer
+@inject IHtmlLocalizer<Template.Web.SharedResource> SharedLocalizer
 @inject Microsoft.Extensions.Options.IOptions<AppSettings> appSettings
 @{
     Layout = "_LayoutHtml";
@@ -21,12 +21,15 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav m-auto mb-2 mb-lg-0 align-items-center">
-                <a class="navbar-brand" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">FIBER</a>
+                <a class="navbar-brand" href="/Tecnico/Tecnico/HomeTecnico">FIBER</a>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">Bollettini</a>
+                    <a class="nav-link" href="/Tecnico/Tecnico/HomeTecnico">I miei bollettini</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Agricoltore/Agricoltore/ImpostazioniAgricoltore">Impostazioni</a>
+                    <a class="nav-link" href="/Tecnico/Tecnico/NuovoBollettino">Nuovo bollettino</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Tecnico/Tecnico/Impostazioni">Impostazioni</a>
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -60,7 +63,7 @@
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-    gtag('config', 'UA-', { 'anonymize_ip': true });    // Ricordarsi di anonimizzare per fare ricadere il cookie tra quelli tecnici ed evitare l'obbligo del banner
+    gtag('config', 'UA-', { 'anonymize_ip': true });    // Ricordarsi di anonimizzare per fare ricadere il cookie tra quelli tecnici ed evitare l\'obbligo del banner
     </script>*@
     }
 @section scripts{
@@ -69,4 +72,4 @@
     </script>
 
     @RenderSection("scripts", false)
-}
+} 
