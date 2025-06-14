@@ -44,5 +44,11 @@ namespace Template.Web.Areas.Tecnico.Controllers
         {
             return View();
         }
+
+        // GET: Tecnico/Tecnico/NuovoBollettino
+        public virtual IActionResult NuovoBollettino()
+        {
+            return View();
+        }
     }
 } 
