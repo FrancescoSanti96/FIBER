@@ -38,5 +38,11 @@ namespace Template.Web.Areas.Tecnico.Controllers
             };
             return View(model);
         }
+
+        // GET: Tecnico/Tecnico/ImpostazioniTecnico
+        public virtual IActionResult ImpostazioniTecnico()
+        {
+            return View();
+        }
     }
 } 
