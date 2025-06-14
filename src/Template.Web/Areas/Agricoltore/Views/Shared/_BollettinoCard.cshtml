@@ -1,11 +1,31 @@
-@model Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+@model Template.Web.Models.BollettinoCardViewModel
 
-<div class="bulletin-card border rounded p-3 mb-3 bg-white shadow-sm">
-    <h2 class="h5">@Model.Title</h2>
-    <p class="mb-2"><span class="badge rounded-pill bg-success">@Model.Tag1</span> <span class="badge rounded-pill bg-info">@Model.Tag2</span></p>
-    <p class="text-secondary mb-3">@Model.Description</p>
-    <div class="d-flex justify-content-between pt-3 border-top">
-        <a href="@Model.ViewLink" class="btn btn-outline-secondary btn-sm">Visualizza</a>
-        <a href="@Model.DownloadLink" class="btn btn-light btn-sm">Scarica pdf</a>
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h5 class="card-title mb-1">@Model.Title</h5>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-success">Fragola</span>
+                    <span class="badge bg-info">Modena</span>
+                </div>
+            </div>
+            <div class="text-end">
+                <small class="text-muted d-block">@Model.Date</small>
+                <small class="text-muted d-block">@Model.Email</small>
+            </div>
+        </div>
+        <p class="text-secondary mb-3">@Model.Description</p>
+        <div class="d-flex justify-content-between pt-3 border-top">
+            <a href="@Model.ViewLink" class="btn btn-outline-secondary btn-sm">Visualizza</a>
+            @if (Model.IsDraft)
+            {
+                <a href="@Model.DownloadLink" class="btn btn-light btn-sm">Modifica</a>
+            }
+            else
+            {
+                <a href="@Model.DownloadLink" class="btn btn-light btn-sm">Scarica pdf</a>
+            }
+        </div>
     </div>
 </div> 

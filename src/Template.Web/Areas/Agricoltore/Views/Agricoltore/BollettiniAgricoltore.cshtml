@@ -1,7 +1,8 @@
+@using Template.Web.Models
 @{
     ViewData["Title"] = "Bollettini Agricoltore";
 
-    var card1 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    var card1 = new BollettinoCardViewModel
     {
         Title = "Bollettino 1",
         Tag1 = "Fragola",
@@ -11,7 +12,7 @@
         DownloadLink = "#"
     };
 
-    var card2 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    var card2 = new BollettinoCardViewModel
     {
         Title = "Bollettino 2",
         Tag1 = "Fragola",
@@ -21,7 +22,7 @@
         DownloadLink = "#"
     };
 
-    var card3 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    var card3 = new BollettinoCardViewModel
     {
         Title = "Bollettino 3",
         Tag1 = "Fragola",
@@ -31,7 +32,7 @@
         DownloadLink = "#"
     };
 
-    var card4 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    var card4 = new BollettinoCardViewModel
     {
         Title = "Bollettino 4",
         Tag1 = "Fragola",
@@ -41,7 +42,7 @@
         DownloadLink = "#"
     };
 
-    var card5 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    var card5 = new BollettinoCardViewModel
     {
         Title = "Bollettino 5",
         Tag1 = "Fragola",
@@ -51,7 +52,7 @@
         DownloadLink = "#"
     };
 
-    var card6 = new Template.Web.Areas.Agricoltore.Models.BollettinoCardViewModel
+    var card6 = new BollettinoCardViewModel
     {
         Title = "Bollettino 6",
         Tag1 = "Fragola",
@@ -60,6 +61,8 @@
         ViewLink = "/Agricoltore/Agricoltore/Bollettino",
         DownloadLink = "#"
     };
+
+    var bulletins = new List<BollettinoCardViewModel> { card1, card2, card3, card4, card5, card6 };
 }
 
 <h1 class="text-center mt-5">Bollettini Fitosanitari</h1>
@@ -78,23 +81,11 @@
 
 <div class="container">
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col">
-            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card1" />
-        </div>
-        <div class="col">
-            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card2" />
-        </div>
-        <div class="col">
-            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card3" />
-        </div>
-        <div class="col">
-            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card4" />
-        </div>
-        <div class="col">
-            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card5" />
-        </div>
-        <div class="col">
-            <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="card6" />
-        </div>
+        @foreach (var bulletin in bulletins)
+        {
+            <div class="col">
+                <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="bulletin" />
+            </div>
+        }
     </div>
 </div> 

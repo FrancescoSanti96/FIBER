@@ -1,0 +1,44 @@
+@using Template.Web.Models
+@{
+    ViewData["Title"] = "Home Tecnico";
+    var activeTab = ViewBag.ActiveTab as string ?? "caricati";
+
+    var bollettiniCaricati = new List<BollettinoCardViewModel>
+    {
+        new BollettinoCardViewModel { Title = "Bollettino 1", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 2", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 3", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 4", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 5", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" },
+        new BollettinoCardViewModel { Title = "Bollettino 6", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "#", DownloadLink = "#", Date = "0/0/0", Email = "info@email.com" }
+    };
+
+    var bozze = new List<BollettinoCardViewModel>
+    {
+        new BollettinoCardViewModel { Title = "Bozza 1", Tag1 = "Uva", Tag2 = "Pera", Description = "Questa è una bozza di bollettino", ViewLink = "#", DownloadLink = "#", Date = "1/1/1", Email = "draft@email.com", IsDraft = true },
+        new BollettinoCardViewModel { Title = "Bozza 2", Tag1 = "Mela", Tag2 = "Banana", Description = "Questa è un\'altra bozza di bollettino", ViewLink = "#", DownloadLink = "#", Date = "2/2/2", Email = "draft@email.com", IsDraft = true }
+    };
+
+    var currentBulletins = activeTab == "caricati" ? bollettiniCaricati : bozze;
+}
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4" style="color: #4B0082;">Gestione Bollettini Fitosanitari</h1>
+
+    <div class="d-flex justify-content-center mb-4">
+        <p class="fs-5">
+            <a href="@Url.Action("HomeTecnico", "Tecnico", new { Area = "Tecnico", tab = "caricati" })" class="@(activeTab == "caricati" ? "text-dark" : "text-secondary") text-decoration-none">Bollettini caricati</a>
+            <span class="text-secondary"> | </span>
+            <a href="@Url.Action("HomeTecnico", "Tecnico", new { Area = "Tecnico", tab = "bozze" })" class="@(activeTab == "bozze" ? "text-dark" : "text-secondary") text-decoration-none">Bozze</a>
+        </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var bulletin in currentBulletins)
+        {
+            <div class="col">
+                <partial name="~/Areas/Agricoltore/Views/Shared/_BollettinoCard.cshtml" model="bulletin" />
+            </div>
+        }
+    </div>
+</div> 

@@ -1,4 +1,4 @@
-namespace Template.Web.Areas.Agricoltore.Models
+namespace Template.Web.Models
 {
     public class BollettinoCardViewModel
     {
