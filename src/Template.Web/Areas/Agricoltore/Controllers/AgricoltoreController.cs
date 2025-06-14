@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Template.Web.Areas;
 
 namespace Template.Web.Areas.Agricoltore.Controllers
 {
     [Area("Agricoltore")]
-    public partial class AgricoltoreController : Controller
+    public partial class AgricoltoreController : AuthenticatedBaseController
     {
         public virtual IActionResult BollettiniAgricoltore()
         {

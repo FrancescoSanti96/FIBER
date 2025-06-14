@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using Template.Web.Infrastructure;
+using Newtonsoft.Json;
 
 namespace Template.Web.Areas
 {
@@ -26,6 +27,19 @@ namespace Template.Web.Areas
             }
         }
 
+        protected int? CurrentUserRoleId
+        {
+            get
+            {
+                var roleClaim = HttpContext.User.FindFirst(ClaimTypes.Role);
+                if (roleClaim != null && int.TryParse(roleClaim.Value, out int roleId))
+                {
+                    return roleId;
+                }
+                return null;
+            }
+        }
+
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             try
@@ -36,19 +50,51 @@ namespace Template.Web.Areas
                     {
                         EmailUtenteCorrente = context.HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Email).First().Value
                     };
-                }
-                else
-                {
-                    HttpContext.SignOutAsync();
-                    this.SignOut();
 
-                    context.Result = new RedirectResult(context.HttpContext.Request.GetEncodedUrl());
-                    Alerts.AddError(this, "L'utente non possiede i diritti per visualizzare la risorsa richiesta");
+                    var area = context.RouteData.Values["area"]?.ToString();
+                    if (!string.IsNullOrEmpty(area))
+                    {
+                        var roleId = CurrentUserRoleId;
+                        if (roleId.HasValue)
+                        {
+                            bool hasAccess = area switch
+                            {
+                                "Agricoltore" => roleId == 1 || roleId == 2, // Admin e Agricoltore
+                                "Tecnico" => roleId == 1 || roleId == 3,     // Admin e Tecnico
+                                _ => true
+                            };
+
+                            if (!hasAccess)
+                            {
+                                // Reindirizza l'utente alla sua area in base al ruolo
+                                var redirectUrl = roleId switch
+                                {
+                                    2 => "/Agricoltore/Agricoltore/BollettiniAgricoltore", // Agricoltore
+                                    3 => "/Tecnico/Tecnico/BollettiniCaricati",           // Tecnico
+                                    _ => "/Login/Login"                                    // Altri casi (non dovrebbe mai succedere)
+                                };
+
+                                Alerts.AddError(this, "Non hai i permessi per accedere a questa area");
+                                // Salva manualmente gli alerts nel TempData prima del reindirizzamento
+                                var controller = (Controller)context.Controller;
+                                if (controller.ViewData.ContainsKey(Alerts.ALERTS_KEY))
+                                {
+                                    var viewDataAlerts = controller.ViewData[Alerts.ALERTS_KEY];
+                                    if (viewDataAlerts != null)
+                                    {
+                                        controller.TempData[Alerts.ALERTS_KEY] = JsonConvert.SerializeObject(viewDataAlerts);
+                                    }
+                                }
+                                context.Result = new RedirectResult(redirectUrl);
+                                return;
+                            }
+                        }
+                    }
                 }
 
                 base.OnActionExecuting(context);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

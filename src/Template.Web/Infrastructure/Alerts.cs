@@ -146,7 +146,10 @@ namespace Template.Web.Infrastructure
                 var viewDataAlerts = controller.ViewData[Alerts.ALERTS_KEY];
 
                 if (viewDataAlerts != null)
-                    controller.TempData[Alerts.ALERTS_KEY] = JsonConvert.SerializeObject(viewDataAlerts);
+                {
+                    var serializedAlerts = JsonConvert.SerializeObject(viewDataAlerts);
+                    controller.TempData[Alerts.ALERTS_KEY] = serializedAlerts;
+                }
             }
         }
 

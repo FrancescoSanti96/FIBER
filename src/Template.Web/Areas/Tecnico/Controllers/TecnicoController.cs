@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Template.Web.Areas;
 
 namespace Template.Web.Areas.Tecnico.Controllers
 {
     [Area("Tecnico")]
-    public partial class TecnicoController : Controller
+    public partial class TecnicoController : AuthenticatedBaseController
     {
         // GET: Tecnico/Tecnico/HomeTecnico
         public virtual IActionResult HomeTecnico(string tab = "caricati")
