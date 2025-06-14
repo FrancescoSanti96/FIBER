@@ -111,6 +111,7 @@ namespace Template.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapAreaControllerRoute("Agricoltore", "Agricoltore", "Agricoltore/{controller=Agricoltore}/{action=BollettiniAgricoltore}/{id?}");
+                endpoints.MapAreaControllerRoute("Tecnico", "Tecnico", "Tecnico/{controller=Tecnico}/{action=HomeTecnico}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Login}/{action=Login}");
             });
         }

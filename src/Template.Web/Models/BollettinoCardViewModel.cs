@@ -1,4 +1,4 @@
-namespace Template.Web.Areas.Agricoltore.Models
+namespace Template.Web.Models
 {
     public class BollettinoCardViewModel
     {
@@ -11,5 +11,6 @@ namespace Template.Web.Areas.Agricoltore.Models
         public string Date { get; set; }
         public string Email { get; set; }
         public bool IsDraft { get; set; }
+        public int Id { get; set; }
     }
 } 

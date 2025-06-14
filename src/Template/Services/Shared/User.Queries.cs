@@ -58,6 +58,7 @@ namespace Template.Services.Shared
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public int RoleId { get; set; }
     }
 
     public class CheckLoginCredentialsQuery
@@ -167,6 +168,7 @@ namespace Template.Services.Shared
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                RoleId = user.RoleId
             };
         }
     }
