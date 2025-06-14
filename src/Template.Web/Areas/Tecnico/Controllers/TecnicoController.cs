@@ -50,5 +50,30 @@ namespace Template.Web.Areas.Tecnico.Controllers
         {
             return View();
         }
+
+        // GET: Tecnico/Tecnico/ModificaBollettino
+        public virtual IActionResult ModificaBollettino(int id)
+        {
+            // In un'applicazione reale, qui recupereresti i dati del bollettino dal database
+            // usando l'id e creeresti un ViewModel più completo.
+            var model = new ModificaBollettinoViewModel
+            {
+                // Esempio: recupera il bollettino con l'ID fornito
+                // var bollettino = _bollettiniService.GetBollettinoById(id);
+                // Title = bollettino.Title,
+                // Content = bollettino.Content,
+                // NomeBollettino = bollettino.NomeBollettino,
+                // CulturaInteresse = bollettino.Cultura,
+                // ZonaInteresse = bollettino.Zona,
+                // ScadenzaTemporale = bollettino.Scadenza.ToString("dd/MM/yyyy")
+                Title = $"Modifica Bollettino {id}", // Dati di esempio per ora
+                Content = "Contenuto di esempio per il bollettino da modificare.",
+                NomeBollettino = "Bollettino di Esempio",
+                CulturaInteresse = "Grano",
+                ZonaInteresse = "Pianura Padana",
+                ScadenzaTemporale = "01/01/2026"
+            };
+            return View(model);
+        }
     }
 } 

@@ -20,7 +20,7 @@
             <a href="@Model.ViewLink" class="btn btn-outline-secondary btn-sm">@(Model.IsDraft ? "Anteprima" : "Visualizza")</a>
             @if (Model.IsDraft)
             {
-                <a href="@Model.DownloadLink" class="btn btn-light btn-sm">Modifica</a>
+                <a href="@Url.Action("ModificaBollettino", "Tecnico", new { Area = "Tecnico", id = Model.Id })" class="btn btn-light btn-sm">Modifica</a>
             }
             else
             {

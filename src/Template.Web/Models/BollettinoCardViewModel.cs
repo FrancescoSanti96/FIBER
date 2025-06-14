@@ -11,5 +11,6 @@ namespace Template.Web.Models
         public string Date { get; set; }
         public string Email { get; set; }
         public bool IsDraft { get; set; }
+        public int Id { get; set; }
     }
 } 
