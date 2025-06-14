@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Template.Services.Shared;
 using System.Threading.Tasks;
 using Template.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace Template.Web.Features.Login
 {
@@ -20,11 +21,16 @@ namespace Template.Web.Features.Login
         public static string LoginErrorModelStateKey = "LoginError";
         private readonly SharedService _sharedService;
         private readonly IStringLocalizer<SharedResource> _sharedLocalizer;
+        private readonly ILogger<LoginController> _logger;
 
-        public LoginController(SharedService sharedService, IStringLocalizer<SharedResource> sharedLocalizer)
+        public LoginController(
+            SharedService sharedService, 
+            IStringLocalizer<SharedResource> sharedLocalizer,
+            ILogger<LoginController> logger)
         {
             _sharedService = sharedService;
             _sharedLocalizer = sharedLocalizer;
+            _logger = logger;
         }
 
         private ActionResult LoginAndRedirect(UserDetailDTO utente, string returnUrl, bool rememberMe)
@@ -32,7 +38,8 @@ namespace Template.Web.Features.Login
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, utente.Id.ToString()),
-                new Claim(ClaimTypes.Email, utente.Email)
+                new Claim(ClaimTypes.Email, utente.Email),
+                new Claim(ClaimTypes.Role, utente.RoleId.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -46,7 +53,22 @@ namespace Template.Web.Features.Login
             if (string.IsNullOrWhiteSpace(returnUrl) == false)
                 return Redirect(returnUrl);
 
-            return RedirectToAction(MVC.Agricoltore.Agricoltore.BollettiniAgricoltore());
+            // Reindirizza in base al ruolo
+            switch (utente.RoleId)
+            {
+                case 1: // Admin
+                    _logger.LogInformation("Admin login successful: {Email}", utente.Email);
+                    Console.WriteLine($"Admin login successful: {utente.Email}");
+                    return RedirectToAction("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
+                case 2: // Agricoltore
+                    return RedirectToAction("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
+                case 3: // Tecnico
+                    return RedirectToAction("BollettiniCaricati", "Tecnico", new { area = "Tecnico" });
+            }
+
+            // Se arriviamo qui, c'è un problema con il RoleId
+            _logger.LogWarning("Login attempt with invalid RoleId: {RoleId}", utente.RoleId);
+            return RedirectToAction(nameof(Login));
         }
 
         [HttpGet]
@@ -57,7 +79,26 @@ namespace Template.Web.Features.Login
                 if (string.IsNullOrWhiteSpace(returnUrl) == false)
                     return Redirect(returnUrl);
 
-                return RedirectToAction(MVC.Agricoltore.Agricoltore.BollettiniAgricoltore());
+                // Reindirizza in base al ruolo dell'utente autenticato
+                var roleClaim = HttpContext.User.FindFirst(ClaimTypes.Role);
+                if (roleClaim != null && int.TryParse(roleClaim.Value, out int roleId))
+                {
+                    switch (roleId)
+                    {
+                        case 1: // Admin
+                            _logger.LogInformation("Admin login successful: {Email}", HttpContext.User.FindFirst(ClaimTypes.Email)?.Value);
+                            Console.WriteLine($"Admin login successful: {HttpContext.User.FindFirst(ClaimTypes.Email)?.Value}");
+                            return RedirectToAction("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
+                        case 2: // Agricoltore
+                            return RedirectToAction("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
+                        case 3: // Tecnico
+                            return RedirectToAction("BollettiniCaricati", "Tecnico", new { area = "Tecnico" });
+                    }
+                }
+
+                // Se arriviamo qui, c'è un problema con il RoleId
+                _logger.LogWarning("Authenticated user with invalid RoleId");
+                return RedirectToAction(nameof(Login));
             }
 
             var model = new LoginViewModel
@@ -89,7 +130,7 @@ namespace Template.Web.Features.Login
                 }
             }
 
-            return RedirectToAction(MVC.Login.Login());
+            return RedirectToAction(nameof(Login));
         }
 
         [HttpPost]
@@ -98,7 +139,7 @@ namespace Template.Web.Features.Login
             HttpContext.SignOutAsync();
 
             Alerts.AddSuccess(this, "Utente scollegato correttamente");
-            return RedirectToAction(MVC.Login.Login());
+            return RedirectToAction(nameof(Login));
         }
     }
 }
