@@ -35,3 +35,16 @@
         }
     }
 }
+
+// Custom toast error styling
+.onit-toastify-error {
+    background: #dc3545 !important; /* Red background for errors */
+    color: #ffffff !important; /* White text */
+}
+
+// Custom navigation active link styling
+.navbar-nav .nav-item .nav-link.active {
+    color: white; /* Colore del testo per il link attivo */
+    font-weight: bold; /* Rende il testo in grassetto */
+    text-decoration: underline; /* Aggiunge un underline */
+}
