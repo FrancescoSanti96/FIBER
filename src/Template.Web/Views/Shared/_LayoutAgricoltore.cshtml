@@ -5,6 +5,8 @@
     var version = System.Reflection.Assembly.GetAssembly(typeof(Startup)).GetName().Version;
 
     var identitaCorrente = (Template.Web.Areas.IdentitaViewModel)ViewData[Template.Web.Areas.IdentitaViewModel.VIEWDATA_IDENTITACORRENTE_KEY];
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 @section metas{
     @RenderSection("metas", false)
@@ -23,10 +25,10 @@
             <ul class="navbar-nav m-auto mb-2 mb-lg-0 align-items-center">
                 <a class="navbar-brand" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">FIBER</a>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">Bollettini</a>
+                    <a class="nav-link @(currentAction == "BollettiniAgricoltore" && currentController == "Agricoltore" ? "active" : "")" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">Bollettini</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Agricoltore/Agricoltore/ImpostazioniAgricoltore">Impostazioni</a>
+                    <a class="nav-link @(currentAction == "ImpostazioniAgricoltore" && currentController == "Agricoltore" ? "active" : "")" href="/Agricoltore/Agricoltore/ImpostazioniAgricoltore">Impostazioni</a>
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {
