@@ -48,3 +48,21 @@
     font-weight: bold; /* Rende il testo in grassetto */
     text-decoration: underline; /* Aggiunge un underline */
 }
+
+.ck-content {
+    height: 360px;
+    overflow-y: auto;  /* Abilita la scrollbar verticale se il contenuto supera max-height */
+}
+
+/* Regole CSS specifiche per lo stile della toolbar, se necessario */
+.ck.ck-toolbar {
+    border: 1px solid var(--bs-border-color);
+    border-bottom: none;
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+}
+
+.ck.ck-editor__main > .ck-editor__editable {
+    border: 1px solid var(--bs-border-color);
+    border-top: none;
+    border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+}
