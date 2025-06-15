@@ -74,7 +74,7 @@ namespace Template.Web.Areas
                                     _ => "/Login/Login"                                    // Altri casi (non dovrebbe mai succedere)
                                 };
 
-                                Alerts.AddError(this, "Non hai i permessi per accedere a questa area");
+                                Alerts.AddError(this, "Non hai i permessi per accedere a questa area. Sei stato reindirizzato alla tua area di competenza.", 5000); // 5000ms = 5 secondi
                                 // Salva manualmente gli alerts nel TempData prima del reindirizzamento
                                 var controller = (Controller)context.Controller;
                                 if (controller.ViewData.ContainsKey(Alerts.ALERTS_KEY))

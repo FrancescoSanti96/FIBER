@@ -3,6 +3,7 @@ namespace Template.Web.Models
     public class BollettinoTecnicoViewModel
     {
         public bool IsDraft { get; set; }
+        public string ContenutoHTML { get; set; }
         // Aggiungi qui altre proprietà che il bollettino tecnico potrebbe avere, es:
         // public string Title { get; set; }
         // public string Description { get; set; }

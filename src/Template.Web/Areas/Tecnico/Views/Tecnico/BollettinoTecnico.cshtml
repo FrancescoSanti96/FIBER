@@ -41,18 +41,15 @@
             <h3>Tignoletta</h3>
             <p class="mb-3">Il monitoraggio con trappole a feromoni indica un aumento delle catture. Si prevede l'inizio dei voli della prima generazione. In caso di superamento della soglia di intervento, si consiglia un trattamento con prodotti specifici.</p>
         </div>
+        <!-- TODO -->
+           <!-- <div class="ckeditor-content-display">
+                @* QUI VERRÀ VISUALIZZATO IL CONTENUTO HTML DAL CKEDITOR *@
+                @Html.Raw(Model.ContenutoHTML) @* ATTENZIONE: Contenuto deve essere sanificato lato server per prevenire XSS! *@
+            </div> -->
 
         <div class="col-md-4">
             <p class="text-secondary mb-1">29/05/2025 Redatto dal: Tecnico Mario Rossi</p>
             <p class="text-secondary mb-4">mail: <a href="mailto:test@test.it" class="text-secondary">test@test.it</a></p>
-
-            @if (!Model.IsDraft)
-            {
-                <div class="card shadow-sm p-3 mb-4">
-                    <h3 class="h5 card-title">Condividi</h3>
-                    <button class="btn btn-light w-100">Copia</button>
-                </div>
-            }
 
             <div class="card shadow-sm p-3 mb-4">
                 <h3 class="h5 card-title">Download</h3>

@@ -102,9 +102,9 @@ namespace Template.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //var node_modules = new CompositePhysicalFileProvider(Directory.GetCurrentDirectory(), "node_modules");
+            var node_modules = new CompositePhysicalFileProvider(Directory.GetCurrentDirectory(), "node_modules");
             var areas = new CompositePhysicalFileProvider(Directory.GetCurrentDirectory(), "Areas");
-            var compositeFp = new CustomCompositeFileProvider(env.WebRootFileProvider, areas);
+            var compositeFp = new CustomCompositeFileProvider(env.WebRootFileProvider, node_modules, areas);
             env.WebRootFileProvider = compositeFp;
             app.UseStaticFiles();
 
