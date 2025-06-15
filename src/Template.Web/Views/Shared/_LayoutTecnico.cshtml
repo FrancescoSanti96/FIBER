@@ -5,6 +5,8 @@
     var version = System.Reflection.Assembly.GetAssembly(typeof(Startup)).GetName().Version;
 
     var identitaCorrente = (Template.Web.Areas.IdentitaViewModel)ViewData[Template.Web.Areas.IdentitaViewModel.VIEWDATA_IDENTITACORRENTE_KEY];
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 @section metas{
     @RenderSection("metas", false)
@@ -23,13 +25,13 @@
             <ul class="navbar-nav m-auto mb-2 mb-lg-0 align-items-center">
                 <a class="navbar-brand" href="/Tecnico/Tecnico/HomeTecnico">FIBER</a>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Tecnico/Tecnico/HomeTecnico">I miei bollettini</a>
+                    <a class="nav-link @(currentAction == "HomeTecnico" && currentController == "Tecnico" ? "active" : "")" href="/Tecnico/Tecnico/HomeTecnico">I miei bollettini</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Tecnico/Tecnico/NuovoBollettino">Nuovo bollettino</a>
+                    <a class="nav-link @(currentAction == "NuovoBollettino" && currentController == "Tecnico" ? "active" : "")" href="/Tecnico/Tecnico/NuovoBollettino">Nuovo bollettino</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Tecnico/Tecnico/ImpostazioniTecnico">Impostazioni</a>
+                    <a class="nav-link @(currentAction == "ImpostazioniTecnico" && currentController == "Tecnico" ? "active" : "")" href="/Tecnico/Tecnico/ImpostazioniTecnico">Impostazioni</a>
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {
