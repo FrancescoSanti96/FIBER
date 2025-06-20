@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Template.Infrastructure;
 
-namespace Template.Services.Shared
+namespace Template.Services.Users
 {
     public class UsersSelectQuery
     {
@@ -67,7 +67,7 @@ namespace Template.Services.Shared
         public string Password { get; set; }
     }
 
-    public partial class SharedService
+    public partial class UserService
     {
         /// <summary>
         /// Returns users for a select field

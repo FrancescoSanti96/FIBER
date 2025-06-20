@@ -1,6 +1,8 @@
-﻿using Template.Services.Shared;
+﻿using Template.Services.Users;
 using Microsoft.Extensions.DependencyInjection;
-using Template.Web.SignalR;
+using Template.Services.DataPersister;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Template.Infrastructure;
 
 namespace Template.Web
 {
@@ -9,10 +11,9 @@ namespace Template.Web
         public static void RegisterTypes(IServiceCollection container)
         {
             // Registration of all the database services you have
-            container.AddScoped<SharedService>();
-
-            // Registration of SignalR events
-            container.AddScoped<IPublishDomainEvents, SignalrPublishDomainEvents>();
+            container.AddScoped<IDataPersister, DataPersister>();
+            container.AddSingleton<IInterceptor, FiberDbContextSaveChangesInteceptor>();
+            container.AddScoped<UserService>();
         }
     }
 }

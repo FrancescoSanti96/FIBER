@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Template.Services.Shared;
+using Template.Services.Users;
 using System.Threading.Tasks;
 using Template.Infrastructure;
 using Microsoft.Extensions.Logging;
@@ -19,16 +19,13 @@ namespace Template.Web.Features.Login
     public partial class LoginController : Controller
     {
         public static string LoginErrorModelStateKey = "LoginError";
-        private readonly SharedService _sharedService;
+        private readonly UserService _userService;
         private readonly IStringLocalizer<SharedResource> _sharedLocalizer;
         private readonly ILogger<LoginController> _logger;
 
-        public LoginController(
-            SharedService sharedService, 
-            IStringLocalizer<SharedResource> sharedLocalizer,
-            ILogger<LoginController> logger)
+        public LoginController(UserService userService, IStringLocalizer<SharedResource> sharedLocalizer, ILogger<LoginController> logger)
         {
-            _sharedService = sharedService;
+            _userService = userService;
             _sharedLocalizer = sharedLocalizer;
             _logger = logger;
         }
@@ -37,9 +34,9 @@ namespace Template.Web.Features.Login
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, utente.Id.ToString()),
-                new Claim(ClaimTypes.Email, utente.Email),
-                new Claim(ClaimTypes.Role, utente.RoleId.ToString())
+                new (ClaimTypes.NameIdentifier, utente.Id.ToString()),
+                new (ClaimTypes.Email, utente.Email),
+                new (ClaimTypes.Role, utente.RoleId.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -66,7 +63,7 @@ namespace Template.Web.Features.Login
                     return RedirectToAction("BollettiniCaricati", "Tecnico", new { area = "Tecnico" });
             }
 
-            // Se arriviamo qui, c'Ã¨ un problema con il RoleId
+            // Se arriviamo qui, c'è un problema con il RoleId
             _logger.LogWarning("Login attempt with invalid RoleId: {RoleId}", utente.RoleId);
             return RedirectToAction(nameof(Login));
         }
@@ -96,7 +93,7 @@ namespace Template.Web.Features.Login
                     }
                 }
 
-                // Se arriviamo qui, c'Ã¨ un problema con il RoleId
+                // Se arriviamo qui, c'è un problema con il RoleId
                 _logger.LogWarning("Authenticated user with invalid RoleId");
                 return RedirectToAction(nameof(Login));
             }
@@ -116,7 +113,7 @@ namespace Template.Web.Features.Login
             {
                 try
                 {
-                    var utente = await _sharedService.Query(new CheckLoginCredentialsQuery
+                    var utente = await _userService.Query(new CheckLoginCredentialsQuery
                     {
                         Email = model.Email,
                         Password = model.Password,

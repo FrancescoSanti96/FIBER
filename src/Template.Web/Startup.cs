@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,9 +12,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Template.EntityModel;
-using Template.Services;
+using Template.Services.DataPersister;
 using Template.Web.Infrastructure;
-using Template.Web.SignalR.Hubs;
 
 namespace Template.Web
 {
@@ -33,9 +33,11 @@ namespace Template.Web
         {
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
-            services.AddDbContext<FiberDbContext>(options =>
+            services.AddDbContext<FiberDbContext>((serviceProvider, options) =>
             {
-                options.UseInMemoryDatabase(databaseName: "Fiber");
+                var interceptor = serviceProvider.GetRequiredService<IInterceptor>();
+                options.UseInMemoryDatabase(databaseName: "Fiber")
+                    .AddInterceptors(interceptor);
             });
 
             // SERVICES FOR AUTHENTICATION
@@ -80,7 +82,7 @@ namespace Template.Web
             Container.RegisterTypes(services);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, IServiceScopeFactory scopeFactory)
         {
             // Configure the HTTP request pipeline.
             if (!env.IsDevelopment())
@@ -113,6 +115,14 @@ namespace Template.Web
                 endpoints.MapAreaControllerRoute("Agricoltore", "Agricoltore", "Agricoltore/{controller=Agricoltore}/{action=BollettiniAgricoltore}/{id?}");
                 endpoints.MapAreaControllerRoute("Tecnico", "Tecnico", "Tecnico/{controller=Tecnico}/{action=HomeTecnico}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Login}/{action=Login}");
+            });
+
+            // Registrazione del salvataggio automatico quando l'app si arresta
+            lifetime.ApplicationStopped.Register(() =>
+            {
+                using var scope = scopeFactory.CreateScope();
+                var persister = scope.ServiceProvider.GetRequiredService<IDataPersister>();
+                persister.SaveOnFileAsync().GetAwaiter().GetResult();
             });
         }
     }

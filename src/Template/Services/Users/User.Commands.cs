@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Template.EntityModel.Models;
 
-namespace Template.Services.Shared
+namespace Template.Services.Users
 {
     public class AddOrUpdateUserCommand
     {
@@ -15,9 +15,9 @@ namespace Template.Services.Shared
         public int RoleId { get; set; }
     }
 
-    public partial class SharedService
+    public partial class UserService
     {
-        public async Task<int> Handle(AddOrUpdateUserCommand cmd)
+        public async Task<int> AddOrUpdate(AddOrUpdateUserCommand cmd)
         {
             var user = await _dbContext.Users
                 .Where(x => x.Id == cmd.Id)
@@ -25,7 +25,7 @@ namespace Template.Services.Shared
 
             if (user == null)
             {
-                user = new EntityModel.Models.User
+                user = new User
                 {
                     Id = cmd.Id,
                     Email = cmd.Email,
@@ -42,6 +42,24 @@ namespace Template.Services.Shared
             await _dbContext.SaveChangesAsync();
 
             return user.Id;
+        }
+
+        public async Task<UserDto> SaveUserSettingsAsync(int idUser, IReadOnlyList<int> coltures, IReadOnlyList<int> provinces)
+        {
+            var user = await _dbContext.Users
+                .Where(x => x.Id == idUser)
+                .FirstOrDefaultAsync()
+                ?? throw new System.Exception($"User with id {idUser} not found");
+
+            var selectedColtures = await _dbContext.Coltures.Where(x => coltures.Contains(x.Id)).ToListAsync();
+            var selectedProvinces = await _dbContext.Provinces.Where(x => provinces.Contains(x.Id)).ToListAsync();
+
+            user.Coltures = selectedColtures;
+            user.Provinces = selectedProvinces;
+
+            await _dbContext.SaveChangesAsync();
+
+            return new UserDto(user);
         }
     }
 }

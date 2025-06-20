@@ -69,9 +69,9 @@ namespace Template.Web.Areas
                                 // Reindirizza l'utente alla sua area in base al ruolo
                                 var redirectUrl = roleId switch
                                 {
-                                    2 => "/Agricoltore/Agricoltore/BollettiniAgricoltore", // Agricoltore
-                                    3 => "/Tecnico/Tecnico/BollettiniCaricati",           // Tecnico
-                                    _ => "/Login/Login"                                    // Altri casi (non dovrebbe mai succedere)
+                                    2 => "/Agricoltore/Agricoltore/BollettiniAgricoltore",  // Agricoltore
+                                    3 => "/Tecnico/Tecnico/BollettiniCaricati",             // Tecnico
+                                    _ => "/Login/Login"                                     // Altri casi (non dovrebbe mai succedere)
                                 };
 
                                 Alerts.AddError(this, "Non hai i permessi per accedere a questa area. Sei stato reindirizzato alla tua area di competenza.", 5000); // 5000ms = 5 secondi
@@ -98,6 +98,20 @@ namespace Template.Web.Areas
             {
                 throw;
             }
+        }
+
+        protected async Task<UserDetailDTO> GetCurrentUserAsync()
+        {
+            var userIdentity = HttpContext.User;
+            var userId = userIdentity.FindFirst(ClaimTypes.NameIdentifier).ToString();
+
+            if (int.TryParse(userId, out int intUserId))
+            {
+                var user = await _userService.Query(new UserDetailQuery { Id = intUserId });
+                return user;
+            }
+
+            return null;
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using Template.EntityModel.Models;
 using Template.Infrastructure;
@@ -21,6 +22,7 @@ namespace Template.EntityModel
 
             SeedEntityFromJson<User>(contextStateFolderPath);
             SeedEntityFromJson<Role>(contextStateFolderPath);
+            SeedEntityFromJson<Colture>(contextStateFolderPath);
             SeedEntityFromJson<Province>(contextStateFolderPath);
         }
 
@@ -28,7 +30,6 @@ namespace Template.EntityModel
         public DbSet<Province> Provinces { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<UserSetting> UserSettings { get; set; }
         public DbSet<Bulletin> Bulletins { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,27 +48,25 @@ namespace Template.EntityModel
                 .HasIndex(r => r.Name)
                 .IsUnique();
 
-            modelBuilder.Entity<UserSetting>()
-                .HasKey(us => new { us.IdUser, us.IdProvince, us.IdColture });
+            // User-Colture relationships
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Coltures)
+                .WithMany(c => c.SubscribedUsers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserColture",
+                    j => j.HasOne<Colture>().WithMany().HasForeignKey("ColtureId").OnDelete(DeleteBehavior.ClientNoAction),
+                    j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientNoAction)
+                );
 
-            // UserSetting relationships
-            modelBuilder.Entity<UserSetting>()
-                .HasOne(us => us.User)
-                .WithOne(u => u.UserSetting)
-                .HasForeignKey<UserSetting>(us => us.IdUser)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<UserSetting>()
-                .HasOne(us => us.Province)
-                .WithMany(p => p.UserSettings)
-                .HasForeignKey(us => us.IdProvince)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<UserSetting>()
-                .HasOne(us => us.Colture)
-                .WithMany(c => c.UserSettings)
-                .HasForeignKey(us => us.IdColture)
-                .OnDelete(DeleteBehavior.Restrict);
+            // User-Province relationships
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Provinces)
+                .WithMany(p => p.SubscribedUsers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserProvince",
+                    j => j.HasOne<Province>().WithMany().HasForeignKey("ColtureId").OnDelete(DeleteBehavior.ClientNoAction),
+                    j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientNoAction)
+                );
 
             // User - Role relationship
             modelBuilder.Entity<User>()

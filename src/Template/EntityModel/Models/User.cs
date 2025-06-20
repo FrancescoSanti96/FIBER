@@ -36,7 +36,8 @@ namespace Template.EntityModel.Models
 
         // Navigation properties
         public virtual Role Role { get; set; } = null!;
-        public virtual UserSetting UserSetting { get; set; }
+        public virtual ICollection<Colture> Coltures { get; set; } = [];
+        public virtual ICollection<Province> Provinces { get; set; } = [];
         public virtual ICollection<Bulletin> Bulletins { get; set; } = [];
 
         public bool IsMatchWithPassword(string password)

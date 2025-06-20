@@ -18,7 +18,7 @@ namespace Template.EntityModel.Models
         public string Code { get; set; }
 
         // Navigation properties
-        public virtual ICollection<UserSetting> UserSettings { get; set; } = new List<UserSetting>();
+        public virtual ICollection<User> SubscribedUsers { get; set; } = [];
         public virtual ICollection<Bulletin> Bulletins { get; set; } = new List<Bulletin>();
     }
 }

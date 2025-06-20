@@ -13,7 +13,7 @@ namespace Template.EntityModel.Models
         public string Name { get; set; } = string.Empty;
 
         // Navigation properties
-        public virtual ICollection<UserSetting> UserSettings { get; set; } = [];
+        public virtual ICollection<User> SubscribedUsers { get; set; } = [];
         public virtual ICollection<Bulletin> Bulletins { get; set; } = [];
     }
 }
