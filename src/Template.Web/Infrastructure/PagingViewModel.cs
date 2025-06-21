@@ -58,13 +58,7 @@ namespace Template.Web.Infrastructure
             var route = GetRoute();
             return ChangePageSizePageUrl(url, route, pageSize);
         }
-        string ChangePageSizePageUrl(IUrlHelper url, IActionResult route, int pageSize)
-        {
-            var idx = route.GetRouteValueDictionary();
-            idx["PageSize"] = pageSize;
-
-            return url.Action(route);
-        }
+        string ChangePageSizePageUrl(IUrlHelper url, IActionResult route, int pageSize) => string.Empty;
 
 
         public string NextPageUrl(IUrlHelper url)
@@ -72,13 +66,7 @@ namespace Template.Web.Infrastructure
             var route = GetRoute();
             return NextPageUrl(url, route);
         }
-        string NextPageUrl(IUrlHelper url, IActionResult route)
-        {
-            var idx = route.GetRouteValueDictionary();
-            idx["Page"] = Math.Min(TotalPages(), Page + 1);
-
-            return url.Action(route);
-        }
+        string NextPageUrl(IUrlHelper url, IActionResult route) => string.Empty;
         string NextPageUrl(IUrlHelper url, Task<ActionResult> route)
         {
             return NextPageUrl(url, route.GetAwaiter().GetResult());
@@ -90,13 +78,7 @@ namespace Template.Web.Infrastructure
             return LastPageUrl(url, route);
         }
 
-        string LastPageUrl(IUrlHelper url, IActionResult route)
-        {
-            var idx = route.GetRouteValueDictionary();
-            idx["Page"] = TotalPages();
-
-            return url.Action(route);
-        }
+        string LastPageUrl(IUrlHelper url, IActionResult route) => string.Empty;
         public string PrevPageUrl(IUrlHelper url)
         {
             var route = GetRoute();
@@ -106,26 +88,14 @@ namespace Template.Web.Infrastructure
         {
             return PrevPageUrl(url, route.GetAwaiter().GetResult());
         }
-        string PrevPageUrl(IUrlHelper url, IActionResult route)
-        {
-            var idx = route.GetRouteValueDictionary();
-            idx["Page"] = Math.Max(1, Page - 1);
-
-            return url.Action(route);
-        }
+        string PrevPageUrl(IUrlHelper url, IActionResult route) => string.Empty;
         public string FirstPageUrl(IUrlHelper url)
         {
             var route = GetRoute();
             return FirstPageUrl(url, route);
         }
 
-        string FirstPageUrl(IUrlHelper url, IActionResult route)
-        {
-            var idx = route.GetRouteValueDictionary();
-            idx["Page"] = 1;
-
-            return url.Action(route);
-        }
+        string FirstPageUrl(IUrlHelper url, IActionResult route) => string.Empty;
 
 
         protected string OrderbyUrl<TModel, TProperty>(IUrlHelper url, Expression<Func<TModel, TProperty>> expression)
@@ -139,22 +109,7 @@ namespace Template.Web.Infrastructure
             return OrderbyUrl(url, propertyName, GetRoute());
         }
 
-        string OrderbyUrl(IUrlHelper url, string propertyName, IActionResult route)
-        {
-            var idx = route.GetRouteValueDictionary();
-
-            if (OrderBy == propertyName)
-            {
-                idx["OrderByDescending"] = !OrderByDescending;
-            }
-            else
-            {
-                idx["OrderBy"] = propertyName;
-                idx["OrderByDescending"] = false;
-            }
-
-            return url.Action(route);
-        }
+        string OrderbyUrl(IUrlHelper url, string propertyName, IActionResult route) => string.Empty;
 
         protected string OrderbyCss<TModel, TProperty>(HttpContext context, Expression<Func<TModel, TProperty>> expression)
         {
