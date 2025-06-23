@@ -1,11 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Template.Services.Users;
 using Template.Web.Areas;
+using Template.Web.Areas.Dto;
 
 namespace Template.Web.Areas.Agricoltore.Controllers
 {
     [Area("Agricoltore")]
-    public partial class AgricoltoreController : AuthenticatedBaseController
+    public class AgricoltoreController : AuthenticatedBaseController
     {
+
+        public AgricoltoreController(UserService userService) : base(userService) { }
+
         public virtual IActionResult BollettiniAgricoltore()
         {
             return View();
@@ -20,5 +26,18 @@ namespace Template.Web.Areas.Agricoltore.Controllers
         {
             return View();
         }
+
+        public virtual async Task<IActionResult> SaveUserPreferences(SavePreferencesDto dto)
+        {
+            var user = await GetCurrentUserAsync();
+
+            if (user == null)
+            {
+                return NotFound("Invalid user");
+            }
+
+            var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
+            return RedirectToAction("ImpostazioniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
+        }
     }
-} 
+}

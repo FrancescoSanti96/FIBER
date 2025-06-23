@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using Template.Web.Areas;
+using Template.Services.Users;
 using Template.Web.Models;
 
 namespace Template.Web.Areas.Tecnico.Controllers
 {
     [Area("Tecnico")]
-    public partial class TecnicoController : AuthenticatedBaseController
+    public class TecnicoController : AuthenticatedBaseController
     {
+        public TecnicoController(UserService userService) : base(userService) { }
+
         // GET: Tecnico/Tecnico/HomeTecnico
         public virtual IActionResult HomeTecnico(string tab = "caricati")
         {
@@ -76,4 +78,4 @@ namespace Template.Web.Areas.Tecnico.Controllers
             return View(model);
         }
     }
-} 
+}

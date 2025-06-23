@@ -10,8 +10,13 @@ using Template.Infrastructure;
 
 namespace Template.EntityModel
 {
+
+
     public class FiberDbContext : DbContext
     {
+        private record UserColtureDto(int IdUser, int IdColture);
+        private record UserProvinceDto(int IdUser, int IdProvince);
+
         public FiberDbContext(DbContextOptions<FiberDbContext> options) : base(options)
         {
             var contextStateFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "SolutionItems", "FiberDbState");
@@ -20,10 +25,8 @@ namespace Template.EntityModel
                 throw new DirectoryNotFoundException();
             }
 
-            SeedEntityFromJson<User>(contextStateFolderPath);
-            SeedEntityFromJson<Role>(contextStateFolderPath);
-            SeedEntityFromJson<Colture>(contextStateFolderPath);
-            SeedEntityFromJson<Province>(contextStateFolderPath);
+            LoadFromFile(contextStateFolderPath);
+
         }
 
         public DbSet<Colture> Coltures { get; set; }
@@ -106,6 +109,69 @@ namespace Template.EntityModel
             modelBuilder.Entity<Bulletin>()
                 .Property(b => b.Body)
                 .HasColumnType("varchar(max)");
+        }
+
+        private void LoadFromFile(string contextStateFolderPath)
+        {
+            #region Seed entità
+
+            SeedEntityFromJson<User>(contextStateFolderPath);
+            SeedEntityFromJson<Role>(contextStateFolderPath);
+            SeedEntityFromJson<Colture>(contextStateFolderPath);
+            SeedEntityFromJson<Province>(contextStateFolderPath);
+
+            #endregion
+
+            #region Seed navigation properties
+
+            var users = Users
+                .Include(u => u.Coltures)
+                .Include(u => u.Provinces)
+                .ToList();
+
+            var coltureMap = Coltures.ToDictionary(c => c.Id);
+            var provinceMap = Provinces.ToDictionary(c => c.Id);
+
+            // Pulizia relazioni esistenti
+            foreach (var user in users)
+            {
+                user.Coltures.Clear();
+                user.Provinces.Clear();
+            }
+
+            if (File.Exists(Path.Combine(contextStateFolderPath, "UserColture.json")))
+            {
+                var userColturesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserColture.json"));
+                var userColtures = JsonSerializer.Deserialize<List<UserColtureDto>>(userColturesJson);
+
+                foreach (var uc in userColtures!)
+                {
+                    var user = users.FirstOrDefault(u => u.Id == uc.IdUser);
+                    if (user != null && coltureMap.TryGetValue(uc.IdColture, out var colture))
+                    {
+                        user.Coltures.Add(colture);
+                    }
+                }
+            }
+
+            if (File.Exists(Path.Combine(contextStateFolderPath, "UserProvince.json")))
+            {
+                var userProvincesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserProvince.json"));
+                var userProvinces = JsonSerializer.Deserialize<List<UserProvinceDto>>(userProvincesJson);
+
+                foreach (var up in userProvinces!)
+                {
+                    var user = users.FirstOrDefault(u => u.Id == up.IdUser);
+                    if (user != null && provinceMap.TryGetValue(up.IdProvince, out var province))
+                    {
+                        user.Provinces.Add(province);
+                    }
+                }
+            }
+
+            #endregion
+
+            SaveChanges();
         }
 
         private void SeedEntityFromJson<T>(string contextStateFolderPath) where T : class

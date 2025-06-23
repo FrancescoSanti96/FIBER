@@ -12,7 +12,7 @@ namespace Template.Web
         {
             // Registration of all the database services you have
             container.AddScoped<IDataPersister, DataPersister>();
-            container.AddSingleton<IInterceptor, FiberDbContextSaveChangesInteceptor>();
+            container.AddSingleton<IInterceptor, FiberDbContextSaveChangesInterceptor>();
             container.AddScoped<UserService>();
         }
     }

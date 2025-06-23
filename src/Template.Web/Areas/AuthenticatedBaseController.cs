@@ -8,6 +8,8 @@ using System.Linq;
 using System.Security.Claims;
 using Template.Web.Infrastructure;
 using Newtonsoft.Json;
+using Template.Services.Users;
+using System.Threading.Tasks;
 
 namespace Template.Web.Areas
 {
@@ -15,9 +17,14 @@ namespace Template.Web.Areas
     [Alerts]
     [ModelStateToTempData]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-    public partial class AuthenticatedBaseController : Controller
+    public class AuthenticatedBaseController : Controller
     {
-        public AuthenticatedBaseController() { }
+        protected readonly UserService _userService;
+
+        public AuthenticatedBaseController(UserService userService)
+        {
+            _userService = userService;
+        }
 
         protected IdentitaViewModel Identita
         {

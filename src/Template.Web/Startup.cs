@@ -75,9 +75,6 @@ namespace Template.Web
                 options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
             });
 
-            // SIGNALR FOR COLLABORATIVE PAGES
-            services.AddSignalR();
-
             // CONTAINER FOR ALL EXTRA CUSTOM SERVICES
             Container.RegisterTypes(services);
         }
