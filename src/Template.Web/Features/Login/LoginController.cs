@@ -127,7 +127,8 @@ namespace Template.Web.Features.Login
                 }
             }
 
-            return RedirectToAction(nameof(Login));
+            // Torna alla view con gli errori invece di fare redirect
+            return View(model);
         }
 
         [HttpPost]

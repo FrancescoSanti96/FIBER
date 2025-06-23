@@ -8,7 +8,6 @@
 		<PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.11" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="SG4MVC" Version="0.9.4-beta" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -16,29 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AssemblyAttribute Include="Sg4Mvc.GenerateSg4Mvc" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\Template\Template.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Update="Areas\Example\Users\EditViewModel.cs">
-			<Generator>DtsGenerator</Generator>
-			<LastGenOutput>EditViewModel.cs.d.ts</LastGenOutput>
-		</Compile>
-		<Compile Update="Areas\Example\Users\IndexViewModel.cs">
-			<Generator></Generator>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="Areas\Example\Users\EditViewModel.cs.d.ts">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>EditViewModel.cs</DependentUpon>
-		</None>
 	</ItemGroup>
 
 	<ItemGroup>

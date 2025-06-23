@@ -20,10 +20,10 @@
       "wwwroot/js/site.js"
     ],
     "minify": {
-      "enabled": true
+      "enabled": false
     },
     "includeInProject": true,
-    "sourceMap": true
+    "sourceMap": false
   },
   {
     "outputFileName": "wwwroot/js/bundle-vue.js",
