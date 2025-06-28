@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Template.Services.Users;
 using Template.Web.Models;
 
-namespace Template.Web.Areas.Tecnico.Controllers
+namespace Template.Web.Areas.Tecnico
 {
     [Area("Tecnico")]
     public class TecnicoController : AuthenticatedBaseController

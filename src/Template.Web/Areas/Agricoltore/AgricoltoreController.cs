@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Template.Services.Users;
-using Template.Web.Areas;
 using Template.Web.Areas.Dto;
 
-namespace Template.Web.Areas.Agricoltore.Controllers
+namespace Template.Web.Areas.Agricoltore
 {
     [Area("Agricoltore")]
     public class AgricoltoreController : AuthenticatedBaseController
