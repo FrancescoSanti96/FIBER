@@ -1,0 +1,139 @@
+@{
+    ViewData["Title"] = "Benvenuto!";
+    Layout = "~/Views/Shared/_LayoutAgricoltore.cshtml";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="text-center mb-5">
+                <h1 class="display-4 text-success mb-3">👋 Benvenuto!</h1>
+                <p class="lead text-muted">Siamo felici di averti qui! Per personalizzare la tua esperienza, abbiamo bisogno di alcune informazioni.</p>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="step-indicator active me-2">
+                                <span class="step-number">1</span>
+                            </div>
+                            <div class="step-line"></div>
+                            <div class="step-indicator me-2">
+                                <span class="step-number">2</span>
+                            </div>
+                        </div>
+                        <h3 class="text-success">Dove coltivi?</h3>
+                        <p class="text-muted">Seleziona le zone dove coltivi per ricevere bollettini personalizzati</p>
+                    </div>
+
+                    <form id="onboarding-step1-form">
+                        <div class="form-group mb-4">
+                            <label for="zona-interesse" class="form-label fw-bold">Zone di interesse</label>
+                            <select id="zona-interesse" class="form-control form-control-lg text-secondary" multiple>
+                                <option value="">Caricamento zone...</option>
+                            </select>
+                            <div class="form-text">Puoi selezionare più zone se coltivi in diverse province</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" id="next-step" class="btn btn-success btn-lg px-4">
+                                Avanti <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <small class="text-muted">Step 1 di 2</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.step-indicator {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    color: #6c757d;
+    font-weight: bold;
+}
+
+.step-indicator.active {
+    background-color: #198754;
+    color: white;
+}
+
+.step-line {
+    width: 60px;
+    height: 3px;
+    background-color: #e9ecef;
+    margin-top: 18px;
+}
+
+.card {
+    border-radius: 15px;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Carica le province dal ViewBag
+    loadProvinces();
+    
+    // Gestione del pulsante Avanti
+    document.getElementById('next-step').addEventListener('click', function() {
+        const selectedProvinces = Array.from(document.getElementById('zona-interesse').selectedOptions)
+            .map(option => option.value)
+            .filter(value => value !== '');
+            
+        if (selectedProvinces.length === 0) {
+            alert('Seleziona almeno una zona di interesse');
+            return;
+        }
+        
+        // Salva temporaneamente le province selezionate
+        sessionStorage.setItem('onboarding_provinces', JSON.stringify(selectedProvinces));
+        
+        // Vai al prossimo step
+        window.location.href = '@Url.Action("OnboardingStep2", "Agricoltore", new { area = "Agricoltore" })';
+    });
+});
+
+function loadProvinces() {
+    const provinces = @Html.Raw(Json.Serialize(ViewBag.Provinces));
+    const select = document.getElementById('zona-interesse');
+    select.innerHTML = '';
+    
+    provinces.forEach(province => {
+        const option = document.createElement('option');
+        option.value = province.id;
+        option.textContent = province.name;
+        select.appendChild(option);
+    });
+}
+</script> 

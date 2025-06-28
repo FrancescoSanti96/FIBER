@@ -142,7 +142,8 @@ namespace Template.EntityModel
             if (File.Exists(Path.Combine(contextStateFolderPath, "UserColture.json")))
             {
                 var userColturesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserColture.json"));
-                var userColtures = JsonSerializer.Deserialize<List<UserColtureDto>>(userColturesJson);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var userColtures = JsonSerializer.Deserialize<List<UserColtureDto>>(userColturesJson, options);
 
                 foreach (var uc in userColtures!)
                 {
@@ -157,7 +158,8 @@ namespace Template.EntityModel
             if (File.Exists(Path.Combine(contextStateFolderPath, "UserProvince.json")))
             {
                 var userProvincesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserProvince.json"));
-                var userProvinces = JsonSerializer.Deserialize<List<UserProvinceDto>>(userProvincesJson);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var userProvinces = JsonSerializer.Deserialize<List<UserProvinceDto>>(userProvincesJson, options);
 
                 foreach (var up in userProvinces!)
                 {
@@ -187,7 +189,14 @@ namespace Template.EntityModel
                     throw new FileNotFoundException($"File not found: {fullPath}");
 
                 var json = File.ReadAllText(fullPath);
-                var data = JsonSerializer.Deserialize<List<T>>(json);
+                
+                // Configura opzioni di serializzazione case-insensitive
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                
+                var data = JsonSerializer.Deserialize<List<T>>(json, options);
 
                 if (data != null)
                 {

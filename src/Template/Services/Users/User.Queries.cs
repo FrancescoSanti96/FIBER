@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Template.Infrastructure;
+using Template.EntityModel.Models;
 
 namespace Template.Services.Users
 {
@@ -59,12 +60,21 @@ namespace Template.Services.Users
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int RoleId { get; set; }
+        public bool OnboardingComplete { get; set; }
     }
 
     public class CheckLoginCredentialsQuery
     {
         public string Email { get; set; }
         public string Password { get; set; }
+    }
+
+    public class GetAllProvincesQuery
+    {
+    }
+
+    public class GetAllColturesQuery
+    {
     }
 
     public partial class UserService
@@ -143,6 +153,8 @@ namespace Template.Services.Users
                     Email = x.Email,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
+                    RoleId = x.RoleId,
+                    OnboardingComplete = x.OnboardingComplete
                 })
                 .FirstOrDefaultAsync();
         }
@@ -170,6 +182,30 @@ namespace Template.Services.Users
                 LastName = user.LastName,
                 RoleId = user.RoleId
             };
+        }
+
+        /// <summary>
+        /// Returns all provinces for selection
+        /// </summary>
+        /// <param name="qry"></param>
+        /// <returns></returns>
+        public async Task<List<Province>> Query(GetAllProvincesQuery qry)
+        {
+            return await _dbContext.Provinces
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Returns all coltures for selection
+        /// </summary>
+        /// <param name="qry"></param>
+        /// <returns></returns>
+        public async Task<List<Colture>> Query(GetAllColturesQuery qry)
+        {
+            return await _dbContext.Coltures
+                .OrderBy(c => c.Name)
+                .ToListAsync();
         }
     }
 }
