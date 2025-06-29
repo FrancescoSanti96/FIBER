@@ -2,14 +2,24 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Template.Services.Users;
 using Template.Web.Areas.Dto;
+using Template.Services.DataPersister;
+using Microsoft.Extensions.Logging;
+using System.Linq;
+using System;
 
 namespace Template.Web.Areas.Agricoltore
 {
     [Area("Agricoltore")]
     public class AgricoltoreController : AuthenticatedBaseController
     {
+        private readonly IDataPersister _dataPersister;
+        private readonly ILogger<AgricoltoreController> _logger;
 
-        public AgricoltoreController(UserService userService) : base(userService) { }
+        public AgricoltoreController(UserService userService, IDataPersister dataPersister, ILogger<AgricoltoreController> logger) : base(userService) 
+        {
+            _dataPersister = dataPersister;
+            _logger = logger;
+        }
 
         public virtual async Task<IActionResult> BollettiniAgricoltore()
         {
@@ -52,6 +62,40 @@ namespace Template.Web.Areas.Agricoltore
             return View();
         }
 
+        // API endpoint per caricare le province
+        [HttpGet]
+        public virtual async Task<IActionResult> GetProvinces()
+        {
+            try
+            {
+                var provinces = await _userService.Query(new GetAllProvincesQuery());
+                var provinceDtos = provinces.Select(p => new { id = p.Id, name = p.Name }).ToList();
+                return Json(new { success = true, data = provinceDtos });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore nel caricamento delle province");
+                return Json(new { success = false, message = "Errore nel caricamento delle province" });
+            }
+        }
+
+        // API endpoint per caricare le colture
+        [HttpGet]
+        public virtual async Task<IActionResult> GetColtures()
+        {
+            try
+            {
+                var coltures = await _userService.Query(new GetAllColturesQuery());
+                var coltureDtos = coltures.Select(c => new { id = c.Id, name = c.Name }).ToList();
+                return Json(new { success = true, data = coltureDtos });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore nel caricamento delle colture");
+                return Json(new { success = false, message = "Errore nel caricamento delle colture" });
+            }
+        }
+
         // Onboarding Step 1 - Zone di interesse
         public virtual async Task<IActionResult> OnboardingStep1()
         {
@@ -67,10 +111,6 @@ namespace Template.Web.Areas.Agricoltore
                 return RedirectToAction("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
             }
 
-            // Carica le province della Romagna
-            var provinces = await _userService.Query(new GetAllProvincesQuery());
-            ViewBag.Provinces = provinces;
-            
             return View();
         }
 
@@ -89,10 +129,6 @@ namespace Template.Web.Areas.Agricoltore
                 return RedirectToAction("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
             }
 
-            // Carica tutte le colture
-            var coltures = await _userService.Query(new GetAllColturesQuery());
-            ViewBag.Coltures = coltures;
-            
             return View();
         }
 
@@ -116,6 +152,9 @@ namespace Template.Web.Areas.Agricoltore
 
             var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
             
+            // Salva immediatamente nel JSON
+            await _dataPersister.SaveOnFileAsync();
+            
             // Dopo aver salvato le preferenze, reindirizza alla home dell'agricoltore
             return Json(new { success = true, redirectUrl = Url.Action("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" }) });
         }
@@ -130,6 +169,10 @@ namespace Template.Web.Areas.Agricoltore
             }
 
             var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
+
+            // Salva immediatamente nel JSON
+            await _dataPersister.SaveOnFileAsync();
+
             return RedirectToAction("ImpostazioniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
         }
     }

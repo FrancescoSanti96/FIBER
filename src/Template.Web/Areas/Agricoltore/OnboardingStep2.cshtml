@@ -17,36 +17,31 @@
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
                         <div class="d-flex justify-content-center mb-3">
-                            <div class="step-indicator me-2">
-                                <span class="step-number">1</span>
-                            </div>
-                            <div class="step-line"></div>
-                            <div class="step-indicator active me-2">
-                                <span class="step-number">2</span>
-                            </div>
+                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px;height:40px;font-weight:bold;">1</div>
+                            <div class="bg-secondary" style="width:60px;height:3px;margin-top:18px;"></div>
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px;height:40px;font-weight:bold;">2</div>
                         </div>
                         <h3 class="text-success">Cosa coltivi?</h3>
                         <p class="text-muted">Seleziona le colture che ti interessano</p>
                     </div>
 
-                    <form id="onboarding-step2-form">
-                        <div class="form-group mb-4">
-                            <label for="cultura-interesse" class="form-label fw-bold">Colture di interesse</label>
-                            <select id="cultura-interesse" class="form-control form-control-lg text-secondary" multiple>
-                                <option value="">Caricamento colture...</option>
-                            </select>
-                            <div class="form-text">Puoi selezionare più colture se coltivi diversi tipi di prodotti</div>
-                        </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Colture di interesse</label>
+                        <div id="error" class="text-danger mb-2" style="display:none;"></div>
+                        <select id="select" class="form-control form-control-lg" multiple>
+                            <option>Caricamento...</option>
+                        </select>
+                        <div class="form-text">Puoi selezionare più colture se coltivi diversi tipi di prodotti</div>
+                    </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-                            <button type="button" id="prev-step" class="btn btn-outline-secondary btn-lg px-4">
-                                <i class="fas fa-arrow-left me-2"></i> Indietro
-                            </button>
-                            <button type="button" id="complete-onboarding" class="btn btn-success btn-lg px-4">
-                                Completato! <i class="fas fa-check ms-2"></i>
-                            </button>
-                        </div>
-                    </form>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                        <button type="button" id="prev" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="fas fa-arrow-left me-2"></i> Indietro
+                        </button>
+                        <button type="button" id="complete" class="btn btn-success btn-lg px-4">
+                            Completato! <i class="fas fa-check ms-2"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -57,136 +52,55 @@
     </div>
 </div>
 
-<style>
-.step-indicator {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #e9ecef;
-    color: #6c757d;
-    font-weight: bold;
-}
-
-.step-indicator.active {
-    background-color: #198754;
-    color: white;
-}
-
-.step-line {
-    width: 60px;
-    height: 3px;
-    background-color: #e9ecef;
-    margin-top: 18px;
-}
-
-.card {
-    border-radius: 15px;
-}
-
-.form-control {
-    border-radius: 10px;
-    border: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus {
-    border-color: #198754;
-    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
-}
-
-.btn {
-    border-radius: 10px;
-    font-weight: 600;
-}
-
-.btn-outline-secondary:hover {
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Carica le colture
-    loadColtures();
-    
-    // Gestione del pulsante Indietro
-    document.getElementById('prev-step').addEventListener('click', function() {
+    fetch('@Url.Action("GetColtures", "Agricoltore", new { area = "Agricoltore" })')
+        .then(r => r.json())
+        .then(r => {
+            if (r.success) {
+                const select = document.getElementById('select');
+                select.innerHTML = '';
+                r.data.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.name;
+                    select.appendChild(opt);
+                });
+            }
+        });
+
+    document.getElementById('prev').addEventListener('click', function() {
         window.location.href = '@Url.Action("OnboardingStep1", "Agricoltore", new { area = "Agricoltore" })';
     });
-    
-    // Gestione del pulsante Completato
-    document.getElementById('complete-onboarding').addEventListener('click', function() {
-        const selectedColtures = Array.from(document.getElementById('cultura-interesse').selectedOptions)
-            .map(option => option.value)
-            .filter(value => value !== '');
-            
-        if (selectedColtures.length === 0) {
-            alert('Seleziona almeno una coltura di interesse');
+
+    document.getElementById('complete').addEventListener('click', function() {
+        const selected = Array.from(document.getElementById('select').selectedOptions).map(o => o.value).filter(v => v);
+        if (selected.length === 0) {
+            const error = document.getElementById('error');
+            error.textContent = 'Seleziona almeno una coltura di interesse';
+            error.style.display = 'block';
+            document.getElementById('select').style.borderColor = '#dc3545';
             return;
         }
-        
-        // Recupera le province dal primo step
+
         const provinces = JSON.parse(sessionStorage.getItem('onboarding_provinces') || '[]');
-        
-        if (provinces.length === 0) {
-            alert('Errore: riavvia l\'onboarding');
-            return;
-        }
-        
-        // Invia i dati al server
-        saveOnboardingData(provinces, selectedColtures);
+        if (provinces.length === 0) return;
+
+        fetch('@Url.Action("SaveOnboardingPreferences", "Agricoltore", new { area = "Agricoltore" })', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({ Provinces: provinces, Coltures: selected })
+        })
+        .then(r => r.json())
+        .then(r => {
+            if (r.success) {
+                sessionStorage.removeItem('onboarding_provinces');
+                window.location.href = r.redirectUrl;
+            }
+        });
     });
 });
-
-function loadColtures() {
-    const coltures = @Html.Raw(Json.Serialize(ViewBag.Coltures));
-    const select = document.getElementById('cultura-interesse');
-    select.innerHTML = '';
-    
-    coltures.forEach(colture => {
-        const option = document.createElement('option');
-        option.value = colture.id;
-        option.textContent = colture.name;
-        select.appendChild(option);
-    });
-}
-
-function saveOnboardingData(provinces, coltures) {
-    const data = {
-        Provinces: provinces,
-        Coltures: coltures
-    };
-    
-    fetch('@Url.Action("SaveOnboardingPreferences", "Agricoltore", new { area = "Agricoltore" })', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Pulisci i dati temporanei
-            sessionStorage.removeItem('onboarding_provinces');
-            
-            // Mostra messaggio di successo
-            alert('Perfetto! Ora puoi iniziare a utilizzare l\'applicazione.');
-            
-            // Reindirizza alla home
-            window.location.href = data.redirectUrl;
-        } else {
-            alert('Errore durante il salvataggio. Riprova.');
-        }
-    })
-    .catch(error => {
-        console.error('Errore:', error);
-        alert('Errore durante il salvataggio. Riprova.');
-    });
-}
 </script> 

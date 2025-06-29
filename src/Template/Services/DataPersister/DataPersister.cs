@@ -27,28 +27,47 @@ namespace Template.Services.DataPersister
                 throw new DirectoryNotFoundException();
             }
 
-            // skippo il salvataggio dei seed data (che rimangono sempre gli stessi)
+            // Carica gli utenti con le relazioni incluse
+            var usersWithRelations = await _dbContext.Users
+                .Include(u => u.Coltures)
+                .Include(u => u.Provinces)
+                .ToListAsync();
 
-            var usersColtures = await _dbContext.Users
+            // Salva gli utenti aggiornati (incluso OnboardingComplete)
+            var usersToSave = usersWithRelations.Select(u => new
+            {
+                u.Id,
+                u.FirstName,
+                u.LastName,
+                u.Email,
+                u.Password,
+                u.RoleId,
+                u.LastLoggedAt,
+                u.OnboardingComplete
+            }).ToList();
+
+            await File.WriteAllTextAsync(Path.Combine(_contextStateFolderPath, "User.json"), JsonSerializer.Serialize(usersToSave, new JsonSerializerOptions { WriteIndented = true }));
+
+            // Salva le relazioni utente-colture
+            var usersColtures = usersWithRelations
                 .SelectMany(u => u.Coltures.Select(c => new
                 {
                     IdUser = u.Id,
                     IdColture = c.Id
                 }))
-                .ToListAsync();
+                .ToList();
 
-            var usersProvinces = await _dbContext.Users
+            // Salva le relazioni utente-province
+            var usersProvinces = usersWithRelations
                 .SelectMany(u => u.Provinces.Select(p => new
                 {
                     IdUser = u.Id,
                     IdProvince = p.Id
                 }))
-                .ToListAsync();
+                .ToList();
 
             await File.WriteAllTextAsync(Path.Combine(_contextStateFolderPath, "UserColture.json"), JsonSerializer.Serialize(usersColtures));
             await File.WriteAllTextAsync(Path.Combine(_contextStateFolderPath, "UserProvince.json"), JsonSerializer.Serialize(usersProvinces));
         }
-
-
     }
 }
