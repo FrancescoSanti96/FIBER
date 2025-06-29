@@ -41,12 +41,6 @@ namespace Template.Web.Areas.Tecnico
             return View(model);
         }
 
-        // GET: Tecnico/Tecnico/ImpostazioniTecnico
-        public virtual IActionResult ImpostazioniTecnico()
-        {
-            return View();
-        }
-
         // GET: Tecnico/Tecnico/NuovoBollettino
         public virtual IActionResult NuovoBollettino()
         {
