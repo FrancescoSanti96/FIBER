@@ -77,6 +77,11 @@ namespace Template.Services.Users
     {
     }
 
+    public class GetUserWithPreferencesQuery
+    {
+        public int Id { get; set; }
+    }
+
     public partial class UserService
     {
         /// <summary>
@@ -206,6 +211,22 @@ namespace Template.Services.Users
             return await _dbContext.Coltures
                 .OrderBy(c => c.Name)
                 .ToListAsync();
+        }
+
+        /// <summary>
+        /// Returns user with preferences (provinces and coltures)
+        /// </summary>
+        /// <param name="qry"></param>
+        /// <returns></returns>
+        public async Task<UserDto> Query(GetUserWithPreferencesQuery qry)
+        {
+            var user = await _dbContext.Users
+                .Include(u => u.Provinces)
+                .Include(u => u.Coltures)
+                .Where(x => x.Id == qry.Id)
+                .FirstOrDefaultAsync();
+
+            return user != null ? new UserDto(user) : null;
         }
     }
 }

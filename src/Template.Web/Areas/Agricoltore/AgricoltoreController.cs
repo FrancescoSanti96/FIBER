@@ -6,6 +6,7 @@ using Template.Services.DataPersister;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace Template.Web.Areas.Agricoltore
 {
@@ -96,6 +97,44 @@ namespace Template.Web.Areas.Agricoltore
             }
         }
 
+        // API endpoint per caricare le preferenze dell'utente
+        [HttpGet]
+        public virtual async Task<IActionResult> GetUserPreferences()
+        {
+            try
+            {
+                var user = await GetCurrentUserAsync();
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Utente non trovato" });
+                }
+
+                // Recupera l'utente completo con le relazioni
+                var userWithPreferences = await _userService.Query(new GetUserWithPreferencesQuery { Id = user.Id });
+                
+                if (userWithPreferences == null)
+                {
+                    return Json(new { success = false, message = "Utente non trovato" });
+                }
+
+                var selectedProvinces = userWithPreferences.Provinces?.Select(p => p.Id).ToList() ?? new List<int>();
+                var selectedColtures = userWithPreferences.Coltures?.Select(c => c.Id).ToList() ?? new List<int>();
+
+                return Json(new { 
+                    success = true, 
+                    data = new { 
+                        provinces = selectedProvinces, 
+                        coltures = selectedColtures 
+                    } 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore nel caricamento delle preferenze utente");
+                return Json(new { success = false, message = "Errore nel caricamento delle preferenze" });
+            }
+        }
+
         // Onboarding Step 1 - Zone di interesse
         public virtual async Task<IActionResult> OnboardingStep1()
         {
@@ -174,6 +213,34 @@ namespace Template.Web.Areas.Agricoltore
             await _dataPersister.SaveOnFileAsync();
 
             return RedirectToAction("ImpostazioniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
+        }
+
+        // API endpoint per salvare le preferenze dell'utente
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<IActionResult> SaveUserPreferencesAjax([FromBody] SavePreferencesDto dto)
+        {
+            try
+            {
+                var user = await GetCurrentUserAsync();
+
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Utente non trovato" });
+                }
+
+                var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
+
+                // Salva immediatamente nel JSON
+                await _dataPersister.SaveOnFileAsync();
+
+                return Json(new { success = true, message = "Preferenze salvate con successo!" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Errore nel salvataggio delle preferenze utente");
+                return Json(new { success = false, message = "Errore nel salvataggio delle preferenze" });
+            }
         }
     }
 }

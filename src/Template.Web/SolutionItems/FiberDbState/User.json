@@ -7,7 +7,7 @@
     "Password": "$2a$11$I7BWy7GEhVUMdYzQNfxBZOGUk1yvvpquxUx3Zzx76Af5Wrlay1dhK",
     "RoleId": 2,
     "LastLoggedAt": null,
-    "OnboardingComplete": false
+    "OnboardingComplete": true
   },
   {
     "Id": 2,

@@ -1,24 +1,190 @@
 <h1 class="text-center mt-3">@ViewData["Title"]</h1>
 <p class="text-center text-success" style="margin-bottom: 70px !important;">Modifica le preferenze, per cambiare i bollettini consigliati</p>
 
+@Html.AntiForgeryToken()
+
 <div class="container d-flex justify-content-center mt-4">
     <div class="col-md-4">
         <div class="form-group mb-3" style="margin-bottom: 70px !important;">
             <label for="zona-interesse" class="form-label">Zone di interesse</label>
-            <select id="zona-interesse" class="form-control text-secondary">
-                <option value="">Seleziona almeno una zona di interesse</option>
+            <select id="zona-interesse" class="form-control text-secondary" multiple>
+                <option value="">Caricamento...</option>
             </select>
+            <div class="form-text">Puoi selezionare più zone se coltivi in diverse province</div>
         </div>
 
         <div class="form-group mb-4">
             <label for="cultura-interesse-settings" class="form-label">Coltura di interesse</label>
-            <select id="cultura-interesse-settings" class="form-control text-secondary">
-                <option value="" >Seleziona almeno una coltura di interesse</option>
+            <select id="cultura-interesse-settings" class="form-control text-secondary" multiple>
+                <option value="">Caricamento...</option>
             </select>
+            <div class="form-text">Puoi selezionare più colture se coltivi diversi tipi di prodotti</div>
         </div>
 
         <div class="text-end">
-            <button class="btn btn-success">Conferma</button>
+            <button id="btn-salva" class="btn btn-success" disabled>
+                <span id="btn-text">Conferma</span>
+                <span id="btn-loading" style="display:none;">
+                    <i class="fas fa-spinner fa-spin"></i> Salvando...
+                </span>
+            </button>
         </div>
+
+        <!-- Alert per feedback -->
+        <div id="alert-container" class="mt-3"></div>
     </div>
-</div> 
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const provinceSelect = document.getElementById('zona-interesse');
+    const coltureSelect = document.getElementById('cultura-interesse-settings');
+    const btnSalva = document.getElementById('btn-salva');
+    const btnText = document.getElementById('btn-text');
+    const btnLoading = document.getElementById('btn-loading');
+    const alertContainer = document.getElementById('alert-container');
+
+    let userPreferences = { provinces: [], coltures: [] };
+
+    // Funzione per mostrare alert
+    function showAlert(message, type = 'success') {
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+    }
+
+    // Funzione per abilitare/disabilitare il pulsante
+    function updateButtonState() {
+        const hasProvinces = Array.from(provinceSelect.selectedOptions).length > 0;
+        const hasColtures = Array.from(coltureSelect.selectedOptions).length > 0;
+        btnSalva.disabled = !hasProvinces || !hasColtures;
+    }
+
+    // Carica le province
+    fetch('@Url.Action("GetProvinces", "Agricoltore", new { area = "Agricoltore" })')
+        .then(r => r.json())
+        .then(r => {
+            if (r.success) {
+                provinceSelect.innerHTML = '';
+                r.data.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.name;
+                    provinceSelect.appendChild(opt);
+                });
+                
+                // Dopo aver caricato le province, carica le preferenze utente
+                loadUserPreferences();
+            } else {
+                showAlert('Errore nel caricamento delle province', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Errore nel caricamento delle province:', error);
+            showAlert('Errore nel caricamento delle province', 'danger');
+        });
+
+    // Carica le colture
+    fetch('@Url.Action("GetColtures", "Agricoltore", new { area = "Agricoltore" })')
+        .then(r => r.json())
+        .then(r => {
+            if (r.success) {
+                coltureSelect.innerHTML = '';
+                r.data.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.name;
+                    coltureSelect.appendChild(opt);
+                });
+            } else {
+                showAlert('Errore nel caricamento delle colture', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Errore nel caricamento delle colture:', error);
+            showAlert('Errore nel caricamento delle colture', 'danger');
+        });
+
+    // Carica le preferenze dell'utente
+    function loadUserPreferences() {
+        fetch('@Url.Action("GetUserPreferences", "Agricoltore", new { area = "Agricoltore" })')
+            .then(r => r.json())
+            .then(r => {
+                if (r.success) {
+                    userPreferences = r.data;
+                    
+                    // Seleziona le province salvate
+                    userPreferences.provinces.forEach(provinceId => {
+                        const option = provinceSelect.querySelector(`option[value="${provinceId}"]`);
+                        if (option) option.selected = true;
+                    });
+                    
+                    // Seleziona le colture salvate
+                    userPreferences.coltures.forEach(coltureId => {
+                        const option = coltureSelect.querySelector(`option[value="${coltureId}"]`);
+                        if (option) option.selected = true;
+                    });
+                    
+                    updateButtonState();
+                }
+            })
+            .catch(error => {
+                console.error('Errore nel caricamento delle preferenze:', error);
+            });
+    }
+
+    // Event listeners per aggiornare lo stato del pulsante
+    provinceSelect.addEventListener('change', updateButtonState);
+    coltureSelect.addEventListener('change', updateButtonState);
+
+    // Salvataggio delle preferenze
+    btnSalva.addEventListener('click', function() {
+        const selectedProvinces = Array.from(provinceSelect.selectedOptions).map(o => parseInt(o.value));
+        const selectedColtures = Array.from(coltureSelect.selectedOptions).map(o => parseInt(o.value));
+
+        if (selectedProvinces.length === 0 || selectedColtures.length === 0) {
+            showAlert('Seleziona almeno una zona e una coltura di interesse', 'warning');
+            return;
+        }
+
+        // Mostra loading
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'inline';
+        btnSalva.disabled = true;
+
+        fetch('@Url.Action("SaveUserPreferencesAjax", "Agricoltore", new { area = "Agricoltore" })', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({ 
+                Provinces: selectedProvinces, 
+                Coltures: selectedColtures 
+            })
+        })
+        .then(r => r.json())
+        .then(r => {
+            if (r.success) {
+                showAlert(r.message, 'success');
+                userPreferences = { provinces: selectedProvinces, coltures: selectedColtures };
+            } else {
+                showAlert(r.message || 'Errore nel salvataggio', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Errore nel salvataggio:', error);
+            showAlert('Errore nel salvataggio delle preferenze', 'danger');
+        })
+        .finally(() => {
+            // Nascondi loading
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+            updateButtonState();
+        });
+    });
+});
+</script> 
