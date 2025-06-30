@@ -176,6 +176,11 @@ namespace Template.EntityModel
 
         private void SeedEntityFromJson<T>(string contextStateFolderPath) where T : class
         {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
             var dbSet = this.Set<T>();
 
             if (!dbSet.Any())
@@ -187,7 +192,7 @@ namespace Template.EntityModel
                     throw new FileNotFoundException($"File not found: {fullPath}");
 
                 var json = File.ReadAllText(fullPath);
-                var data = JsonSerializer.Deserialize<List<T>>(json);
+                var data = JsonSerializer.Deserialize<List<T>>(json, options);
 
                 if (data != null)
                 {
