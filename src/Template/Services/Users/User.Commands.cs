@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,18 @@ namespace Template.Services.Users
 
     public partial class UserService
     {
+        public async Task Login(int idUser)
+        {
+            var user = await _dbContext.Users
+                .FindAsync(idUser);
+
+            if (user != null)
+            {
+                user.LastLoggedAt = DateTime.Now;
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
         public async Task<int> AddOrUpdate(AddOrUpdateUserCommand cmd)
         {
             var user = await _dbContext.Users
@@ -60,6 +73,28 @@ namespace Template.Services.Users
             await _dbContext.SaveChangesAsync();
 
             return new UserDto(user);
+        }
+
+        public async Task<int> AddNewBulletinAsync(Bulletin bulletin, IEnumerable<int> provinceIds, IEnumerable<int> coltureIds)
+        {
+            // Associa le province
+            var provinces = await _dbContext.Provinces
+                .Where(p => provinceIds.Contains(p.Id))
+                .ToListAsync();
+
+            // Associa le colture
+            var coltures = await _dbContext.Coltures
+                .Where(c => coltureIds.Contains(c.Id))
+                .ToListAsync();
+
+            bulletin.Provinces = provinces;
+            bulletin.Coltures = coltures;
+            bulletin.PublishDate = bulletin.Published ? DateTime.Now : null;
+
+            _dbContext.Bulletins.Add(bulletin);
+            await _dbContext.SaveChangesAsync();
+
+            return bulletin.Id;
         }
     }
 }

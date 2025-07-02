@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +11,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Template.EntityModel;
-using Template.Services.DataPersister;
 using Template.Web.Infrastructure;
 
 namespace Template.Web
@@ -33,11 +31,18 @@ namespace Template.Web
         {
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
-            services.AddDbContext<FiberDbContext>((serviceProvider, options) =>
+            services.AddDbContext<FiberDbContext>(options =>
             {
-                var interceptor = serviceProvider.GetRequiredService<IInterceptor>();
-                options.UseInMemoryDatabase(databaseName: "Fiber")
-                    .AddInterceptors(interceptor);
+                var contextStateFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "SolutionItems", "FiberDbState");
+                if (!Directory.Exists(contextStateFolderPath))
+                {
+                    Directory.CreateDirectory(contextStateFolderPath);
+                }
+                var dbPath = Path.Combine(contextStateFolderPath, "fiber.db");
+                options.UseSqlite($"Data Source={dbPath}");
+                //var interceptor = serviceProvider.GetRequiredService<IInterceptor>();
+                //options.UseInMemoryDatabase(databaseName: "Fiber")
+                //    .AddInterceptors(interceptor);
             });
 
             services.AddControllers()
@@ -84,8 +89,14 @@ namespace Template.Web
             Container.RegisterTypes(services);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, IServiceScopeFactory scopeFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<FiberDbContext>();
+                context.Database.EnsureCreated();
+            }
+
             // Configure the HTTP request pipeline.
             if (!env.IsDevelopment())
             {
@@ -117,14 +128,6 @@ namespace Template.Web
                 endpoints.MapAreaControllerRoute("Agricoltore", "Agricoltore", "Agricoltore/{controller=Agricoltore}/{action=BollettiniAgricoltore}/{id?}");
                 endpoints.MapAreaControllerRoute("Tecnico", "Tecnico", "Tecnico/{controller=Tecnico}/{action=HomeTecnico}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Login}/{action=Login}");
-            });
-
-            // Registrazione del salvataggio automatico quando l'app si arresta
-            lifetime.ApplicationStopped.Register(() =>
-            {
-                using var scope = scopeFactory.CreateScope();
-                var persister = scope.ServiceProvider.GetRequiredService<IDataPersister>();
-                persister.SaveOnFileAsync().GetAwaiter().GetResult();
             });
         }
     }

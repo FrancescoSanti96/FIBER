@@ -119,6 +119,7 @@ namespace Template.Web.Features.Login
                         Password = model.Password,
                     });
 
+                    await _userService.Login(utente.Id);
                     return LoginAndRedirect(utente, model.ReturnUrl, model.RememberMe);
                 }
                 catch (LoginException e)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace Template.EntityModel.Models
 {
@@ -16,28 +17,18 @@ namespace Template.EntityModel.Models
         [MaxLength(255)]
         public string Summary { get; set; } = null;
 
-        [Required]
-        [ForeignKey("Province")]
-        public int IdProvince { get; set; }
-
-        [Required]
-        [ForeignKey("Colture")]
-        public int IdColture { get; set; }
-
-        [Required]
-        public string Body { get; set; } = string.Empty;
+        public string Body { get; set; } = null;
 
         [Required]
         public bool Published { get; set; }
 
         public DateTime? PublishDate { get; set; }
 
-        [Required]
-        public DateOnly ExpireDate { get; set; }
+        public DateOnly? ExpireDate { get; set; }
 
         // Navigation properties
         public virtual User User { get; set; } = null!;
-        public virtual Province Province { get; set; } = null!;
-        public virtual Colture Colture { get; set; } = null!;
+        public virtual ICollection<Province> Provinces { get; set; } = [];
+        public virtual ICollection<Colture> Coltures { get; set; } = [];
     }
 }

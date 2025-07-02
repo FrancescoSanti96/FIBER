@@ -110,7 +110,7 @@ namespace Template.Web.Areas
         protected async Task<UserDetailDTO> GetCurrentUserAsync()
         {
             var userIdentity = HttpContext.User;
-            var userId = userIdentity.FindFirst(ClaimTypes.NameIdentifier).ToString();
+            var userId = userIdentity.FindFirst(ClaimTypes.NameIdentifier).Value.ToString();
 
             if (int.TryParse(userId, out int intUserId))
             {

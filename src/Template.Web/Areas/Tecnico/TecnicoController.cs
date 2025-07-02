@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Template.EntityModel.Models;
 using Template.Services.Coltures;
 using Template.Services.Provinces;
 using Template.Services.Users;
 using Template.Web.Areas.Tecnico.ViewModels;
+using Template.Web.Infrastructure;
 using Template.Web.Models;
 
 namespace Template.Web.Areas.Tecnico
@@ -63,25 +66,46 @@ namespace Template.Web.Areas.Tecnico
         }
 
         // GET: Tecnico/Tecnico/NuovoBollettino
-        public async Task<IActionResult> NuovoBollettino()
+        public async Task<IActionResult> NuovoBollettino() =>
+          View(await GetNuovoBollettinoViewModel());
+
+        [HttpPost]
+        public async Task<IActionResult> NuovoBollettino(NuovoBollettinoViewModel model)
         {
-            var vm = new NuovoBollettinoViewModel()
+            var baseVm = await GetNuovoBollettinoViewModel();
+            model.OpzioniColture = baseVm.OpzioniColture;
+            model.OpzioniProvince = baseVm.OpzioniProvince;
+            try
             {
-                OpzioniColture = [.. (await _coltureService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                if (model.Pubblicato is true && !ModelState.IsValid)
                 {
-                    Text = x.Name,
-                    Value = x.Id.ToString(),
-
-                })],
-                OpzioniProvince = [.. (await _provinceService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                    var validationMessages = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    Alerts.AddError(this, string.Join(", ", validationMessages));
+                    return View(model);
+                }
+                else
                 {
-                    Text = x.Name,
-                    Value = x.Id.ToString(),
+                    var currentUser = await GetCurrentUserAsync()
+                       ?? throw new InvalidOperationException("Utente non trovato");
 
-                })]
-            };
+                    var bulletin = new Bulletin
+                    {
+                        IdUser = currentUser.Id,
+                        Summary = model.TitoloBollettino,
+                        Body = model.ContenutoBollettino,
+                        Published = model.Pubblicato,
+                        ExpireDate = model.Scadenza
+                    };
 
-            return View(vm);
+                    var newBulletinId = await _userService.AddNewBulletinAsync(bulletin, provinceIds: model.IdProvinceSelezionate, coltureIds: model.IdColtureSelezionate);
+                    return RedirectToAction(nameof(BollettinoTecnico), new { Id = newBulletinId });
+                }
+            }
+            catch (Exception ex)
+            {
+                Alerts.AddError(this, ex.Message);
+                return View(model);
+            }
         }
 
         // GET: Tecnico/Tecnico/ModificaBollettino
@@ -108,5 +132,28 @@ namespace Template.Web.Areas.Tecnico
             };
             return View(model);
         }
+        #region Private methods
+        private async Task<NuovoBollettinoViewModel> GetNuovoBollettinoViewModel()
+        {
+            var vm = new NuovoBollettinoViewModel()
+            {
+                OpzioniColture = [.. (await _coltureService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString(),
+
+                })],
+                OpzioniProvince = [.. (await _provinceService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString(),
+
+                })]
+            };
+
+            return vm;
+        }
+        #endregion
     }
+
 }

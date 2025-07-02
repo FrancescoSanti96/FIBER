@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="SolutionItems\FiberDbState\" />
+	  <Folder Include="SolutionItems\" />
 	</ItemGroup>
 
 </Project>

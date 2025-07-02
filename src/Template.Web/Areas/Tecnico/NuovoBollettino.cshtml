@@ -1,6 +1,8 @@
 @model Template.Web.Areas.Tecnico.ViewModels.NuovoBollettinoViewModel
 @{
     ViewData["Title"] = "Nuovo Bollettino";
+    var coltureDict = Model.OpzioniColture.ToDictionary(x => x.Value, x => x.Text);
+    var provinceDict = Model.OpzioniProvince.ToDictionary(x => x.Value, x => x.Text);
 }
 
 <div class="container mt-4">
@@ -14,21 +16,34 @@
     </div>
 
     <div class="mt-4">
-        <form id="nuovoBollettino" class="d-flex gap-5">
+        @using (Html.BeginForm("NuovoBollettino", "Tecnico", FormMethod.Post, new { @class = "d-flex gap-5" }))
+        {
             @* editor wysiwyg *@
-            <div class="flex-grow-1" >
-                <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label>
-                <div id="editor"></div>
-                @* <div class="mb-3">
-                    <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label>
-                    <textarea class="form-control" id="editor" name="@nameof(Model.ContenutoBollettino)"></textarea>
-                </div> *@
+            <div class="flex-grow-1">
+                @* <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label> *@
+                <textarea id="editor" name="@nameof(Model.ContenutoBollettino)">
+                    @Model.ContenutoBollettino
+                </textarea>
             </div>
 
             <div class="col-12 col-md-4">
+                @* stato documento *@
+                <div class="mb-3">
+                    <sl-select name="@nameof(Model.Pubblicato)" label="Stato documento" value="@Model.Pubblicato.ToString()">
+                            <sl-option value="False">
+                            <sl-icon slot="prefix" name="clock"></sl-icon>
+                            Bozza
+                        </sl-option>
+                            <sl-option value="True">
+                            <sl-icon slot="prefix" name="check2-circle"></sl-icon>
+                            Pubblicato
+                        </sl-option>
+                    </sl-select>
+                </div>
+
                 @* colture *@
                 <div class="mb-3">
-                    <sl-select name="@nameof(Model.IdColtureSelezionate)" label="Colture di interesse" multiple clearable required>
+                    <sl-select name="@nameof(Model.IdColtureSelezionate)" label="Colture di interesse" value="@string.Join(',', Model.IdColtureSelezionate)" multiple clearable>
                         @foreach (var option in Model.OpzioniColture)
                         {
                             <sl-option value="@option.Value">@option.Text</sl-option>
@@ -38,7 +53,7 @@
 
                 @* province *@
                 <div class="mb-3">
-                    <sl-select name="@nameof(Model.IdProvinceSelezionate)" label="Zone di interesse" multiple clearable>
+                    <sl-select name="@nameof(Model.IdProvinceSelezionate)" label="Zone di interesse" value="@string.Join(',', Model.IdProvinceSelezionate)"  multiple clearable>
                         @foreach (var option in Model.OpzioniProvince)
                         {
                             <sl-option value="@option.Value">@option.Text</sl-option>
@@ -48,7 +63,7 @@
 
                 @* scadenza *@
                 <div class="mb-3">
-                    <sl-input type="date" label="Scadenza" name="@nameof(Model.Scadenza)" placeholder="Date"></sl-input>
+                    <sl-input type="date" label="Scadenza" name="@nameof(Model.Scadenza)" value="@(Model.Scadenza.HasValue? Model.Scadenza.Value.ToString("yyyy-MM-dd") : "")" placeholder="Date"></sl-input>
                 </div>
 
                 @* titolo *@
@@ -58,20 +73,12 @@
 
                 @* azioni *@
                 <div class="d-flex justify-content-between gap-2 mt-4 mb-4">
-                    <button type="button" class="btn btn-outline-secondary" style="min-width: 100px;">Annulla</button>
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-success">Pubblica</button>
-                        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" data-bs-reference="parent">
-                            <span class="visually-hidden">Toggle Dropdown</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><button class="dropdown-item" type="button" id="salvaBollettinoBtn">Salva</button></li>
-                            <li><button class="dropdown-item" type="submit">Pubblica</button></li>
-                        </ul>
-                    </div>
+                    <button type="button" class="btn btn-outline-secondary">Annulla</button>
+                    <button type="submit" id="pubblicaBtn" class="btn btn-success d-none">Pubblica</button>
+                    <button type="submit" id="salvaBtn" class="btn btn-success">Salva per dopo</button>
                 </div>
             </div>
-        </form>
+        }
     </div>
 </div>
 
@@ -81,34 +88,40 @@
     <script src="~/js/nuovobollettino-ckeditor.js"></script>
 
     <script>
-        const form = document.querySelector("form#nuovoBollettino");
-
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            const data = prepareFormData(true);
-            console.log(data);
-
-        });
-
-        document.getElementById("salvaBollettinoBtn").addEventListener("click", () => {
-            const data = prepareFormData();
-            console.log(data);
+        const pubblicatoSelect = document.querySelector('sl-select[name=@nameof(Model.Pubblicato)]');
+        const pubblicaBtn = document.getElementById('pubblicaBtn');
+        const salvaBtn = document.getElementById('salvaBtn');
+        pubblicatoSelect.addEventListener('sl-change', event => {
+            const isBozza = event.target.value === "False";
+            if (isBozza) {
+                salvaBtn.classList.remove('d-none');
+                pubblicaBtn.classList.add('d-none');
+            } else {
+                pubblicaBtn.classList.remove('d-none');
+                salvaBtn.classList.add('d-none');
+            }
         })
 
-        function prepareFormData(publish=false) {
-            const data = new FormData(form);
-            const obj = Object.fromEntries(data.entries());
+        const coltureMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdColtureSelezionate)]');
+        const provinceMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdProvinceSelezionate)]');
+        const summaryInput = document.querySelector('sl-input[name=@nameof(Model.TitoloBollettino)]');
 
-            const coltureMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdColtureSelezionate)]');
-            const provinceMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdProvinceSelezionate)]');
+        var allColtures = @Html.Raw(Json.Serialize(coltureDict));
+        var allProvinces = @Html.Raw(Json.Serialize(provinceDict));
 
-            obj["@nameof(Model.ContenutoBollettino)"] = editor.getData();
-            obj["@nameof(Model.IdColtureSelezionate)"] = coltureMultiselect.value;
-            obj["@nameof(Model.IdProvinceSelezionate)"] = provinceMultiselect.value;
-            obj["@nameof(Model.Pubblicato)"] = publish;
+        coltureMultiselect.addEventListener('sl-change', event => {
+            const values = event.target.value;
+            const selectedColtureNames = values.map(v => allColtures[v])?.join(', ');
+            const summaryOgValue = summaryInput.value;
+            summaryInput.value = selectedColtureNames + " - " + (summaryOgValue.split(' - ')[1] || "");
+        })
 
-            return obj;
-        }
+        provinceMultiselect.addEventListener('sl-change', event => {
+            const values = event.target.value;
+            const selectedProvinceNames = values.map(v => allProvinces[v])?.join(', ');
+            const summaryOgValue = summaryInput.value;
+            summaryInput.value = (summaryOgValue.split(' - ')[0] || "") + " - " + selectedProvinceNames;
+        })
     </script>
 }
 

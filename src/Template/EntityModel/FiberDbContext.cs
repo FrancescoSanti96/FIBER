@@ -1,33 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.Json;
 using Template.EntityModel.Models;
-using Template.Infrastructure;
 
 namespace Template.EntityModel
 {
-
-
     public class FiberDbContext : DbContext
     {
-        private record UserColtureDto(int IdUser, int IdColture);
-        private record UserProvinceDto(int IdUser, int IdProvince);
+        public record UserColtureDto(int IdUser, int IdColture);
+        public record UserProvinceDto(int IdUser, int IdProvince);
+        public record BulletinColtureDto(int IdBulletin, int IdColture);
+        public record BulletinProvinceDto(int IdBulletin, int IdProvince);
 
-        public FiberDbContext(DbContextOptions<FiberDbContext> options) : base(options)
-        {
-            var contextStateFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "SolutionItems", "FiberDbState");
-            if (!Directory.Exists(contextStateFolderPath))
-            {
-                throw new DirectoryNotFoundException();
-            }
-
-            LoadFromFile(contextStateFolderPath);
-
-        }
+        public FiberDbContext(DbContextOptions<FiberDbContext> options) : base(options) { }
 
         public DbSet<Colture> Coltures { get; set; }
         public DbSet<Province> Provinces { get; set; }
@@ -79,22 +63,29 @@ namespace Template.EntityModel
                 .OnDelete(DeleteBehavior.ClientNoAction);
 
             // Bulletin relationships
+
+            modelBuilder.Entity<Bulletin>()
+                .HasMany(b => b.Coltures)
+                .WithMany(c => c.Bulletins)
+                .UsingEntity<Dictionary<string, object>>(
+                    "BulletinColture",
+                    j => j.HasOne<Colture>().WithMany().HasForeignKey("ColtureId").OnDelete(DeleteBehavior.ClientNoAction),
+                    j => j.HasOne<Bulletin>().WithMany().HasForeignKey("BulletinId").OnDelete(DeleteBehavior.ClientNoAction)
+                );
+
+            modelBuilder.Entity<Bulletin>()
+                .HasMany(b => b.Provinces)
+                .WithMany(p => p.Bulletins)
+                .UsingEntity<Dictionary<string, object>>(
+                    "BulletinProvince",
+                    j => j.HasOne<Province>().WithMany().HasForeignKey("ColtureId").OnDelete(DeleteBehavior.ClientNoAction),
+                    j => j.HasOne<Bulletin>().WithMany().HasForeignKey("BulletinId").OnDelete(DeleteBehavior.ClientNoAction)
+                );
+
             modelBuilder.Entity<Bulletin>()
                 .HasOne(b => b.User)
                 .WithMany(u => u.Bulletins)
                 .HasForeignKey(b => b.IdUser)
-                .OnDelete(DeleteBehavior.ClientNoAction);
-
-            modelBuilder.Entity<Bulletin>()
-                .HasOne(b => b.Province)
-                .WithMany(p => p.Bulletins)
-                .HasForeignKey(b => b.IdProvince)
-                .OnDelete(DeleteBehavior.ClientNoAction);
-
-            modelBuilder.Entity<Bulletin>()
-                .HasOne(b => b.Colture)
-                .WithMany(c => c.Bulletins)
-                .HasForeignKey(b => b.IdColture)
                 .OnDelete(DeleteBehavior.ClientNoAction);
 
             // Additional configurations
@@ -103,103 +94,103 @@ namespace Template.EntityModel
                 .HasColumnType("varchar(10)");
 
             modelBuilder.Entity<Bulletin>()
-                .Property(b => b.ExpireDate)
-                .HasColumnType("date");
-
-            modelBuilder.Entity<Bulletin>()
                 .Property(b => b.Body)
-                .HasColumnType("varchar(max)");
+                .HasColumnType("text");
+
+            SeedData(modelBuilder);
         }
 
-        private void LoadFromFile(string contextStateFolderPath)
+        private void SeedData(ModelBuilder modelBuilder)
         {
-            #region Seed entità
-
-            SeedEntityFromJson<User>(contextStateFolderPath);
-            SeedEntityFromJson<Role>(contextStateFolderPath);
-            SeedEntityFromJson<Colture>(contextStateFolderPath);
-            SeedEntityFromJson<Province>(contextStateFolderPath);
-
-            #endregion
-
-            #region Seed navigation properties
-
-            var users = Users
-                .Include(u => u.Coltures)
-                .Include(u => u.Provinces)
-                .ToList();
-
-            var coltureMap = Coltures.ToDictionary(c => c.Id);
-            var provinceMap = Provinces.ToDictionary(c => c.Id);
-
-            // Pulizia relazioni esistenti
-            foreach (var user in users)
-            {
-                user.Coltures.Clear();
-                user.Provinces.Clear();
-            }
-
-            if (File.Exists(Path.Combine(contextStateFolderPath, "UserColture.json")))
-            {
-                var userColturesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserColture.json"));
-                var userColtures = JsonSerializer.Deserialize<List<UserColtureDto>>(userColturesJson);
-
-                foreach (var uc in userColtures!)
+            modelBuilder.Entity<User>().HasData(
+                new User
                 {
-                    var user = users.FirstOrDefault(u => u.Id == uc.IdUser);
-                    if (user != null && coltureMap.TryGetValue(uc.IdColture, out var colture))
-                    {
-                        user.Coltures.Add(colture);
-                    }
-                }
-            }
-
-            if (File.Exists(Path.Combine(contextStateFolderPath, "UserProvince.json")))
-            {
-                var userProvincesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserProvince.json"));
-                var userProvinces = JsonSerializer.Deserialize<List<UserProvinceDto>>(userProvincesJson);
-
-                foreach (var up in userProvinces!)
+                    Id = 1,
+                    FirstName = "Giuseppe",
+                    LastName = "Verdi",
+                    Email = "giuseppe.verdi@agricoltura.com",
+                    Password = "$2a$11$I7BWy7GEhVUMdYzQNfxBZOGUk1yvvpquxUx3Zzx76Af5Wrlay1dhK",
+                    RoleId = 2,
+                    LastLoggedAt = null
+                },
+                new User
                 {
-                    var user = users.FirstOrDefault(u => u.Id == up.IdUser);
-                    if (user != null && provinceMap.TryGetValue(up.IdProvince, out var province))
-                    {
-                        user.Provinces.Add(province);
-                    }
-                }
-            }
-
-            #endregion
-
-            SaveChanges();
-        }
-
-        private void SeedEntityFromJson<T>(string contextStateFolderPath) where T : class
-        {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
-            var dbSet = this.Set<T>();
-
-            if (!dbSet.Any())
-            {
-                var fileName = $"{typeof(T).Name}.json";
-                var fullPath = Path.Combine(contextStateFolderPath, fileName);
-
-                if (!File.Exists(fullPath))
-                    throw new FileNotFoundException($"File not found: {fullPath}");
-
-                var json = File.ReadAllText(fullPath);
-                var data = JsonSerializer.Deserialize<List<T>>(json, options);
-
-                if (data != null)
+                    Id = 2,
+                    FirstName = "Anna",
+                    LastName = "Ferrari",
+                    Email = "anna.ferrari@agricoltura.com",
+                    Password = "$2a$11$gffIU.L5HqfpY2YI.tDXlutRtXpnJE6js45puOuwnYbLeE9JdQIlW",
+                    RoleId = 2,
+                    LastLoggedAt = null
+                },
+                new User
                 {
-                    dbSet.AddRange(data);
-                    this.SaveChanges();
+                    Id = 3,
+                    FirstName = "Marco",
+                    LastName = "Romano",
+                    Email = "marco.romano@agricoltura.com",
+                    Password = "$2a$11$FjYvYHLG6Oc0k7F40D6You0bZB8wEvxJIi6VoJ/XyVbsJ1e/n27m2",
+                    RoleId = 3,
+                    LastLoggedAt = null
+                },
+                new User
+                {
+                    Id = 4,
+                    FirstName = "Sara",
+                    LastName = "Conti",
+                    Email = "sara.conti@agricoltura.com",
+                    Password = "$2a$11$drrlbSq0lU/rSj1y.XAaCOzV/70M.ScJhYXmNE9a4i0sal6Rzifw6",
+                    RoleId = 3,
+                    LastLoggedAt = null
                 }
-            }
+            );
+
+            modelBuilder.Entity<Colture>().HasData(
+                new Colture { Id = 1, Name = "aglio" },
+                new Colture { Id = 2, Name = "albicocco" },
+                new Colture { Id = 3, Name = "carciofo" },
+                new Colture { Id = 4, Name = "carota da seme" },
+                new Colture { Id = 5, Name = "ciliegio" },
+                new Colture { Id = 6, Name = "cipolla" },
+                new Colture { Id = 7, Name = "cocomero" },
+                new Colture { Id = 8, Name = "coriandolo" },
+                new Colture { Id = 9, Name = "diospiro" },
+                new Colture { Id = 10, Name = "fagiolino" },
+                new Colture { Id = 11, Name = "girasole" },
+                new Colture { Id = 12, Name = "grano" },
+                new Colture { Id = 13, Name = "mais" },
+                new Colture { Id = 14, Name = "melone" },
+                new Colture { Id = 15, Name = "melo" },
+                new Colture { Id = 16, Name = "orzo" },
+                new Colture { Id = 17, Name = "patata" },
+                new Colture { Id = 18, Name = "pero" },
+                new Colture { Id = 19, Name = "pesco" },
+                new Colture { Id = 20, Name = "pisello" },
+                new Colture { Id = 21, Name = "ravanello" },
+                new Colture { Id = 22, Name = "senape" },
+                new Colture { Id = 23, Name = "soia" },
+                new Colture { Id = 24, Name = "sorgo" },
+                new Colture { Id = 25, Name = "susino" }
+            );
+
+            modelBuilder.Entity<Province>().HasData(
+                new Province { Id = 1, Name = "Bologna", Code = "BO" },
+                new Province { Id = 2, Name = "Ferrara", Code = "FE" },
+                new Province { Id = 3, Name = "Forlì-Cesena", Code = "FC" },
+                new Province { Id = 4, Name = "Modena", Code = "MO" },
+                new Province { Id = 5, Name = "Parma", Code = "PR" },
+                new Province { Id = 6, Name = "Piacenza", Code = "PC" },
+                new Province { Id = 7, Name = "Ravenna", Code = "RA" },
+                new Province { Id = 8, Name = "Reggio Emilia", Code = "RE" },
+                new Province { Id = 9, Name = "Rimini", Code = "RN" }
+            );
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = "Admin" },
+                new Role { Id = 2, Name = "Agricoltore" },
+                new Role { Id = 3, Name = "Tecnico" }
+            );
+
         }
     }
 }
