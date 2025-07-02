@@ -19,6 +19,7 @@ namespace Template.Services.Users
             }
         }
         public string Email { get; init; }
+        public bool OnboardingComplete { get; init; }
         public List<Colture> Coltures { get; init; }
         public List<Province> Provinces { get; init; }
 
@@ -28,6 +29,7 @@ namespace Template.Services.Users
             Id = entity.Id;
             FirstName = entity.FirstName;
             LastName = entity.LastName;
+            OnboardingComplete = entity.OnboardingComplete;
             Coltures = entity.Coltures.ToList() ?? [];
             Provinces = entity.Provinces.ToList() ?? [];
         }

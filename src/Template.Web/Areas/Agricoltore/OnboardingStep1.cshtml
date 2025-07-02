@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "Benvenuto!";
+    Layout = "~/Views/Shared/_LayoutAgricoltore.cshtml";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="text-center mb-5">
+                <h1 class="display-4 text-success mb-3">👋 Benvenuto!</h1>
+                <p class="lead text-muted">Siamo felici di averti qui! Per personalizzare la tua esperienza, abbiamo bisogno di alcune informazioni.</p>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px;height:40px;font-weight:bold;">1</div>
+                            <div class="bg-secondary" style="width:60px;height:3px;margin-top:18px;"></div>
+                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:40px;height:40px;font-weight:bold;">2</div>
+                        </div>
+                        <h3 class="text-success">Dove coltivi?</h3>
+                        <p class="text-muted">Seleziona le zone dove coltivi per ricevere bollettini personalizzati</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <div id="error" class="text-danger mb-2" style="display:none;"></div>
+                        <sl-select id="select" label="Zone di interesse" multiple clearable>
+                            <sl-option>Caricamento...</sl-option>
+                        </sl-select>
+                        <div class="form-text">Puoi selezionare più zone se coltivi in diverse province</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" id="next" class="btn btn-success btn-lg px-4">
+                            Avanti <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <small class="text-muted">Step 1 di 2</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('@Url.Action("GetProvinces", "Agricoltore", new { area = "Agricoltore" })')
+        .then(r => r.json())
+        .then(r => {
+            if (r.success) {
+                const select = document.getElementById('select');
+                select.innerHTML = '';
+                r.data.forEach(p => {
+                    const option = document.createElement('sl-option');
+                    option.value = p.id;
+                    option.textContent = p.name;
+                    select.appendChild(option);
+                });
+            }
+        });
+
+    document.getElementById('next').addEventListener('click', function() {
+        const select = document.getElementById('select');
+        const selected = select.value || [];
+        
+        if (selected.length === 0) {
+            const error = document.getElementById('error');
+            error.textContent = 'Seleziona almeno una zona di interesse';
+            error.style.display = 'block';
+            select.classList.add('error');
+            return;
+        }
+        
+        sessionStorage.setItem('onboarding_provinces', JSON.stringify(selected));
+        window.location.href = '@Url.Action("OnboardingStep2", "Agricoltore", new { area = "Agricoltore" })';
+    });
+});
+</script> 

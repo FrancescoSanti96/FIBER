@@ -101,7 +101,7 @@ namespace Template.Web.Areas
 
                 base.OnActionExecuting(context);
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -110,9 +110,20 @@ namespace Template.Web.Areas
         protected async Task<UserDetailDTO> GetCurrentUserAsync()
         {
             var userIdentity = HttpContext.User;
-            var userId = userIdentity.FindFirst(ClaimTypes.NameIdentifier).ToString();
+            
+            if (userIdentity == null || !userIdentity.Identity.IsAuthenticated)
+            {
+                return null;
+            }
 
-            if (int.TryParse(userId, out int intUserId))
+            var userIdClaim = userIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            
+            if (userIdClaim == null)
+            {
+                return null;
+            }
+            
+            if (int.TryParse(userIdClaim.Value, out int intUserId))
             {
                 var user = await _userService.Query(new UserDetailQuery { Id = intUserId });
                 return user;

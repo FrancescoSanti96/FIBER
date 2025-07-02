@@ -67,7 +67,7 @@ namespace Template.EntityModel
                 .WithMany(p => p.SubscribedUsers)
                 .UsingEntity<Dictionary<string, object>>(
                     "UserProvince",
-                    j => j.HasOne<Province>().WithMany().HasForeignKey("ColtureId").OnDelete(DeleteBehavior.ClientNoAction),
+                    j => j.HasOne<Province>().WithMany().HasForeignKey("ProvinceId").OnDelete(DeleteBehavior.ClientNoAction),
                     j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientNoAction)
                 );
 
@@ -142,7 +142,8 @@ namespace Template.EntityModel
             if (File.Exists(Path.Combine(contextStateFolderPath, "UserColture.json")))
             {
                 var userColturesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserColture.json"));
-                var userColtures = JsonSerializer.Deserialize<List<UserColtureDto>>(userColturesJson);
+                var userColtureOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var userColtures = JsonSerializer.Deserialize<List<UserColtureDto>>(userColturesJson, userColtureOptions);
 
                 foreach (var uc in userColtures!)
                 {
@@ -157,7 +158,8 @@ namespace Template.EntityModel
             if (File.Exists(Path.Combine(contextStateFolderPath, "UserProvince.json")))
             {
                 var userProvincesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserProvince.json"));
-                var userProvinces = JsonSerializer.Deserialize<List<UserProvinceDto>>(userProvincesJson);
+                var userProvinceOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var userProvinces = JsonSerializer.Deserialize<List<UserProvinceDto>>(userProvincesJson, userProvinceOptions);
 
                 foreach (var up in userProvinces!)
                 {
@@ -176,11 +178,6 @@ namespace Template.EntityModel
 
         private void SeedEntityFromJson<T>(string contextStateFolderPath) where T : class
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
             var dbSet = this.Set<T>();
 
             if (!dbSet.Any())
@@ -192,7 +189,14 @@ namespace Template.EntityModel
                     throw new FileNotFoundException($"File not found: {fullPath}");
 
                 var json = File.ReadAllText(fullPath);
-                var data = JsonSerializer.Deserialize<List<T>>(json, options);
+                
+                // Configura opzioni di serializzazione case-insensitive
+                var jsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                
+                var data = JsonSerializer.Deserialize<List<T>>(json, jsonOptions);
 
                 if (data != null)
                 {
