@@ -26,11 +26,10 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold">Zone di interesse</label>
                         <div id="error" class="text-danger mb-2" style="display:none;"></div>
-                        <select id="select" class="form-control form-control-lg" multiple>
-                            <option>Caricamento...</option>
-                        </select>
+                        <sl-select id="select" label="Zone di interesse" multiple clearable>
+                            <sl-option>Caricamento...</sl-option>
+                        </sl-select>
                         <div class="form-text">Puoi selezionare più zone se coltivi in diverse province</div>
                     </div>
 
@@ -58,23 +57,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 const select = document.getElementById('select');
                 select.innerHTML = '';
                 r.data.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.textContent = p.name;
-                    select.appendChild(opt);
+                    const option = document.createElement('sl-option');
+                    option.value = p.id;
+                    option.textContent = p.name;
+                    select.appendChild(option);
                 });
             }
         });
 
     document.getElementById('next').addEventListener('click', function() {
-        const selected = Array.from(document.getElementById('select').selectedOptions).map(o => o.value).filter(v => v);
+        const select = document.getElementById('select');
+        const selected = select.value || [];
+        
         if (selected.length === 0) {
             const error = document.getElementById('error');
             error.textContent = 'Seleziona almeno una zona di interesse';
             error.style.display = 'block';
-            document.getElementById('select').style.borderColor = '#dc3545';
+            select.classList.add('error');
             return;
         }
+        
         sessionStorage.setItem('onboarding_provinces', JSON.stringify(selected));
         window.location.href = '@Url.Action("OnboardingStep2", "Agricoltore", new { area = "Agricoltore" })';
     });

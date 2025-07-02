@@ -142,8 +142,8 @@ namespace Template.EntityModel
             if (File.Exists(Path.Combine(contextStateFolderPath, "UserColture.json")))
             {
                 var userColturesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserColture.json"));
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var userColtures = JsonSerializer.Deserialize<List<UserColtureDto>>(userColturesJson, options);
+                var userColtureOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var userColtures = JsonSerializer.Deserialize<List<UserColtureDto>>(userColturesJson, userColtureOptions);
 
                 foreach (var uc in userColtures!)
                 {
@@ -158,8 +158,8 @@ namespace Template.EntityModel
             if (File.Exists(Path.Combine(contextStateFolderPath, "UserProvince.json")))
             {
                 var userProvincesJson = File.ReadAllText(Path.Combine(contextStateFolderPath, "UserProvince.json"));
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var userProvinces = JsonSerializer.Deserialize<List<UserProvinceDto>>(userProvincesJson, options);
+                var userProvinceOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var userProvinces = JsonSerializer.Deserialize<List<UserProvinceDto>>(userProvincesJson, userProvinceOptions);
 
                 foreach (var up in userProvinces!)
                 {
@@ -178,11 +178,6 @@ namespace Template.EntityModel
 
         private void SeedEntityFromJson<T>(string contextStateFolderPath) where T : class
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
             var dbSet = this.Set<T>();
 
             if (!dbSet.Any())
@@ -196,12 +191,12 @@ namespace Template.EntityModel
                 var json = File.ReadAllText(fullPath);
                 
                 // Configura opzioni di serializzazione case-insensitive
-                var options = new JsonSerializerOptions
+                var jsonOptions = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 };
                 
-                var data = JsonSerializer.Deserialize<List<T>>(json, options);
+                var data = JsonSerializer.Deserialize<List<T>>(json, jsonOptions);
 
                 if (data != null)
                 {

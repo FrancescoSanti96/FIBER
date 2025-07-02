@@ -26,11 +26,10 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold">Colture di interesse</label>
                         <div id="error" class="text-danger mb-2" style="display:none;"></div>
-                        <select id="select" class="form-control form-control-lg" multiple>
-                            <option>Caricamento...</option>
-                        </select>
+                        <sl-select id="select" label="Colture di interesse" multiple clearable>
+                            <sl-option>Caricamento...</sl-option>
+                        </sl-select>
                         <div class="form-text">Puoi selezionare più colture se coltivi diversi tipi di prodotti</div>
                     </div>
 
@@ -61,10 +60,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const select = document.getElementById('select');
                 select.innerHTML = '';
                 r.data.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.id;
-                    opt.textContent = c.name;
-                    select.appendChild(opt);
+                    const option = document.createElement('sl-option');
+                    option.value = c.id;
+                    option.textContent = c.name;
+                    select.appendChild(option);
                 });
             }
         });
@@ -74,12 +73,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('complete').addEventListener('click', function() {
-        const selected = Array.from(document.getElementById('select').selectedOptions).map(o => o.value).filter(v => v);
+        const select = document.getElementById('select');
+        const selected = select.value || [];
+        
         if (selected.length === 0) {
             const error = document.getElementById('error');
             error.textContent = 'Seleziona almeno una coltura di interesse';
             error.style.display = 'block';
-            document.getElementById('select').style.borderColor = '#dc3545';
+            select.classList.add('error');
             return;
         }
 
