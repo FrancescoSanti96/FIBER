@@ -69,6 +69,9 @@ namespace Template.Services.Users
 
             user.Coltures = selectedColtures;
             user.Provinces = selectedProvinces;
+            
+            // Marca l'onboarding come completato quando l'utente salva le preferenze
+            user.OnboardingComplete = true;
 
             await _dbContext.SaveChangesAsync();
 

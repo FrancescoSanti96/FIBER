@@ -34,6 +34,11 @@ namespace Template.EntityModel.Models
         [ForeignKey("Role")]
         public int RoleId { get; set; }
 
+        /// <summary>
+        /// Indica se l'agricoltore ha completato l'onboarding
+        /// </summary>
+        public bool OnboardingComplete { get; set; } = false;
+
         // Navigation properties
         public virtual Role Role { get; set; } = null!;
         public virtual ICollection<Colture> Coltures { get; set; } = [];

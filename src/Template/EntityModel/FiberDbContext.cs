@@ -51,7 +51,7 @@ namespace Template.EntityModel
                 .WithMany(p => p.SubscribedUsers)
                 .UsingEntity<Dictionary<string, object>>(
                     "UserProvince",
-                    j => j.HasOne<Province>().WithMany().HasForeignKey("ColtureId").OnDelete(DeleteBehavior.ClientNoAction),
+                    j => j.HasOne<Province>().WithMany().HasForeignKey("ProvinceId").OnDelete(DeleteBehavior.ClientNoAction),
                     j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.ClientNoAction)
                 );
 
