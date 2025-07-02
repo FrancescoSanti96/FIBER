@@ -1,3 +1,26 @@
+@* Stili personalizzati per Select2 *@
+<style>
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    min-height: 38px;
+}
+.select2-container {
+    width: 100% !important;
+}
+.select2-selection__choice {
+    background-color: #198754 !important;
+    border: 1px solid #198754 !important;
+    color: white !important;
+}
+.select2-selection__choice__remove {
+    color: white !important;
+}
+.select2-selection__choice__remove:hover {
+    background-color: rgba(255,255,255,0.2) !important;
+}
+</style>
+
 <h1 class="text-center mt-3">@ViewData["Title"]</h1>
 <p class="text-center text-success" style="margin-bottom: 70px !important;">Modifica le preferenze, per cambiare i bollettini consigliati</p>
 
@@ -7,17 +30,13 @@
     <div class="col-md-4">
         <div class="form-group mb-3" style="margin-bottom: 70px !important;">
             <label for="zona-interesse" class="form-label">Zone di interesse</label>
-            <select id="zona-interesse" class="form-control text-secondary" multiple>
-                <option value="">Caricamento...</option>
-            </select>
+            <select id="zona-interesse" class="form-control" multiple="multiple"></select>
             <div class="form-text">Puoi selezionare più zone se coltivi in diverse province</div>
         </div>
 
         <div class="form-group mb-4">
             <label for="cultura-interesse-settings" class="form-label">Coltura di interesse</label>
-            <select id="cultura-interesse-settings" class="form-control text-secondary" multiple>
-                <option value="">Caricamento...</option>
-            </select>
+            <select id="cultura-interesse-settings" class="form-control" multiple="multiple"></select>
             <div class="form-text">Puoi selezionare più colture se coltivi diversi tipi di prodotti</div>
         </div>
 
@@ -36,153 +55,93 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const provinceSelect = document.getElementById('zona-interesse');
-    const coltureSelect = document.getElementById('cultura-interesse-settings');
-    const btnSalva = document.getElementById('btn-salva');
-    const btnText = document.getElementById('btn-text');
-    const btnLoading = document.getElementById('btn-loading');
-    const alertContainer = document.getElementById('alert-container');
+$(document).ready(function() {
+    const provinceSelect = $('#zona-interesse');
+    const coltureSelect = $('#cultura-interesse-settings');
+    const btnSalva = $('#btn-salva');
+    const alertContainer = $('#alert-container');
 
-    let userPreferences = { provinces: [], coltures: [] };
-
-    // Funzione per mostrare alert
     function showAlert(message, type = 'success') {
-        alertContainer.innerHTML = `
+        alertContainer.html(`
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        `;
+        `);
     }
 
-    // Funzione per abilitare/disabilitare il pulsante
     function updateButtonState() {
-        const hasProvinces = Array.from(provinceSelect.selectedOptions).length > 0;
-        const hasColtures = Array.from(coltureSelect.selectedOptions).length > 0;
-        btnSalva.disabled = !hasProvinces || !hasColtures;
+        const hasProvinces = provinceSelect.val()?.length > 0;
+        const hasColtures = coltureSelect.val()?.length > 0;
+        btnSalva.prop('disabled', !hasProvinces || !hasColtures);
     }
 
-    // Carica le province
-    fetch('@Url.Action("GetProvinces", "Agricoltore", new { area = "Agricoltore" })')
-        .then(r => r.json())
-        .then(r => {
-            if (r.success) {
-                provinceSelect.innerHTML = '';
-                r.data.forEach(p => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.textContent = p.name;
-                    provinceSelect.appendChild(opt);
-                });
-                
-                // Dopo aver caricato le province, carica le preferenze utente
-                loadUserPreferences();
-            } else {
-                showAlert('Errore nel caricamento delle province', 'danger');
+    // Carica province
+    $.get('@Url.Action("GetProvinces", "Agricoltore", new { area = "Agricoltore" })')
+        .done(response => {
+            if (response.success) {
+                response.data.forEach(p => provinceSelect.append(`<option value="${p.id}">${p.name}</option>`));
+                provinceSelect.select2({ placeholder: 'Seleziona zone', width: '100%' });
             }
         })
-        .catch(error => {
-            console.error('Errore nel caricamento delle province:', error);
-            showAlert('Errore nel caricamento delle province', 'danger');
-        });
+        .fail(() => showAlert('Errore nel caricamento delle zone', 'danger'));
 
-    // Carica le colture
-    fetch('@Url.Action("GetColtures", "Agricoltore", new { area = "Agricoltore" })')
-        .then(r => r.json())
-        .then(r => {
-            if (r.success) {
-                coltureSelect.innerHTML = '';
-                r.data.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.id;
-                    opt.textContent = c.name;
-                    coltureSelect.appendChild(opt);
-                });
-            } else {
-                showAlert('Errore nel caricamento delle colture', 'danger');
+    // Carica colture
+    $.get('@Url.Action("GetColtures", "Agricoltore", new { area = "Agricoltore" })')
+        .done(response => {
+            if (response.success) {
+                response.data.forEach(c => coltureSelect.append(`<option value="${c.id}">${c.name}</option>`));
+                coltureSelect.select2({ placeholder: 'Seleziona colture', width: '100%' });
             }
         })
-        .catch(error => {
-            console.error('Errore nel caricamento delle colture:', error);
-            showAlert('Errore nel caricamento delle colture', 'danger');
+        .fail(() => showAlert('Errore nel caricamento delle colture', 'danger'));
+
+    // Carica preferenze utente
+    $.get('@Url.Action("GetUserPreferences", "Agricoltore", new { area = "Agricoltore" })')
+        .done(response => {
+            if (response.success && response.data) {
+                if (response.data.provinces) provinceSelect.val(response.data.provinces).trigger('change');
+                if (response.data.coltures) coltureSelect.val(response.data.coltures).trigger('change');
+            }
         });
 
-    // Carica le preferenze dell'utente
-    function loadUserPreferences() {
-        fetch('@Url.Action("GetUserPreferences", "Agricoltore", new { area = "Agricoltore" })')
-            .then(r => r.json())
-            .then(r => {
-                if (r.success) {
-                    userPreferences = r.data;
-                    
-                    // Seleziona le province salvate
-                    userPreferences.provinces.forEach(provinceId => {
-                        const option = provinceSelect.querySelector(`option[value="${provinceId}"]`);
-                        if (option) option.selected = true;
-                    });
-                    
-                    // Seleziona le colture salvate
-                    userPreferences.coltures.forEach(coltureId => {
-                        const option = coltureSelect.querySelector(`option[value="${coltureId}"]`);
-                        if (option) option.selected = true;
-                    });
-                    
-                    updateButtonState();
-                }
-            })
-            .catch(error => {
-                console.error('Errore nel caricamento delle preferenze:', error);
-            });
-    }
+    // Event listeners
+    provinceSelect.add(coltureSelect).on('change', updateButtonState);
 
-    // Event listeners per aggiornare lo stato del pulsante
-    provinceSelect.addEventListener('change', updateButtonState);
-    coltureSelect.addEventListener('change', updateButtonState);
+    // Salva preferenze
+    btnSalva.on('click', function() {
+        const provinces = provinceSelect.val()?.map(Number) || [];
+        const coltures = coltureSelect.val()?.map(Number) || [];
 
-    // Salvataggio delle preferenze
-    btnSalva.addEventListener('click', function() {
-        const selectedProvinces = Array.from(provinceSelect.selectedOptions).map(o => parseInt(o.value));
-        const selectedColtures = Array.from(coltureSelect.selectedOptions).map(o => parseInt(o.value));
-
-        if (selectedProvinces.length === 0 || selectedColtures.length === 0) {
-            showAlert('Seleziona almeno una zona e una coltura di interesse', 'warning');
+        if (!provinces.length || !coltures.length) {
+            showAlert('Seleziona almeno una zona e una coltura', 'warning');
             return;
         }
 
         // Mostra loading
-        btnText.style.display = 'none';
-        btnLoading.style.display = 'inline';
-        btnSalva.disabled = true;
+        btnSalva.prop('disabled', true);
+        $('#btn-text').hide();
+        $('#btn-loading').show();
 
-        fetch('@Url.Action("SaveUserPreferencesAjax", "Agricoltore", new { area = "Agricoltore" })', {
+        $.ajax({
+            url: '@Url.Action("SaveUserPreferencesAjax", "Agricoltore", new { area = "Agricoltore" })',
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-            },
-            body: JSON.stringify({ 
-                Provinces: selectedProvinces, 
-                Coltures: selectedColtures 
-            })
+            data: JSON.stringify({ provinces, coltures }),
+            contentType: 'application/json',
+            headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() }
         })
-        .then(r => r.json())
-        .then(r => {
-            if (r.success) {
-                showAlert(r.message, 'success');
-                userPreferences = { provinces: selectedProvinces, coltures: selectedColtures };
+        .done(response => {
+            if (response.success) {
+                showAlert(response.message, 'success');
             } else {
-                showAlert(r.message || 'Errore nel salvataggio', 'danger');
+                showAlert(response.message, 'danger');
             }
         })
-        .catch(error => {
-            console.error('Errore nel salvataggio:', error);
-            showAlert('Errore nel salvataggio delle preferenze', 'danger');
-        })
-        .finally(() => {
-            // Nascondi loading
-            btnText.style.display = 'inline';
-            btnLoading.style.display = 'none';
+        .fail(() => showAlert('Errore nel salvataggio', 'danger'))
+        .always(() => {
+            // Ripristina pulsante
+            $('#btn-text').show();
+            $('#btn-loading').hide();
             updateButtonState();
         });
     });
