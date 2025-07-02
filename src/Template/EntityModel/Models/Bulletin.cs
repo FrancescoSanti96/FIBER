@@ -13,9 +13,8 @@ namespace Template.EntityModel.Models
         [ForeignKey("User")]
         public int IdUser { get; set; }
 
-        [Required]
         [MaxLength(255)]
-        public string Summary { get; set; } = string.Empty;
+        public string Summary { get; set; } = null;
 
         [Required]
         [ForeignKey("Province")]

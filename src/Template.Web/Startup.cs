@@ -40,6 +40,10 @@ namespace Template.Web
                     .AddInterceptors(interceptor);
             });
 
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true);
+
             // SERVICES FOR AUTHENTICATION
             services.AddSession();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>

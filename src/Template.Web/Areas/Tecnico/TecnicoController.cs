@@ -1,5 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
+using Template.Services.Coltures;
+using Template.Services.Provinces;
 using Template.Services.Users;
+using Template.Web.Areas.Tecnico.ViewModels;
 using Template.Web.Models;
 
 namespace Template.Web.Areas.Tecnico
@@ -7,7 +12,17 @@ namespace Template.Web.Areas.Tecnico
     [Area("Tecnico")]
     public class TecnicoController : AuthenticatedBaseController
     {
-        public TecnicoController(UserService userService) : base(userService) { }
+        private readonly ColtureService _coltureService;
+        private readonly ProvinceService _provinceService;
+
+        public TecnicoController(UserService userService,
+            ColtureService coltureService,
+            ProvinceService provinceService)
+            : base(userService)
+        {
+            _coltureService = coltureService;
+            _provinceService = provinceService;
+        }
 
         // GET: Tecnico/Tecnico/HomeTecnico
         public virtual IActionResult HomeTecnico(string tab = "caricati")
@@ -42,9 +57,25 @@ namespace Template.Web.Areas.Tecnico
         }
 
         // GET: Tecnico/Tecnico/NuovoBollettino
-        public virtual IActionResult NuovoBollettino()
+        public async Task<IActionResult> NuovoBollettino()
         {
-            return View();
+            var vm = new NuovoBollettinoViewModel()
+            {
+                OpzioniColture = [.. (await _coltureService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString(),
+
+                })],
+                OpzioniProvince = [.. (await _provinceService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString(),
+
+                })]
+            };
+
+            return View(vm);
         }
 
         // GET: Tecnico/Tecnico/ModificaBollettino

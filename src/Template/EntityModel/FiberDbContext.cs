@@ -178,6 +178,11 @@ namespace Template.EntityModel
 
         private void SeedEntityFromJson<T>(string contextStateFolderPath) where T : class
         {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
             var dbSet = this.Set<T>();
 
             if (!dbSet.Any())

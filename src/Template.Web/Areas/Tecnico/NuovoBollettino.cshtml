@@ -1,58 +1,114 @@
+@model Template.Web.Areas.Tecnico.ViewModels.NuovoBollettinoViewModel
 @{
     ViewData["Title"] = "Nuovo Bollettino";
 }
+
+<div class="container mt-4">
+    <div class="row mb-3 align-items-center">
+        <div class="col-auto me-3">
+            <a href="/Tecnico/Tecnico/BollettiniCaricati" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini</a>
+        </div>
+        <div class="col">
+            <h1 class="mb-0">Nuovo Bollettino</h1>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <form id="nuovoBollettino" class="d-flex gap-5">
+            @* editor wysiwyg *@
+            <div class="flex-grow-1" >
+                <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label>
+                <div id="editor"></div>
+                @* <div class="mb-3">
+                    <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label>
+                    <textarea class="form-control" id="editor" name="@nameof(Model.ContenutoBollettino)"></textarea>
+                </div> *@
+            </div>
+
+            <div class="col-12 col-md-4">
+                @* colture *@
+                <div class="mb-3">
+                    <sl-select name="@nameof(Model.IdColtureSelezionate)" label="Colture di interesse" multiple clearable required>
+                        @foreach (var option in Model.OpzioniColture)
+                        {
+                            <sl-option value="@option.Value">@option.Text</sl-option>
+                        }
+                    </sl-select>
+                </div>
+
+                @* province *@
+                <div class="mb-3">
+                    <sl-select name="@nameof(Model.IdProvinceSelezionate)" label="Zone di interesse" multiple clearable>
+                        @foreach (var option in Model.OpzioniProvince)
+                        {
+                            <sl-option value="@option.Value">@option.Text</sl-option>
+                        }
+                    </sl-select>
+                </div>
+
+                @* scadenza *@
+                <div class="mb-3">
+                    <sl-input type="date" label="Scadenza" name="@nameof(Model.Scadenza)" placeholder="Date"></sl-input>
+                </div>
+
+                @* titolo *@
+                <div class="mb-3">
+                    <sl-input label="Nome Bollettino" name="@nameof(Model.TitoloBollettino)"></sl-input>
+                </div>
+
+                @* azioni *@
+                <div class="d-flex justify-content-between gap-2 mt-4 mb-4">
+                    <button type="button" class="btn btn-outline-secondary" style="min-width: 100px;">Annulla</button>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-success">Pubblica</button>
+                        <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" data-bs-reference="parent">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button class="dropdown-item" type="button" id="salvaBollettinoBtn">Salva</button></li>
+                            <li><button class="dropdown-item" type="submit">Pubblica</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 @section Scripts {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
     <script src="~/js/nuovobollettino-ckeditor.js"></script>
-}
-<div class="container mt-4">
-    <div class="row mb-3 align-items-center">
-            <div class="col-auto me-3">
-                <a href="/Tecnico/Tecnico/BollettiniCaricati" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini</a>
-            </div>
-            <div class="col">
-                <h1 class="mb-0">Nuovo Bollettino</h1>
-            </div>
-    </div>
 
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label>
-                    <textarea class="form-control" id="contenutoBollettino" name="contenutoBollettino" placeholder="Inserisci il contenuto ..."></textarea>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <form class="h-100 d-flex flex-column justify-content-between">
-                    <div class="mb-3">
-                        <label for="nomeBollettino" class="form-label">Nome Bollettino</label>
-                        <input type="text" class="form-control" id="nomeBollettino" placeholder="Inserisci il nome del bollettino">
-                    </div>
-                    <div class="mb-3">
-                        <label for="culturaInteresse" class="form-label">Cultura di interesse</label>
-                        <select id="culturaInteresse" class="form-select text-secondary">
-                            <option value="">Seleziona almeno una coltura di interesse</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="zonaInteresse" class="form-label">Zone di interesse</label>
-                        <select id="zonaInteresse" class="form-select text-secondary">
-                            <option value="">Seleziona almeno una zona di interesse</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="scadenzaTemporale" class="form-label">Scadenza temporale</label>
-                        <input type="text" class="form-control" id="scadenzaTemporale" placeholder="gg/mm/anno">
-                    </div>
-                    <div class="d-flex justify-content-between gap-2 mt-4 mb-4">
-                        <button type="button" class="btn btn-outline-secondary" style="min-width: 100px;">Annulla</button>
-                        <button type="button" class="btn btn-light" style="min-width: 100px;">Salva</button>
-                        <button type="submit" class="btn btn-success" id="pubblicaBollettinoBtn" style="min-width: 100px;">Pubblica</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div> 
-</div>
+    <script>
+        const form = document.querySelector("form#nuovoBollettino");
+
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            const data = prepareFormData(true);
+            console.log(data);
+
+        });
+
+        document.getElementById("salvaBollettinoBtn").addEventListener("click", () => {
+            const data = prepareFormData();
+            console.log(data);
+        })
+
+        function prepareFormData(publish=false) {
+            const data = new FormData(form);
+            const obj = Object.fromEntries(data.entries());
+
+            const coltureMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdColtureSelezionate)]');
+            const provinceMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdProvinceSelezionate)]');
+
+            obj["@nameof(Model.ContenutoBollettino)"] = editor.getData();
+            obj["@nameof(Model.IdColtureSelezionate)"] = coltureMultiselect.value;
+            obj["@nameof(Model.IdProvinceSelezionate)"] = provinceMultiselect.value;
+            obj["@nameof(Model.Pubblicato)"] = publish;
+
+            return obj;
+        }
+    </script>
+}
+
