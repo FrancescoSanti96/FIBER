@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Template.Services.Users;
 using Template.Web.Areas.Dto;
-using Template.Services.DataPersister;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System;
@@ -13,12 +12,10 @@ namespace Template.Web.Areas.Agricoltore
     [Area("Agricoltore")]
     public class AgricoltoreController : AuthenticatedBaseController
     {
-        private readonly IDataPersister _dataPersister;
         private readonly ILogger<AgricoltoreController> _logger;
 
-        public AgricoltoreController(UserService userService, IDataPersister dataPersister, ILogger<AgricoltoreController> logger) : base(userService) 
+        public AgricoltoreController(UserService userService, ILogger<AgricoltoreController> logger) : base(userService)
         {
-            _dataPersister = dataPersister;
             _logger = logger;
         }
 
@@ -111,7 +108,7 @@ namespace Template.Web.Areas.Agricoltore
 
                 // Recupera l'utente completo con le relazioni
                 var userWithPreferences = await _userService.Query(new GetUserWithPreferencesQuery { Id = user.Id });
-                
+
                 if (userWithPreferences == null)
                 {
                     return Json(new { success = false, message = "Utente non trovato" });
@@ -120,12 +117,14 @@ namespace Template.Web.Areas.Agricoltore
                 var selectedProvinces = userWithPreferences.Provinces?.Select(p => p.Id).ToList() ?? new List<int>();
                 var selectedColtures = userWithPreferences.Coltures?.Select(c => c.Id).ToList() ?? new List<int>();
 
-                return Json(new { 
-                    success = true, 
-                    data = new { 
-                        provinces = selectedProvinces, 
-                        coltures = selectedColtures 
-                    } 
+                return Json(new
+                {
+                    success = true,
+                    data = new
+                    {
+                        provinces = selectedProvinces,
+                        coltures = selectedColtures
+                    }
                 });
             }
             catch (Exception ex)
@@ -190,10 +189,7 @@ namespace Template.Web.Areas.Agricoltore
             }
 
             var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
-            
-            // Salva immediatamente nel JSON
-            await _dataPersister.SaveOnFileAsync();
-            
+
             // Dopo aver salvato le preferenze, reindirizza alla home dell'agricoltore
             return Json(new { success = true, redirectUrl = Url.Action("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" }) });
         }
@@ -208,9 +204,6 @@ namespace Template.Web.Areas.Agricoltore
             }
 
             var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
-
-            // Salva immediatamente nel JSON
-            await _dataPersister.SaveOnFileAsync();
 
             return RedirectToAction("ImpostazioniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
         }
@@ -230,9 +223,6 @@ namespace Template.Web.Areas.Agricoltore
                 }
 
                 var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
-
-                // Salva immediatamente nel JSON
-                await _dataPersister.SaveOnFileAsync();
 
                 return Json(new { success = true, message = "Preferenze salvate con successo!" });
             }

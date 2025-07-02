@@ -68,14 +68,14 @@
 
                 @* titolo *@
                 <div class="mb-3">
-                    <sl-input label="Nome Bollettino" name="@nameof(Model.TitoloBollettino)"></sl-input>
+                    <sl-input label="Nome Bollettino" name="@nameof(Model.TitoloBollettino)" clearable></sl-input>
                 </div>
 
                 @* azioni *@
                 <div class="d-flex justify-content-between gap-2 mt-4 mb-4">
                     <button type="button" class="btn btn-outline-secondary">Annulla</button>
-                    <button type="submit" id="pubblicaBtn" class="btn btn-success d-none">Pubblica</button>
-                    <button type="submit" id="salvaBtn" class="btn btn-success">Salva per dopo</button>
+                    <button type="submit" id="pubblicaBtn" class="btn btn-success @(Model.Pubblicato ? "d-block" : "d-none")">Pubblica</button>
+                    <button type="submit" id="salvaBtn" class="btn btn-success @(!Model.Pubblicato ? "d-block" : "d-none")">Salva per dopo</button>
                 </div>
             </div>
         }

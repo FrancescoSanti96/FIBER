@@ -34,6 +34,7 @@ namespace Template.EntityModel.Models
         [ForeignKey("Role")]
         public int RoleId { get; set; }
 
+
         /// <summary>
         /// Indica se l'agricoltore ha completato l'onboarding
         /// </summary>

@@ -40,9 +40,6 @@ namespace Template.Web
                 }
                 var dbPath = Path.Combine(contextStateFolderPath, "fiber.db");
                 options.UseSqlite($"Data Source={dbPath}");
-                //var interceptor = serviceProvider.GetRequiredService<IInterceptor>();
-                //options.UseInMemoryDatabase(databaseName: "Fiber")
-                //    .AddInterceptors(interceptor);
             });
 
             services.AddControllers()
