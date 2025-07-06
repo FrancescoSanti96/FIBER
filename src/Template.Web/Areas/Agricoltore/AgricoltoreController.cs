@@ -150,7 +150,8 @@ namespace Template.Web.Areas.Agricoltore
             }
             catch (Exception ex)
             {
-       
+                Console.WriteLine($"ERRORE nella generazione PDF: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 Alerts.AddError(this, $"Errore nella generazione del PDF: {ex.Message}");
                 return RedirectToAction(nameof(BollettiniAgricoltore));
             }

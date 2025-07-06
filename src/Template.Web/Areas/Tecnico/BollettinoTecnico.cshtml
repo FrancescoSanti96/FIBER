@@ -48,6 +48,14 @@
                 <p class="text-secondary mb-4">mail: <a href="mailto:@Model.AutoreEmail" class="text-secondary">@Model.AutoreEmail</a></p>
             }
 
+            @if (!Model.Pubblicato || Model.IsDraft)
+            {
+                <div class="card shadow-sm p-3 mb-4">
+                    <h3 class="h5 card-title">Modifica Bollettino</h3>
+                    <a href="@Url.Action("ModificaBollettino", "Tecnico", new { Area = "Tecnico", id = Model.Id })" class="btn btn-light w-100">Modifica</a>
+                </div>
+            }
+
             <div class="card shadow-sm p-3 mb-4">
                 <h3 class="h5 card-title">Download</h3>
                 <a href="@Url.Action("DownloadBollettino", "Tecnico", new { Area = "Tecnico", id = Model.Id })" class="btn btn-light w-100">Scarica pdf</a>
