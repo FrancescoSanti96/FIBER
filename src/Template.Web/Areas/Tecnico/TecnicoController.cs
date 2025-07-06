@@ -28,7 +28,7 @@ namespace Template.Web.Areas.Tecnico
         public TecnicoController(UserService userService,
             ColtureService coltureService,
             ProvinceService provinceService,
-            IPdfService pdfService)
+            IPdfService pdfService,
             BollettiniService bollettiniService)
             : base(userService)
         {
@@ -83,9 +83,6 @@ namespace Template.Web.Areas.Tecnico
         // GET: Tecnico/Tecnico/BollettinoTecnico
         public virtual async Task<IActionResult> BollettinoTecnico(int id = 3, bool isDraft = false)
         {
-            // TODO: MOCK - Sostituire con recupero dati reale dal database
-            // Per attivare la chiamata reale, decommentare il blocco qui sotto e rimuovere i dati mock
-            /*
             try
             {
                 var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
@@ -93,7 +90,9 @@ namespace Template.Web.Areas.Tecnico
                 if (bulletinDto == null)
                 {
                     Alerts.AddError(this, "Bollettino non trovato");
-                    return RedirectToAction(nameof(BollettiniCaricati));
+                    // Se è una bozza, torna alle bozze, altrimenti ai caricati
+                    var tab = isDraft || bulletinDto?.Published == false ? TabBollettini.Bozze : TabBollettini.Caricati;
+                    return RedirectToAction(nameof(HomeTecnico), new { Tab = tab });
                 }
 
                 var model = new BollettinoTecnicoViewModel
@@ -117,28 +116,10 @@ namespace Template.Web.Areas.Tecnico
             catch (Exception ex)
             {
                 Alerts.AddError(this, $"Errore nel caricamento del bollettino: {ex.Message}");
-                return RedirectToAction(nameof(BollettiniCaricati));
+                // Se è una bozza, torna alle bozze, altrimenti ai caricati
+                var tab = isDraft ? TabBollettini.Bozze : TabBollettini.Caricati;
+                return RedirectToAction(nameof(HomeTecnico), new { Tab = tab });
             }
-            */
-
-            // DATI MOCK - Bollettino ID 5 dal database
-            var model = new BollettinoTecnicoViewModel
-            {
-                Id = 5,
-                Titolo = "Albicocco, Carota da seme - Ferrara",
-                ContenutoHTML = "	<h2>Situazione</h2><p><br><strong>Le condizioni climatiche delle ultime settimane </strong>hanno favorito lo sviluppo di infezioni fungine, in particolare di peronospora. Si osservano i primi sintomi su foglia in diverse zone del territorio.<br>Previsioni meteo<br>&nbsp;</p><ul><li>Per i prossimi giorni si prevedono <strong>temperature</strong> in aumento e precipitazioni sparse, condizioni che potrebbero favorire lo sviluppo di infezioni secondarie.</li><li>Peronospora<br>Si consiglia di <strong>monitorare</strong> attentamente i vigneti. In presenza di sintomi, intervenire con prodotti a base di rame o altri fungicidi specifici. Nelle zone a maggior rischio, si consiglia un trattamento preventivo.<br><strong>Oidio</strong></li><li>Il rischio di infezioni è moderato. Si consiglia di intervenire con zolfo nelle ore più fresche della giornata, evitando le ore più calde.<br><br><strong>Tignoletta</strong><br><i>Il monitoraggio con trappole a feromoni indica un aumento delle catture. Si prevede l'inizio dei voli della prima generazione. In caso di superamento della soglia di intervento, si consiglia di intervenire con prodotti specifici..</i></li></ul><p>&nbsp;</p><ol><li><i>test</i></li><li><i>test</i></li><li><i>test</i></li></ol>",
-                AutoreNome = "Marco",
-                AutoreCognome = "Romano",
-                AutoreEmail = "marco.romano@agricoltura.com",
-                DataPubblicazione = DateTime.Parse("2025-07-02 21:26:02.754169"),
-                DataScadenza = DateOnly.Parse("2025-07-10"),
-                Province = ["Ferrara"], // Dati mock
-                Colture = ["Albicocco", "Carota da seme"], // Dati mock
-                Pubblicato = true,
-                IsDraft = false
-            };
-
-            return View(model);
         }
 
         // GET: Tecnico/Tecnico/NuovoBollettino
@@ -185,47 +166,61 @@ namespace Template.Web.Areas.Tecnico
         }
 
         // GET: Tecnico/Tecnico/ModificaBollettino
-        public virtual IActionResult ModificaBollettino(int id)
-        {
-            // In un'applicazione reale, qui recupereresti i dati del bollettino dal database
-            // usando l'id e creeresti un ViewModel più completo.
-            var model = new ModificaBollettinoViewModel
-            {
-                // Esempio: recupera il bollettino con l'ID fornito
-                // var bollettino = _bollettiniService.GetBollettinoById(id);
-                // Title = bollettino.Title,
-                // Content = bollettino.Content,
-                // NomeBollettino = bollettino.NomeBollettino,
-                // CulturaInteresse = bollettino.Cultura,
-                // ZonaInteresse = bollettino.Zona,
-                // ScadenzaTemporale = bollettino.Scadenza.ToString("dd/MM/yyyy")
-                Title = $"Modifica Bollettino {id}", // Dati di esempio per ora
-                Content = "Contenuto di esempio per il bollettino da modificare.",
-                NomeBollettino = "Bollettino di Esempio",
-                CulturaInteresse = "Grano",
-                ZonaInteresse = "Pianura Padana",
-                ScadenzaTemporale = "01/01/2026"
-            };
-            return View(model);
-        }
-
-        // GET: Tecnico/Tecnico/DownloadBollettino
-        public virtual IActionResult DownloadBollettino(int id = 5)
+        public virtual async Task<IActionResult> ModificaBollettino(int id)
         {
             try
             {
-                // DATI MOCK - Bollettino ID 4 dal database
-                var title = "Albicocco, Carciofo, Ciliegio - Ferrara, Forlì-Cesena";
-                var content = "	<h2>Situazione</h2><p><br><strong>Le condizioni climatiche delle ultime settimane </strong>hanno favorito lo sviluppo di infezioni fungine, in particolare di peronospora. Si osservano i primi sintomi su foglia in diverse zone del territorio.<br>Previsioni meteo<br>&nbsp;</p><ul><li>Per i prossimi giorni si prevedono <strong>temperature</strong> in aumento e precipitazioni sparse, condizioni che potrebbero favorire lo sviluppo di infezioni secondarie.</li><li>Peronospora<br>Si consiglia di <strong>monitorare</strong> attentamente i vigneti. In presenza di sintomi, intervenire con prodotti a base di rame o altri fungicidi specifici. Nelle zone a maggior rischio, si consiglia un trattamento preventivo.<br><strong>Oidio</strong></li><li>Il rischio di infezioni è moderato. Si consiglia di intervenire con zolfo nelle ore più fresche della giornata, evitando le ore più calde.<br><br><strong>Tignoletta</strong><br><i>Il monitoraggio con trappole a feromoni indica un aumento delle catture. Si prevede l'inizio dei voli della prima generazione. In caso di superamento della soglia di intervento, si consiglia di intervenire con prodotti specifici..</i></li></ul><p>&nbsp;</p><ol><li><i>test</i></li><li><i>test</i></li><li><i>test</i></li></ol>";
-                var author = "Marco Romano";
-                var publishDate = DateTime.Parse("2025-07-02 21:26:02.754169");
-                var expireDate = DateOnly.Parse("2025-07-10");
-                var provinces = new List<string> { "Ferrara", "Forlì-Cesena" };
-                var coltures = new List<string> { "Albicocco", "Carciofo", "Ciliegio" };
+                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                
+                if (bulletinDto == null)
+                {
+                    Alerts.AddError(this, "Bollettino non trovato");
+                    return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze });
+                }
+
+                var model = new ModificaBollettinoViewModel
+                {
+                    Title = bulletinDto.Summary ?? "Bollettino senza titolo",
+                    Content = bulletinDto.Body ?? "",
+                    NomeBollettino = bulletinDto.Summary ?? "Bollettino senza titolo",
+                    CulturaInteresse = string.Join(", ", bulletinDto.ColtureNames ?? new List<string>()),
+                    ZonaInteresse = string.Join(", ", bulletinDto.ProvinceNames ?? new List<string>()),
+                    ScadenzaTemporale = bulletinDto.ExpireDate?.ToString("dd/MM/yyyy") ?? ""
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Alerts.AddError(this, $"Errore nel caricamento del bollettino: {ex.Message}");
+                return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze });
+            }
+        }
+
+        // GET: Tecnico/Tecnico/DownloadBollettino
+        public virtual async Task<IActionResult> DownloadBollettino(int id)
+        {
+            try
+            {
+                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                
+                if (bulletinDto == null)
+                {
+                    Alerts.AddError(this, "Bollettino non trovato");
+                    // Se il bollettino non esiste, torna ai caricati (dove normalmente dovrebbe essere)
+                    return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Caricati });
+                }
+
+                var title = bulletinDto.Summary ?? "Bollettino senza titolo";
+                var content = bulletinDto.Body ?? "";
+                var author = $"{bulletinDto.AuthorFirstName} {bulletinDto.AuthorLastName}";
+                var publishDate = bulletinDto.PublishDate ?? DateTime.Now;
+                var expireDate = bulletinDto.ExpireDate;
+                var provinces = bulletinDto.ProvinceNames?.ToList() ?? new List<string>();
+                var coltures = bulletinDto.ColtureNames?.ToList() ?? new List<string>();
 
                 Console.WriteLine($"Generazione PDF per bollettino {id}");
                 Console.WriteLine($"Titolo: {title}");
-                Console.WriteLine($"Contenuto: {content}");
                 Console.WriteLine($"Autore: {author}");
 
                 var pdfBytes = _pdfService.GenerateBulletinPdf(title, content, author, publishDate, expireDate, provinces, coltures);
@@ -240,7 +235,7 @@ namespace Template.Web.Areas.Tecnico
                 Console.WriteLine($"ERRORE nella generazione PDF: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 Alerts.AddError(this, $"Errore nella generazione del PDF: {ex.Message}");
-                return RedirectToAction(nameof(BollettinoTecnico), new { id });
+                return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Caricati });
             }
         }
         #region Private methods
@@ -266,5 +261,4 @@ namespace Template.Web.Areas.Tecnico
         }
         #endregion
     }
-
 }

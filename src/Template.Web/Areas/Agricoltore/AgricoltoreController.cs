@@ -2,21 +2,15 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Template.Services.Users;
-using Template.Web.Areas.Dto;
+using Template.Services.Bulletins;
+using Template.Web.Areas.Agricoltore.Dto;
+using Template.Web.Areas.Agricoltore.ViewModels;
 using Template.Web.Models;
 using Template.Web.Infrastructure;
 using Template.Web.Services;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System;
-using Microsoft.Extensions.Logging;
-using System.Linq;
-using System;
-using System.Collections.Generic;
-using Template.Web.Areas.Agricoltore.Dto;
-using Template.Web.Areas.Agricoltore.ViewModels;
-using Template.Services.Bulletins;
-using Template.Web.Models;
 
 namespace Template.Web.Areas.Agricoltore
 {
@@ -25,18 +19,15 @@ namespace Template.Web.Areas.Agricoltore
     {
         private readonly ILogger<AgricoltoreController> _logger;
         private readonly IPdfService _pdfService;
-
-        public AgricoltoreController(UserService userService, ILogger<AgricoltoreController> logger, IPdfService pdfService) : base(userService)
-        {
-            _logger = logger;
-            _pdfService = pdfService;
         private readonly BollettiniService _bollettiniService;
 
         public AgricoltoreController(UserService userService, 
             ILogger<AgricoltoreController> logger,
+            IPdfService pdfService,
             BollettiniService bollettiniService) : base(userService)
         {
             _logger = logger;
+            _pdfService = pdfService;
             _bollettiniService = bollettiniService;
         }
 

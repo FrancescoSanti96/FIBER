@@ -2,6 +2,7 @@
     Questa vista è stata copiata da src/Template.Web/Areas/Agricoltore/Views/Agricoltore/Bollettino.cshtml
     e adattata per l'area Tecnico. Sarà la base per la visualizzazione e modifica dei bollettini da parte del tecnico.
 *@
+@using Template.Web.Areas.Tecnico.Enums
 @model Template.Web.Models.BollettinoTecnicoViewModel
 @{
     ViewData["Title"] = $"Bollettino - {Model.Titolo}";
@@ -10,7 +11,7 @@
 <div class="container mt-4">
     <div class="row mb-3 align-items-center">
         <div class="col-auto me-3">
-            <a href="/Tecnico/Tecnico/BollettiniCaricati" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini caricati</a>
+            <a href="@Url.Action("HomeTecnico", "Tecnico", new { Area = "Tecnico", Tab = Model.IsDraft ? TabBollettini.Bozze : TabBollettini.Caricati })" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini @(Model.IsDraft ? "bozze" : "caricati")</a>
         </div>
         <div class="col">
             <h1 class="mb-0">@Model.Titolo</h1>

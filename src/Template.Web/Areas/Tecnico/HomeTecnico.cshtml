@@ -12,10 +12,10 @@
         <div class="tabs-wrapper position-relative">
             <ul class="nav nav-tabs border-0 justify-content-center" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link @(Model.Tab == TabBollettini.Caricati ? "active" : "")" href="@Url.Action("HomeTecnico", "Tecnico", new {Tab = TabBollettini.Caricati})">Caricati</a>
+                    <a class="nav-link @(Model.Tab == TabBollettini.Bozze ? "active" : "")" href="@Url.Action("HomeTecnico", "Tecnico", new {Tab = TabBollettini.Bozze})">Bozze</a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link @(Model.Tab == TabBollettini.Bozze ? "active" : "")" href="@Url.Action("HomeTecnico", "Tecnico", new {Tab = TabBollettini.Bozze})">Bozze</a>
+                    <a class="nav-link @(Model.Tab == TabBollettini.Caricati ? "active" : "")" href="@Url.Action("HomeTecnico", "Tecnico", new {Tab = TabBollettini.Caricati})">Caricati</a>
                 </li>
             </ul>
             <div class="tab-underline position-absolute bg-success rounded-pill"></div>
