@@ -219,13 +219,8 @@ namespace Template.Web.Areas.Tecnico
                 var provinces = bulletinDto.ProvinceNames?.ToList() ?? new List<string>();
                 var coltures = bulletinDto.ColtureNames?.ToList() ?? new List<string>();
 
-                Console.WriteLine($"Generazione PDF per bollettino {id}");
-                Console.WriteLine($"Titolo: {title}");
-                Console.WriteLine($"Autore: {author}");
-
                 var pdfBytes = _pdfService.GenerateBulletinPdf(title, content, author, publishDate, expireDate, provinces, coltures);
 
-                Console.WriteLine($"PDF generato con successo. Dimensione: {pdfBytes.Length} bytes");
 
                 var fileName = $"bollettino_{id}_{DateTime.Now:yyyyMMdd}.pdf";
                 return File(pdfBytes, "application/pdf", fileName);
