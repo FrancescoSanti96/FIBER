@@ -2,24 +2,30 @@
     Questa vista è stata copiata da src/Template.Web/Areas/Agricoltore/Views/Agricoltore/Bollettino.cshtml
     e adattata per l'area Tecnico. Sarà la base per la visualizzazione e modifica dei bollettini da parte del tecnico.
 *@
+@using Template.Web.Areas.Tecnico.Enums
 @model Template.Web.Models.BollettinoTecnicoViewModel
 @{
-    ViewData["Title"] = "Bollettino Tecnico";
-    // Potrebbe essere necessario passare un ViewModel specifico per il bollettino da modificare
-    // @model YourApp.ViewModels.BollettinoTecnicoViewModel
+    ViewData["Title"] = $"Bollettino - {Model.Titolo}";
 }
 
 <div class="container mt-4">
     <div class="row mb-3 align-items-center">
         <div class="col-auto me-3">
-            <a href="/Tecnico/Tecnico/BollettiniCaricati" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini caricati</a>
+            <a href="@Url.Action("HomeTecnico", "Tecnico", new { Area = "Tecnico", Tab = Model.IsDraft ? TabBollettini.Bozze : TabBollettini.Caricati })" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini @(Model.IsDraft ? "bozze" : "caricati")</a>
         </div>
         <div class="col">
-            <h1 class="mb-0">Dettaglio Bollettino (Tecnico)</h1>
+            <h1 class="mb-0">@Model.Titolo</h1>
             <p class="mt-1 mb-0">
                 <div class="d-flex gap-2">
-                    <span class="badge bg-success">Fragola</span>
-                    <span class="badge bg-info">Modena</span>
+                    <span class="badge @Model.StatoBadgeClass">@Model.StatoBadge</span>
+                    @foreach (var coltura in Model.Colture.Take(3))
+                    {
+                        <span class="badge bg-success">@coltura</span>
+                    }
+                    @foreach (var provincia in Model.Province.Take(2))
+                    {
+                        <span class="badge bg-info">@provincia</span>
+                    }
                 </div>
             </p>
         </div>
@@ -27,33 +33,24 @@
 
     <div class="row mt-4">
         <div class="col-md-8">
-            <h2>Situazione e Dettagli</h2>
-            <p class="mb-3">Qui il tecnico potrà visualizzare i dettagli completi del bollettino e, in futuro, modificarli. Le condizioni climatiche delle ultime settimane hanno favorito lo sviluppo di infezioni fungine, in particolare di peronospora. Si osservano i primi sintomi su foglia in diverse zone del territorio.</p>
-            <p class="fw-bold mb-2">Previsioni meteo</p>
-            <p class="mb-3">Per i prossimi giorni si prevedono temperature in aumento e precipitazioni sparse, condizioni che potrebbero favorire lo sviluppo di infezioni secondarie.</p>
-
-            <h3>Peronospora</h3>
-            <p class="mb-3">Si consiglia di monitorare attentamente i vigneti. In presenza di sintomi, intervenire con prodotti a base di rame o altri fungicidi specifici. Nelle zone a maggior rischio, si consiglia un trattamento preventivo.</p>
-
-            <h3>Oidio</h3>
-            <p class="mb-3">Il rischio di infezioni è moderato. Si consiglia di intervenire con zolfo nelle ore più fresche della giornata, evitando le ore più calde.</p>
-
-            <h3>Tignoletta</h3>
-            <p class="mb-3">Il monitoraggio con trappole a feromoni indica un aumento delle catture. Si prevede l'inizio dei voli della prima generazione. In caso di superamento della soglia di intervento, si consiglia un trattamento con prodotti specifici.</p>
+            <div class="ckeditor-content-display">
+                @Html.Raw(Model.ContenutoHTML)
+            </div>
         </div>
-        <!-- TODO -->
-           <!-- <div class="ckeditor-content-display">
-                @* QUI VERRÀ VISUALIZZATO IL CONTENUTO HTML DAL CKEDITOR *@
-                @Html.Raw(Model.ContenutoHTML) @* ATTENZIONE: Contenuto deve essere sanificato lato server per prevenire XSS! *@
-            </div> -->
 
         <div class="col-md-4">
-            <p class="text-secondary mb-1">29/05/2025 Redatto dal: Tecnico Mario Rossi</p>
-            <p class="text-secondary mb-4">mail: <a href="mailto:test@test.it" class="text-secondary">test@test.it</a></p>
+            @if (!string.IsNullOrEmpty(Model.DataPubblicazioneFormattata))
+            {
+                <p class="text-secondary mb-1">@Model.DataPubblicazioneFormattata Redatto dal: @Model.NomeCompletoAutore</p>
+            }
+            @if (!string.IsNullOrEmpty(Model.AutoreEmail))
+            {
+                <p class="text-secondary mb-4">mail: <a href="mailto:@Model.AutoreEmail" class="text-secondary">@Model.AutoreEmail</a></p>
+            }
 
             <div class="card shadow-sm p-3 mb-4">
                 <h3 class="h5 card-title">Download</h3>
-                <button class="btn btn-light w-100">Scarica pdf</button>
+                <a href="@Url.Action("DownloadBollettino", "Tecnico", new { Area = "Tecnico", id = Model.Id })" class="btn btn-light w-100">Scarica pdf</a>
             </div>
         </div>
     </div>

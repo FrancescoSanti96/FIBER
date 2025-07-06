@@ -111,6 +111,7 @@ namespace Template.EntityModel
                     Email = "giuseppe.verdi@agricoltura.com",
                     Password = "$2a$11$I7BWy7GEhVUMdYzQNfxBZOGUk1yvvpquxUx3Zzx76Af5Wrlay1dhK",
                     RoleId = 2,
+                    OnboardingComplete = false,
                     LastLoggedAt = null
                 },
                 new User
@@ -121,6 +122,7 @@ namespace Template.EntityModel
                     Email = "anna.ferrari@agricoltura.com",
                     Password = "$2a$11$gffIU.L5HqfpY2YI.tDXlutRtXpnJE6js45puOuwnYbLeE9JdQIlW",
                     RoleId = 2,
+                    OnboardingComplete = false,
                     LastLoggedAt = null
                 },
                 new User
@@ -131,6 +133,7 @@ namespace Template.EntityModel
                     Email = "marco.romano@agricoltura.com",
                     Password = "$2a$11$FjYvYHLG6Oc0k7F40D6You0bZB8wEvxJIi6VoJ/XyVbsJ1e/n27m2",
                     RoleId = 3,
+                    OnboardingComplete = true,
                     LastLoggedAt = null
                 },
                 new User
@@ -141,6 +144,7 @@ namespace Template.EntityModel
                     Email = "sara.conti@agricoltura.com",
                     Password = "$2a$11$drrlbSq0lU/rSj1y.XAaCOzV/70M.ScJhYXmNE9a4i0sal6Rzifw6",
                     RoleId = 3,
+                    OnboardingComplete = true,
                     LastLoggedAt = null
                 }
             );

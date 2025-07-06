@@ -1,4 +1,11 @@
 @model Template.Web.Models.BollettinoCardViewModel
+@{
+    var currentArea = ViewContext.RouteData.Values["Area"]?.ToString();
+    var controllerName = currentArea == "Tecnico" ? "Tecnico" : "Agricoltore";
+    var visualizzaAction = currentArea == "Tecnico" ? "BollettinoTecnico" : "Bollettino";
+    var modificaAction = currentArea == "Tecnico" ? "ModificaBollettino" : "ModificaBollettino";
+    var downloadAction = currentArea == "Tecnico" ? "DownloadBollettino" : "DownloadBollettino";
+}
 
 <div class="card mb-3">
     <div class="card-body">
@@ -21,14 +28,14 @@
         </div>
         <div class="text-secondary my-3 two-line-limit">@Html.Raw(Model.Anteprima)</div>
         <div class="d-flex justify-content-between pt-3 border-top">
-            <button class="btn btn-outline-secondary btn-sm">@(Model.Pubblicato == false ? "Anteprima" : "Visualizza")</button>
-            @if (!Model.Pubblicato)
+            <a href="@Url.Action(visualizzaAction, controllerName, new { Area = currentArea, id = Model.Id, isDraft = !Model.Pubblicato })" class="btn btn-outline-secondary btn-sm">@(Model.Pubblicato == false ? "Anteprima" : "Visualizza")</a>
+            @if (!Model.Pubblicato && currentArea == "Tecnico")
             {
-                <a href="@Url.Action("ModificaBollettino", "Tecnico", new { Area = "Tecnico", id = Model.Id })" class="btn btn-light btn-sm">Modifica</a>
+                <a href="@Url.Action(modificaAction, controllerName, new { Area = currentArea, id = Model.Id })" class="btn btn-light btn-sm">Modifica</a>
             }
-            else
+            else if (Model.Pubblicato)
             {
-                <a href="" class="btn btn-light btn-sm">Scarica pdf</a>
+                <a href="@Url.Action(downloadAction, controllerName, new { Area = currentArea, id = Model.Id })" class="btn btn-light btn-sm">Scarica pdf</a>
             }
         </div>
     </div>

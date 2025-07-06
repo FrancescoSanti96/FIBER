@@ -32,12 +32,26 @@
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <li class="nav-item">
-                        <form method="post" action="/Login/Logout" class="nav-link m-0 p-0">
-                            <button type="submit" class="btn btn-link text-white-50 text-decoration-none">
-                                 Logout
-                            </button>
-                        </form>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar me-2">@identitaCorrente.Initials</div>
+                            <span class="d-none d-md-inline">@identitaCorrente.FullName</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li class="px-3 py-2 text-muted small d-md-none border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2" style="background-color: #6c757d;">@identitaCorrente.Initials</div>
+                                    @identitaCorrente.FullName
+                                </div>
+                            </li>
+                            <li>
+                                <form method="post" action="/Login/Logout" class="dropdown-item-form">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fa-solid fa-sign-out-alt me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                 }
                 else
