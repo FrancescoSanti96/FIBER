@@ -82,6 +82,26 @@ namespace Template.Services.Users
         public int Id { get; set; }
     }
 
+    public class GetBulletinByIdQuery
+    {
+        public int Id { get; set; }
+    }
+
+    public class BulletinDetailDto
+    {
+        public int Id { get; set; }
+        public string Summary { get; set; }
+        public string Body { get; set; }
+        public bool Published { get; set; }
+        public DateTime? PublishDate { get; set; }
+        public DateOnly? ExpireDate { get; set; }
+        public string AuthorFirstName { get; set; }
+        public string AuthorLastName { get; set; }
+        public string AuthorEmail { get; set; }
+        public List<string> ProvinceNames { get; set; } = [];
+        public List<string> ColtureNames { get; set; } = [];
+    }
+
     public partial class UserService
     {
         /// <summary>
@@ -227,6 +247,39 @@ namespace Template.Services.Users
                 .FirstOrDefaultAsync();
 
             return user != null ? new UserDto(user) : null;
+        }
+
+        /// <summary>
+        /// Returns a specific bulletin with all related data
+        /// </summary>
+        /// <param name="qry"></param>
+        /// <returns></returns>
+        public async Task<BulletinDetailDto> Query(GetBulletinByIdQuery qry)
+        {
+            var bulletin = await _dbContext.Bulletins
+                .Include(b => b.User)
+                .Include(b => b.Provinces)
+                .Include(b => b.Coltures)
+                .Where(b => b.Id == qry.Id)
+                .FirstOrDefaultAsync();
+
+            if (bulletin == null)
+                return null;
+
+            return new BulletinDetailDto
+            {
+                Id = bulletin.Id,
+                Summary = bulletin.Summary,
+                Body = bulletin.Body,
+                Published = bulletin.Published,
+                PublishDate = bulletin.PublishDate,
+                ExpireDate = bulletin.ExpireDate,
+                AuthorFirstName = bulletin.User?.FirstName ?? "",
+                AuthorLastName = bulletin.User?.LastName ?? "",
+                AuthorEmail = bulletin.User?.Email ?? "",
+                ProvinceNames = bulletin.Provinces?.Select(p => p.Name).ToList() ?? [],
+                ColtureNames = bulletin.Coltures?.Select(c => c.Name).ToList() ?? []
+            };
         }
     }
 }

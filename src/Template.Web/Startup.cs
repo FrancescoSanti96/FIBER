@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using Template.EntityModel;
 using Template.Web.Infrastructure;
+using QuestPDF.Infrastructure;
 
 namespace Template.Web
 {
@@ -29,6 +30,8 @@ namespace Template.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+            
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddDbContext<FiberDbContext>(options =>
