@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Template.Services.Coltures;
 using Template.Services.Provinces;
+using Template.Services.Bulletins;
 
 namespace Template.Web
 {
@@ -13,6 +14,7 @@ namespace Template.Web
             container.AddScoped<UserService>();
             container.AddScoped<ColtureService>();
             container.AddScoped<ProvinceService>();
+            container.AddScoped<BollettiniService>();
         }
     }
 }

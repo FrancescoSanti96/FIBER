@@ -7,11 +7,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 
 namespace Template.Web.Infrastructure
 {
     public abstract class PagingViewModel
     {
+        public abstract string ControllerName { get; }
+        public abstract string ActionName { get; }
+
         public int Page { get; set; }
         [Display(Name = "Elementi per pagina")]
         public int PageSize { get; set; }
@@ -21,7 +25,7 @@ namespace Template.Web.Infrastructure
         public bool OrderByDescending { get; set; }
         public int[] PageSizes { get; set; }
 
-        public IEnumerable<SelectListItem> PageSizeListItems // VB: non facciamo proprietà che fanno i conti, meglio un metodo
+        public IEnumerable<SelectListItem> PageSizeListItems // VB: non facciamo propriet? che fanno i conti, meglio un metodo
         {
             get
             {
@@ -50,66 +54,100 @@ namespace Template.Web.Infrastructure
             return (int)Math.Max(1, Math.Ceiling((double)TotalItems / PageSize));
         }
 
-        public abstract IActionResult GetRoute();
+        public abstract RouteValueDictionary GetRouteValues();
 
 
         public string ChangePageSizePageUrl(IUrlHelper url, int pageSize)
         {
-            var route = GetRoute();
-            return ChangePageSizePageUrl(url, route, pageSize);
+            var routeValues = GetRouteValues();
+            return ChangePageSizePageUrl(url, routeValues, pageSize);
         }
-        string ChangePageSizePageUrl(IUrlHelper url, IActionResult route, int pageSize) => string.Empty;
+        string ChangePageSizePageUrl(IUrlHelper url, RouteValueDictionary routeValues, int pageSize)
+        {
+            routeValues["PageSize"] = pageSize;
+            return url.Action(action: ActionName, controller: ControllerName, values: routeValues);
+        }
 
 
         public string NextPageUrl(IUrlHelper url)
         {
-            var route = GetRoute();
-            return NextPageUrl(url, route);
+            var routeValues = GetRouteValues();
+            return NextPageUrl(url, routeValues);
         }
-        string NextPageUrl(IUrlHelper url, IActionResult route) => string.Empty;
-        string NextPageUrl(IUrlHelper url, Task<ActionResult> route)
+        string NextPageUrl(IUrlHelper url, RouteValueDictionary routeValues)
         {
-            return NextPageUrl(url, route.GetAwaiter().GetResult());
+            routeValues["Page"] = Math.Min(TotalPages(), Page + 1);
+            return url.Action(action: ActionName, controller: ControllerName, values: routeValues);
         }
+        //string NextPageUrl(IUrlHelper url, Task<ActionResult> route)
+        //{
+        //    return NextPageUrl(url, route.GetAwaiter().GetResult());
+
+        //}
 
         public string LastPageUrl(IUrlHelper url)
         {
-            var route = GetRoute();
-            return LastPageUrl(url, route);
+            var routeValues = GetRouteValues();
+            return LastPageUrl(url, routeValues);
         }
 
-        string LastPageUrl(IUrlHelper url, IActionResult route) => string.Empty;
+        string LastPageUrl(IUrlHelper url, RouteValueDictionary routeValues)
+        {
+            routeValues["Page"] = TotalPages();
+            return url.Action(action: ActionName, controller: ControllerName, values: routeValues);
+        }
         public string PrevPageUrl(IUrlHelper url)
         {
-            var route = GetRoute();
-            return PrevPageUrl(url, route);
+            var routeValues = GetRouteValues();
+            return PrevPageUrl(url, routeValues);
         }
-        string PrevPageUrl(IUrlHelper url, Task<ActionResult> route)
+        //string PrevPageUrl(IUrlHelper url, Task<ActionResult> route)
+        //{
+        //    return PrevPageUrl(url, route.GetAwaiter().GetResult());
+        //}
+        string PrevPageUrl(IUrlHelper url, RouteValueDictionary routeValues)
         {
-            return PrevPageUrl(url, route.GetAwaiter().GetResult());
+            routeValues["Page"] = Math.Max(1, Page - 1);
+            return url.Action(action: ActionName, controller: ControllerName, values: routeValues);
         }
-        string PrevPageUrl(IUrlHelper url, IActionResult route) => string.Empty;
         public string FirstPageUrl(IUrlHelper url)
         {
-            var route = GetRoute();
-            return FirstPageUrl(url, route);
+            var routeValues = GetRouteValues();
+            return FirstPageUrl(url, routeValues);
         }
 
-        string FirstPageUrl(IUrlHelper url, IActionResult route) => string.Empty;
+        string FirstPageUrl(IUrlHelper url, RouteValueDictionary routeValues)
+        {
+            routeValues["Page"] = 1;
+            return url.Action(action: ActionName, controller: ControllerName, values: routeValues);
+        }
 
 
         protected string OrderbyUrl<TModel, TProperty>(IUrlHelper url, Expression<Func<TModel, TProperty>> expression)
         {
             var propertyName = GetModelExpressionProvider(url.ActionContext.HttpContext.RequestServices).GetExpressionText(expression);
-            return OrderbyUrl(url, propertyName, GetRoute());
+            return OrderbyUrl(url, propertyName, GetRouteValues());
         }
 
         public string OrderbyUrl(IUrlHelper url, string propertyName)
         {
-            return OrderbyUrl(url, propertyName, GetRoute());
+            return OrderbyUrl(url, propertyName, GetRouteValues());
         }
 
-        string OrderbyUrl(IUrlHelper url, string propertyName, IActionResult route) => string.Empty;
+        string OrderbyUrl(IUrlHelper url, string propertyName, RouteValueDictionary routeValues)
+        {
+            if (OrderBy == propertyName)
+            {
+                routeValues["OrderByDescending"] = !OrderByDescending;
+            }
+            else
+            {
+                routeValues["OrderBy"] = propertyName;
+                routeValues["OrderByDescending"] = false;
+            }
+
+            return url.Action(action: ActionName, controller: ControllerName, values: routeValues);
+        }
 
         protected string OrderbyCss<TModel, TProperty>(HttpContext context, Expression<Func<TModel, TProperty>> expression)
         {

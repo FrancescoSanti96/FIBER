@@ -5,10 +5,10 @@
     var provinceDict = Model.OpzioniProvince.ToDictionary(x => x.Value, x => x.Text);
 }
 
-<div class="container mt-4">
+<div class="container-fluid mt-4 px-3 px-md-5">
     <div class="row mb-3 align-items-center">
         <div class="col-auto me-3">
-            <a href="/Tecnico/Tecnico/BollettiniCaricati" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini</a>
+            <a href="/Tecnico/Tecnico/HomeTecnico" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini</a>
         </div>
         <div class="col">
             <h1 class="mb-0">Nuovo Bollettino</h1>
@@ -16,74 +16,92 @@
     </div>
 
     <div class="mt-4">
-        @using (Html.BeginForm("NuovoBollettino", "Tecnico", FormMethod.Post, new { @class = "d-flex gap-5" }))
+        @using (Html.BeginForm("NuovoBollettino", "Tecnico", FormMethod.Post))
         {
-            @* editor wysiwyg *@
-            <div class="flex-grow-1">
-                @* <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label> *@
-                <textarea id="editor" name="@nameof(Model.ContenutoBollettino)">
-                    @Model.ContenutoBollettino
-                </textarea>
-            </div>
+            <div class="d-flex flex-column-reverse flex-md-row gap-md-5">
+                @* editor wysiwyg *@
+                <div class="flex-grow-1">
+                    @* <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label> *@
+                    <textarea id="editor" name="@nameof(Model.ContenutoBollettino)">
+                        @Model.ContenutoBollettino
+                            </textarea>
+                </div>
 
-            <div class="col-12 col-md-4">
-                @* stato documento *@
-                <div class="mb-3">
-                    <sl-select name="@nameof(Model.Pubblicato)" label="Stato documento" value="@Model.Pubblicato.ToString()">
+                <div class="col-12 col-md-4">
+                    @* primo campo: sempre visibile *@
+                    <div class="mb-3">
+                        <sl-select name="@nameof(Model.Pubblicato)" label="Stato documento" value="@Model.Pubblicato.ToString()">
                             <sl-option value="False">
-                            <sl-icon slot="prefix" name="clock"></sl-icon>
-                            Bozza
-                        </sl-option>
+                                <sl-icon slot="prefix" name="clock"></sl-icon>
+                                Bozza
+                            </sl-option>
                             <sl-option value="True">
-                            <sl-icon slot="prefix" name="check2-circle"></sl-icon>
-                            Pubblicato
-                        </sl-option>
-                    </sl-select>
-                </div>
+                                <sl-icon slot="prefix" name="check2-circle"></sl-icon>
+                                Pubblicato
+                            </sl-option>
+                        </sl-select>
+                    </div>
 
-                @* colture *@
-                <div class="mb-3">
-                    <sl-select name="@nameof(Model.IdColtureSelezionate)" label="Colture di interesse" value="@string.Join(',', Model.IdColtureSelezionate)" multiple clearable>
-                        @foreach (var option in Model.OpzioniColture)
-                        {
-                            <sl-option value="@option.Value">@option.Text</sl-option>
-                        }
-                    </sl-select>
-                </div>
+                    @* campi extra: nascosti su sm, visibili su md *@
+                    <div class="extra-inputs d-none d-md-block">
+                        <div class="mb-3">
+                            <sl-select name="@nameof(Model.IdColtureSelezionate)" label="Colture di interesse" value="@string.Join(',', Model.IdColtureSelezionate)" multiple clearable>
+                                @foreach (var option in Model.OpzioniColture)
+                                {
+                                    <sl-option value="@option.Value">@option.Text</sl-option>
+                                }
+                            </sl-select>
+                        </div>
 
-                @* province *@
-                <div class="mb-3">
-                    <sl-select name="@nameof(Model.IdProvinceSelezionate)" label="Zone di interesse" value="@string.Join(',', Model.IdProvinceSelezionate)"  multiple clearable>
-                        @foreach (var option in Model.OpzioniProvince)
-                        {
-                            <sl-option value="@option.Value">@option.Text</sl-option>
-                        }
-                    </sl-select>
-                </div>
+                        <div class="mb-3">
+                            <sl-select name="@nameof(Model.IdProvinceSelezionate)" label="Zone di interesse" value="@string.Join(',', Model.IdProvinceSelezionate)" multiple clearable>
+                                @foreach (var option in Model.OpzioniProvince)
+                                {
+                                    <sl-option value="@option.Value">@option.Text</sl-option>
+                                }
+                            </sl-select>
+                        </div>
 
-                @* scadenza *@
-                <div class="mb-3">
-                    <sl-input type="date" label="Scadenza" name="@nameof(Model.Scadenza)" value="@(Model.Scadenza.HasValue? Model.Scadenza.Value.ToString("yyyy-MM-dd") : "")" placeholder="Date"></sl-input>
-                </div>
+                        <div class="mb-3">
+                            <sl-input type="date" label="Scadenza" name="@nameof(Model.Scadenza)" value="@(Model.Scadenza.HasValue? Model.Scadenza.Value.ToString("yyyy-MM-dd") : "")" placeholder="Date"></sl-input>
+                        </div>
 
-                @* titolo *@
-                <div class="mb-3">
-                    <sl-input label="Nome Bollettino" name="@nameof(Model.TitoloBollettino)" clearable></sl-input>
-                </div>
+                        <div class="mb-3">
+                            <sl-input label="Nome Bollettino" name="@nameof(Model.TitoloBollettino)" clearable></sl-input>
+                        </div>
+                    </div>
 
-                @* azioni *@
-                <div class="d-flex justify-content-between gap-2 mt-4 mb-4">
-                    <button type="button" class="btn btn-outline-secondary">Annulla</button>
-                    <button type="submit" id="pubblicaBtn" class="btn btn-success @(Model.Pubblicato ? "d-block" : "d-none")">Pubblica</button>
-                    <button type="submit" id="salvaBtn" class="btn btn-success @(!Model.Pubblicato ? "d-block" : "d-none")">Salva per dopo</button>
+                    @* Bottone espandi/riduci solo su sm *@
+                    <div class="d-md-none mb-2">
+                        <button type="button" class="btn btn-sm btn-link p-0 d-flex align-items-center gap-1 toggle-extra-btn mx-auto">
+                            <span class="toggle-text">Espandi</span>
+                            <i class="bi bi-chevron-down toggle-icon"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            @* azioni *@
+            <div class="d-flex justify-content-between  my-4 col-md-4 offset-md-8">
+                <button type="button" class="btn btn-outline-secondary">Annulla</button>
+                <button type="submit" id="pubblicaBtn" class="btn btn-success @(Model.Pubblicato ? "d-block" : "d-none")">Pubblica</button>
+                <button type="submit" id="salvaBtn" class="btn btn-success @(!Model.Pubblicato ? "d-block" : "d-none")">Salva per dopo</button>
+            </div>
+
+
         }
     </div>
 </div>
 
+@section Styles {
+    <style>
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+    </style>
+}
+
 @section Scripts {
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
     <script src="~/js/nuovobollettino-ckeditor.js"></script>
 
@@ -122,6 +140,28 @@
             const summaryOgValue = summaryInput.value;
             summaryInput.value = (summaryOgValue.split(' - ')[0] || "") + " - " + selectedProvinceNames;
         })
+    </script>
+
+    <script>
+        $(function () {
+            $('.toggle-extra-btn').on('click', function () {
+                var $btn = $(this);
+                var $container = $btn.closest('.col-12');
+                var $extra = $container.find('.extra-inputs');
+                var $text = $btn.find('.toggle-text');
+                var $icon = $btn.find('.toggle-icon');
+
+                if ($extra.hasClass('d-none')) {
+                    $extra.removeClass('d-none');
+                    $text.text('Riduci');
+                    $icon.addClass('rotate-180');
+                } else {
+                    $extra.addClass('d-none');
+                    $text.text('Espandi');
+                    $icon.removeClass('rotate-180');
+                }
+            });
+        });
     </script>
 }
 

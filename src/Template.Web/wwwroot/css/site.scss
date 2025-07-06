@@ -1,7 +1,11 @@
 ﻿@import "site.variables.scss";
 
+$bootstrap-icons-font-dir: '../fonts/bootstrap-icons';
+
 // Import bootstrap to be able to customize it with scss variables
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
+
 
 @import "site.layout.scss";
 

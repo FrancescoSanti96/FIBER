@@ -1,44 +1,118 @@
+@using Template.Web.Areas.Tecnico.Enums
 @using Template.Web.Models
+@model Template.Web.Areas.Tecnico.ViewModels.HomeTecnicoViewModel
 @{
     ViewData["Title"] = "Home Tecnico";
-    var activeTab = ViewBag.ActiveTab as string ?? "caricati";
-
-    var bollettiniCaricati = new List<BollettinoCardViewModel>
-    {
-        new BollettinoCardViewModel { Id = 1, Title = "Bollettino 1", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "15/05/2024", Email = "info@email.com" },
-        new BollettinoCardViewModel { Id = 2, Title = "Bollettino 2", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "14/05/2024", Email = "info@email.com" },
-        new BollettinoCardViewModel { Id = 3, Title = "Bollettino 3", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "13/05/2024", Email = "info@email.com" },
-        new BollettinoCardViewModel { Id = 4, Title = "Bollettino 4", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "12/05/2024", Email = "info@email.com" },
-        new BollettinoCardViewModel { Id = 5, Title = "Bollettino 5", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "11/05/2024", Email = "info@email.com" },
-        new BollettinoCardViewModel { Id = 6, Title = "Bollettino 6", Tag1 = "Fragola", Tag2 = "Modena", Description = "Si consiglia in questa settimana di mangiare tante fragole", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "10/05/2024", Email = "info@email.com" }
-    };
-
-    var bozze = new List<BollettinoCardViewModel>
-    {
-        new BollettinoCardViewModel { Id = 101, Title = "Bozza 1", Tag1 = "Uva", Tag2 = "Pera", Description = "Questa è una bozza di bollettino", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "20/05/2024", Email = "draft@email.com", IsDraft = true },
-        new BollettinoCardViewModel { Id = 102, Title = "Bozza 2", Tag1 = "Mela", Tag2 = "Banana", Description = "Questa è un\'altra bozza di bollettino", ViewLink = "/Tecnico/Tecnico/BollettinoTecnico", DownloadLink = "#", Date = "21/05/2024", Email = "draft@email.com", IsDraft = true }
-    };
-
-    var currentBulletins = activeTab == "caricati" ? bollettiniCaricati : bozze;
 }
 
 <div class="container mt-4">
     <h1 class="text-center mb-4" style="color: #4B0082;">Gestione Bollettini Fitosanitari</h1>
 
-    <div class="d-flex justify-content-center mb-4">
-        <p class="fs-5">
-            <a href="@Url.Action("HomeTecnico", "Tecnico", new { Area = "Tecnico", tab = "caricati" })" class="@(activeTab == "caricati" ? "text-dark" : "text-secondary") text-decoration-none">Bollettini caricati</a>
-            <span class="text-secondary"> | </span>
-            <a href="@Url.Action("HomeTecnico", "Tecnico", new { Area = "Tecnico", tab = "bozze" })" class="@(activeTab == "bozze" ? "text-dark" : "text-secondary") text-decoration-none">Bozze</a>
-        </p>
+    <div class="d-flex justify-content-center my-3">
+        <div class="tabs-wrapper position-relative">
+            <ul class="nav nav-tabs border-0 justify-content-center" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link @(Model.Tab == TabBollettini.Caricati ? "active" : "")" href="@Url.Action("HomeTecnico", "Tecnico", new {Tab = TabBollettini.Caricati})">Caricati</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link @(Model.Tab == TabBollettini.Bozze ? "active" : "")" href="@Url.Action("HomeTecnico", "Tecnico", new {Tab = TabBollettini.Bozze})">Bozze</a>
+                </li>
+            </ul>
+            <div class="tab-underline position-absolute bg-success rounded-pill"></div>
+        </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @foreach (var bulletin in currentBulletins)
-        {
-            <div class="col">
-                <partial name="~/Views/Shared/_BollettinoCard.cshtml" model="bulletin" />
-            </div>
-        }
+    <div class="tab-content">
+        <form class="onit-form-search mb-3" method="get">
+            <input type="hidden" name="@nameof(Model.Tab)" value="@Model.Tab"/>
+            <sl-select id="filtroColture" name="@nameof(Model.IdColtureSelezionate)" value="@string.Join(' ', Model.IdColtureSelezionate)" label="Filtra su colture" multiple clearable>
+                @foreach (var option in Model.Colture)
+                {
+                    <sl-option value="@option.Value">@option.Text</sl-option>
+                }
+            </sl-select>
+        </form>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var bollettino in Model.Bollettini)
+            {
+                <div class="col">
+                    <partial name="~/Views/Shared/_BollettinoCard.cshtml" model="bollettino" />
+                </div>
+            }
+        </div>
+
+        <nav class="navbar navbar-expand justify-content-md-center mt-1">
+            <ul class="navbar-nav flex-wrap"><partial name="~/Views/Shared/_PagingPartial.cshtml" model="Model" /></ul>
+        </nav>
     </div>
-</div> 
+</div>
+
+@section Styles {
+    <style>
+        .tabs-wrapper {
+            width: max-content;
+        }
+
+            .tabs-wrapper .nav-link {
+                position: relative;
+                font-weight: 500;
+                font-size: 1.1rem;
+                color: #555;
+                border: none
+            }
+
+                .tabs-wrapper .nav-link.active {
+                    color: rgb(var(--bs-success-rgb));
+                }
+
+        .tab-underline {
+            height: 3px;
+            bottom: 0;
+            transition: all 0.3s ease;
+        }
+
+        .two-line-limit {
+            max-height: calc(1em * 2 * 1.4); /* altezza stimata di due righe con line-height 1.4 */
+            overflow: hidden;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function updateUnderline() {
+          const $active = $('#myTab .nav-link.active');
+          const $underline = $('.tab-underline');
+
+          if ($active.length) {
+            const offset = $active.position();
+            const width = $active.outerWidth();
+
+            $underline.css({
+              left: offset.left + 'px',
+              width: width + 'px'
+            });
+          }
+        }
+
+
+        $(() => {
+            // inizializza
+            updateUnderline();
+
+            $('#myTab .nav-link').on('shown.bs.tab', function () {
+              updateUnderline();
+            });
+
+            // aggiorna anche se ridimensioni
+            $(window).on('resize', function () {
+              updateUnderline();
+            });
+
+            $("#filtroColture").on("sl-change", () => {
+                $("form").submit();
+            })
+        })
+    </script>
+}

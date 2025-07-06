@@ -1,4 +1,4 @@
-@using Template.Web.Models
+@using Template.Web.Areas.Agricoltore
 @{
     ViewData["Title"] = "Bollettini Agricoltore";
 
@@ -87,11 +87,11 @@
 
 <div class="container">
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var bulletin in bulletins)
+@*         @foreach (var bulletin in bulletins)
         {
             <div class="col">
                 <partial name="~/Views/Shared/_BollettinoCard.cshtml" model="bulletin" />
             </div>
-        }
+        } *@
     </div>
 </div> 

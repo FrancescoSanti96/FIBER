@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Template.Web.Areas.Dto
+namespace Template.Web.Areas.Agricoltore.Dto
 {
     public class SavePreferencesDto
     {
