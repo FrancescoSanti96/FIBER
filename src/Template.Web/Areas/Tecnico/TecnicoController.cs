@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Template.EntityModel.Models;
+using Template.Services.Bulletins;
 using Template.Services.Coltures;
 using Template.Services.Provinces;
 using Template.Services.Users;
+using Template.Web.Areas.Tecnico.Enums;
 using Template.Web.Areas.Tecnico.ViewModels;
 using Template.Web.Infrastructure;
 using Template.Web.Models;
@@ -20,35 +23,61 @@ namespace Template.Web.Areas.Tecnico
         private readonly ColtureService _coltureService;
         private readonly ProvinceService _provinceService;
         private readonly IPdfService _pdfService;
+        private readonly BollettiniService _bollettiniService;
 
         public TecnicoController(UserService userService,
             ColtureService coltureService,
             ProvinceService provinceService,
             IPdfService pdfService)
+            BollettiniService bollettiniService)
             : base(userService)
         {
             _coltureService = coltureService;
             _provinceService = provinceService;
             _pdfService = pdfService;
+            _bollettiniService = bollettiniService;
         }
 
         // GET: Tecnico/Tecnico/HomeTecnico
-        public virtual IActionResult HomeTecnico(string tab = "caricati")
+        public async Task<IActionResult> HomeTecnico(HomeTecnicoViewModel vm)
         {
-            ViewBag.ActiveTab = tab;
-            return View();
-        }
+            try
+            {
+                vm.User = await GetCurrentUserAsync();
+                vm.Colture = [.. (await _coltureService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString(),
 
-        // GET: Tecnico/Tecnico/BollettiniCaricati
-        public virtual IActionResult BollettiniCaricati()
-        {
-            return View("HomeTecnico");
-        }
+                })];
 
-        // GET: Tecnico/Tecnico/Bozze
-        public virtual IActionResult Bozze()
-        {
-            return View("HomeTecnico");
+                var queryDto = new BollettiniListQuery
+                {
+                    Paging = new Template.Infrastructure.Paging
+                    {
+                        OrderBy = vm.OrderBy,
+                        OrderByDescending = vm.OrderByDescending,
+                        Page = vm.Page,
+                        PageSize = vm.PageSize
+                    },
+                    FilterExpression = vm.Tab == TabBollettini.Caricati
+                        ? x => x.Published == true
+                        : x => x.Published == false,
+                    ColtureFilter = vm.IdColtureSelezionate
+                };
+
+                var bollettini = (await _bollettiniService.Query(queryDto)).Select(x => new BollettinoCardViewModel(x)).ToList();
+
+                vm.Bollettini = bollettini;
+                vm.TotalItems = bollettini.Count;
+
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                Alerts.AddError(this, ex.Message);
+                return View(vm);
+            }
         }
 
         // GET: Tecnico/Tecnico/BollettinoTecnico

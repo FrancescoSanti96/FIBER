@@ -60,7 +60,7 @@ namespace Template.Web.Features.Login
                 case 2: // Agricoltore
                     return RedirectToAction("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
                 case 3: // Tecnico
-                    return RedirectToAction("BollettiniCaricati", "Tecnico", new { area = "Tecnico" });
+                    return RedirectToAction("HomeTecnico", "Tecnico", new { area = "Tecnico" });
             }
 
             // Se arriviamo qui, c'è un problema con il RoleId
@@ -89,7 +89,7 @@ namespace Template.Web.Features.Login
                         case 2: // Agricoltore
                             return RedirectToAction("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
                         case 3: // Tecnico
-                            return RedirectToAction("BollettiniCaricati", "Tecnico", new { area = "Tecnico" });
+                            return RedirectToAction("HomeTecnico", "Tecnico", new { area = "Tecnico" });
                     }
                 }
 

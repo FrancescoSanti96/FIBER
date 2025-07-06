@@ -177,7 +177,7 @@ namespace Template.Web.Infrastructure
 
                 foreach (var a in alerts)
                 {
-                    var t = $@"Toastify({{close: true,gravity:'bottom',position:'left', className:'onit-toastify onit-toastify-{a.Level}',text:'{a.Value}',duration:{a.MillisecondsAutoDismiss}}}).showToast();";
+                    var t = $@"Toastify({{close: true,gravity:'bottom',position:'left', className:'onit-toastify onit-toastify-{a.Level}',text:`${a.Value}`,duration:{a.MillisecondsAutoDismiss}}}).showToast();";
                     s.AppendLine(t);
                 }
 

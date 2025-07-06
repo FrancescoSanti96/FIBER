@@ -59,6 +59,7 @@ namespace Template.Services.Users
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string DisplayName { get => $"{FirstName} {LastName}"; }
         public int RoleId { get; set; }
         public bool OnboardingComplete { get; set; }
     }

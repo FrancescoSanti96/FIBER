@@ -91,7 +91,7 @@ namespace Template.Web.Areas
                                 var redirectUrl = roleId switch
                                 {
                                     2 => "/Agricoltore/Agricoltore/BollettiniAgricoltore",  // Agricoltore
-                                    3 => "/Tecnico/Tecnico/BollettiniCaricati",             // Tecnico
+                                    3 => "/Tecnico/Tecnico/HomeTecnico",                    // Tecnico
                                     _ => "/Login/Login"                                     // Altri casi (non dovrebbe mai succedere)
                                 };
 

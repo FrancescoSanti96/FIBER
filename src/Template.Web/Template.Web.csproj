@@ -22,6 +22,7 @@
 	<ItemGroup>
 	  <Folder Include="SolutionItems\" />
 	  <Folder Include="SolutionItems\FiberDbState\" />
+	  <Folder Include="wwwroot\fonts\bootstrap-icons\" />
 	</ItemGroup>
 
 </Project>
