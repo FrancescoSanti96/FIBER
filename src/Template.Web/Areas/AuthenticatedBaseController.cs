@@ -50,9 +50,26 @@ namespace Template.Web.Areas
             {
                 if (context.HttpContext != null && context.HttpContext.User != null && context.HttpContext.User.Identity.IsAuthenticated)
                 {
+                    // Uso un approccio sincrono per evitare problemi con l'override asincrono
+                    var userIdClaim = context.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+                    var firstName = "";
+                    var lastName = "";
+                    
+                    if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                    {
+                        var user = _userService.Query(new UserDetailQuery { Id = userId }).Result;
+                        if (user != null)
+                        {
+                            firstName = user.FirstName ?? "";
+                            lastName = user.LastName ?? "";
+                        }
+                    }
+
                     ViewData[IdentitaViewModel.VIEWDATA_IDENTITACORRENTE_KEY] = new IdentitaViewModel
                     {
-                        EmailUtenteCorrente = context.HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Email).First().Value
+                        EmailUtenteCorrente = context.HttpContext.User.Claims.Where(x => x.Type == ClaimTypes.Email).First().Value,
+                        FirstName = firstName,
+                        LastName = lastName
                     };
 
                     var area = context.RouteData.Values["area"]?.ToString();

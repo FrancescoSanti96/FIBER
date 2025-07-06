@@ -30,8 +30,8 @@ namespace Template.Services.Users
             FirstName = entity.FirstName;
             LastName = entity.LastName;
             OnboardingComplete = entity.OnboardingComplete;
-            Coltures = entity.Coltures.ToList() ?? [];
-            Provinces = entity.Provinces.ToList() ?? [];
+            Coltures = entity.Coltures?.ToList() ?? [];
+            Provinces = entity.Provinces?.ToList() ?? [];
         }
     }
 
