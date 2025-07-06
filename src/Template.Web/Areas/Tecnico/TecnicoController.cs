@@ -178,8 +178,34 @@ namespace Template.Web.Areas.Tecnico
                     return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze });
                 }
 
+                // Verifica che sia una bozza (non pubblicato)
+                if (bulletinDto.Published)
+                {
+                    Alerts.AddError(this, "Non è possibile modificare un bollettino già pubblicato");
+                    return RedirectToAction(nameof(BollettinoTecnico), new { id, isDraft = false });
+                }
+
                 var model = new ModificaBollettinoViewModel
                 {
+                    Id = bulletinDto.Id,
+                    ContenutoBollettino = bulletinDto.Body ?? "",
+                    TitoloBollettino = bulletinDto.Summary ?? "",
+                    Scadenza = bulletinDto.ExpireDate,
+                    Pubblicato = bulletinDto.Published,
+                    IdColtureSelezionate = bulletinDto.ColtureIds,
+                    IdProvinceSelezionate = bulletinDto.ProvinceIds,
+                    OpzioniColture = [.. (await _coltureService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                    {
+                        Text = x.Name,
+                        Value = x.Id.ToString(),
+                    })],
+                    OpzioniProvince = [.. (await _provinceService.Query()).Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                    {
+                        Text = x.Name,
+                        Value = x.Id.ToString(),
+                    })],
+                    
+                    // Proprietà legacy per compatibilità
                     Title = bulletinDto.Summary ?? "Bollettino senza titolo",
                     Content = bulletinDto.Body ?? "",
                     NomeBollettino = bulletinDto.Summary ?? "Bollettino senza titolo",
@@ -194,6 +220,75 @@ namespace Template.Web.Areas.Tecnico
             {
                 Alerts.AddError(this, $"Errore nel caricamento del bollettino: {ex.Message}");
                 return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ModificaBollettino(ModificaBollettinoViewModel model)
+        {
+            // Popola le opzioni per il dropdown in caso di errore
+            var baseVm = await GetNuovoBollettinoViewModel();
+            model.OpzioniColture = baseVm.OpzioniColture;
+            model.OpzioniProvince = baseVm.OpzioniProvince;
+            
+            try
+            {
+                if (model.Pubblicato is true && !ModelState.IsValid)
+                {
+                    var validationMessages = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    Alerts.AddError(this, string.Join(", ", validationMessages));
+                    return View(model);
+                }
+                else
+                {
+                    var currentUser = await GetCurrentUserAsync()
+                       ?? throw new InvalidOperationException("Utente non trovato");
+
+                    // Recupera il bollettino esistente
+                    var existingBulletin = await _userService.Query(new GetBulletinByIdQuery { Id = model.Id });
+                    if (existingBulletin == null)
+                    {
+                        Alerts.AddError(this, "Bollettino non trovato");
+                        return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze });
+                    }
+
+                    // Verifica che sia una bozza
+                    if (existingBulletin.Published)
+                    {
+                        Alerts.AddError(this, "Non è possibile modificare un bollettino già pubblicato");
+                        return RedirectToAction(nameof(BollettinoTecnico), new { id = model.Id, isDraft = false });
+                    }
+
+                    // Aggiorna il bollettino
+                    var updatedBulletin = new Bulletin
+                    {
+                        Id = model.Id,
+                        IdUser = currentUser.Id,
+                        Summary = model.TitoloBollettino,
+                        Body = model.ContenutoBollettino,
+                        Published = model.Pubblicato,
+                        ExpireDate = model.Scadenza
+                    };
+
+                    await _userService.UpdateBulletinAsync(updatedBulletin, provinceIds: model.IdProvinceSelezionate, coltureIds: model.IdColtureSelezionate);
+                    
+                    Alerts.AddSuccess(this, "Bollettino modificato con successo!");
+                    
+                    // Reindirizza alla vista del bollettino o alla lista appropriata
+                    if (model.Pubblicato)
+                    {
+                        return RedirectToAction(nameof(BollettinoTecnico), new { Id = model.Id, isDraft = false });
+                    }
+                    else
+                    {
+                        return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Alerts.AddError(this, ex.Message);
+                return View(model);
             }
         }
 

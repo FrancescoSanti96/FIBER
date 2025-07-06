@@ -99,5 +99,48 @@ namespace Template.Services.Users
 
             return bulletin.Id;
         }
+
+        public async Task UpdateBulletinAsync(Bulletin bulletin, IEnumerable<int> provinceIds, IEnumerable<int> coltureIds)
+        {
+            // Recupera il bollettino esistente con le relazioni
+            var existingBulletin = await _dbContext.Bulletins
+                .Include(b => b.Provinces)
+                .Include(b => b.Coltures)
+                .FirstOrDefaultAsync(b => b.Id == bulletin.Id);
+
+            if (existingBulletin == null)
+            {
+                throw new ArgumentException("Bollettino non trovato", nameof(bulletin.Id));
+            }
+
+            // Aggiorna i campi del bollettino
+            existingBulletin.Summary = bulletin.Summary;
+            existingBulletin.Body = bulletin.Body;
+            existingBulletin.Published = bulletin.Published;
+            existingBulletin.ExpireDate = bulletin.ExpireDate;
+            existingBulletin.PublishDate = bulletin.Published ? DateTime.Now : null;
+
+            // Aggiorna le province associate
+            existingBulletin.Provinces.Clear();
+            var provinces = await _dbContext.Provinces
+                .Where(p => provinceIds.Contains(p.Id))
+                .ToListAsync();
+            foreach (var province in provinces)
+            {
+                existingBulletin.Provinces.Add(province);
+            }
+
+            // Aggiorna le colture associate
+            existingBulletin.Coltures.Clear();
+            var coltures = await _dbContext.Coltures
+                .Where(c => coltureIds.Contains(c.Id))
+                .ToListAsync();
+            foreach (var colture in coltures)
+            {
+                existingBulletin.Coltures.Add(colture);
+            }
+
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

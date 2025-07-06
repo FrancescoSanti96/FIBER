@@ -101,6 +101,8 @@ namespace Template.Services.Users
         public string AuthorEmail { get; set; }
         public List<string> ProvinceNames { get; set; } = [];
         public List<string> ColtureNames { get; set; } = [];
+        public List<int> ProvinceIds { get; set; } = [];
+        public List<int> ColtureIds { get; set; } = [];
     }
 
     public partial class UserService
@@ -279,7 +281,9 @@ namespace Template.Services.Users
                 AuthorLastName = bulletin.User?.LastName ?? "",
                 AuthorEmail = bulletin.User?.Email ?? "",
                 ProvinceNames = bulletin.Provinces?.Select(p => p.Name).ToList() ?? [],
-                ColtureNames = bulletin.Coltures?.Select(c => c.Name).ToList() ?? []
+                ColtureNames = bulletin.Coltures?.Select(c => c.Name).ToList() ?? [],
+                ProvinceIds = bulletin.Provinces?.Select(p => p.Id).ToList() ?? [],
+                ColtureIds = bulletin.Coltures?.Select(c => c.Id).ToList() ?? []
             };
         }
     }
