@@ -6,6 +6,9 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using Template.Web.Areas.Agricoltore.Dto;
+using Template.Web.Areas.Agricoltore.ViewModels;
+using Template.Services.Bulletins;
+using Template.Web.Models;
 
 namespace Template.Web.Areas.Agricoltore
 {
@@ -13,13 +16,17 @@ namespace Template.Web.Areas.Agricoltore
     public class AgricoltoreController : AuthenticatedBaseController
     {
         private readonly ILogger<AgricoltoreController> _logger;
+        private readonly BollettiniService _bollettiniService;
 
-        public AgricoltoreController(UserService userService, ILogger<AgricoltoreController> logger) : base(userService)
+        public AgricoltoreController(UserService userService, 
+            ILogger<AgricoltoreController> logger,
+            BollettiniService bollettiniService) : base(userService)
         {
             _logger = logger;
+            _bollettiniService = bollettiniService;
         }
 
-        public virtual async Task<IActionResult> BollettiniAgricoltore()
+        public async Task<IActionResult> BollettiniAgricoltore(BollettiniAgricoltoreViewModel vm)
         {
             var user = await GetCurrentUserAsync();
             if (user == null)
@@ -34,7 +41,24 @@ namespace Template.Web.Areas.Agricoltore
                 return RedirectToAction("OnboardingStep1", "Agricoltore", new { area = "Agricoltore" });
             }
 
-            return View();
+            var query = new BollettiniListQuery
+            {
+                FilterExpression = x => x.Published == true,
+                Paging = new Template.Infrastructure.Paging
+                {
+                    OrderBy = vm.OrderBy,
+                    OrderByDescending = vm.OrderByDescending,
+                    Page = vm.Page,
+                    PageSize = vm.PageSize
+                }
+            };
+
+            var bollettini = (await _bollettiniService.Query(query)).Select(x => new BollettinoCardViewModel(x)).ToList();
+
+            vm.Bollettini = bollettini;
+            vm.TotalItems = bollettini.Count;
+
+            return View(vm);
         }
 
         public virtual async Task<IActionResult> ImpostazioniAgricoltore()
