@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Template.EntityModel.Models;
 using Template.Infrastructure;
+using Template.Services.Users;
 
 namespace Template.Services.Bulletins
 {
@@ -17,32 +18,24 @@ namespace Template.Services.Bulletins
         public Paging Paging { get; set; }
     }
 
-    public class BollettinoDto
+    public class BollettinoDto(Bulletin entity)
     {
-        public int Id { get; init; }
-        public string AuthorName { get; init; }
-        public string AuthorEmail { get; init; }
-        public string Titolo { get; init; }
-        public string Contenuto { get; init; }
-        public DateOnly? Scadenza { get; init; }
-        public DateTime? DataPubblicazione { get; init; }
-        public bool Pubblicato { get; init; }
-        public List<string> Colture { get; init; }
-        public List<string> Province { get; init; }
+        public int Id { get; init; } = entity.Id;
+        public string AuthorFirstName { get; init; } = entity.User.FirstName;
+        public string AuthorLastName { get; init; } = entity.User.LastName;
+        public string AuthorEmail { get; init; } = entity.User.Email;
+        public string Summary { get; init; } = entity.Summary;
+        public string Body { get; init; } = entity.Body;
+        public DateOnly? ExpireDate { get; init; } = entity.ExpireDate;
+        public DateTime? PublishDate { get; init; } = entity.PublishDate;
+        public bool Published { get; init; } = entity.Published;
+        public List<string> Coltures { get; init; } = [.. entity.Coltures.Select(x => x.Name)];
+        public List<string> Provinces { get; init; } = [.. entity.Provinces.Select(x => x.Name)];
+    }
 
-        public BollettinoDto(Bulletin entity)
-        {
-            Id = entity.Id;
-            AuthorName = $"{entity.User.FirstName} {entity.User.LastName}";
-            AuthorEmail = entity.User.Email;
-            Titolo = entity.Summary;
-            Contenuto = entity.Body;
-            Scadenza = entity.ExpireDate;
-            DataPubblicazione = entity.PublishDate;
-            Pubblicato = entity.Published;
-            Colture = [.. entity.Coltures.Select(x => x.Name)];
-            Province = [.. entity.Provinces.Select(x => x.Name)];
-        }
+    public class GetBulletinByIdQuery
+    {
+        public int Id { get; set; }
     }
 
     public partial class BollettiniService
@@ -75,6 +68,26 @@ namespace Template.Services.Bulletins
                 .Select(x => new BollettinoDto(x)).ToListAsync();
 
             return bulletins;
+        }
+
+        /// <summary>
+        /// Returns a specific bulletin with all related data
+        /// </summary>
+        /// <param name="qry"></param>
+        /// <returns></returns>
+        public async Task<BollettinoDto> Query(GetBulletinByIdQuery qry)
+        {
+            var bulletin = await _dbContext.Bulletins
+                .Include(b => b.User)
+                .Include(b => b.Provinces)
+                .Include(b => b.Coltures)
+                .Where(b => b.Id == qry.Id)
+                .FirstOrDefaultAsync();
+
+            if (bulletin == null)
+                return null;
+
+            return new BollettinoDto(bulletin);
         }
     }
 }

@@ -11,6 +11,8 @@ using Template.Web.Services;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System;
+using Template.Services.Coltures;
+using Template.Services.Provinces;
 
 namespace Template.Web.Areas.Agricoltore
 {
@@ -25,6 +27,7 @@ namespace Template.Web.Areas.Agricoltore
 
         public AgricoltoreController(UserService userService, 
             ILogger<AgricoltoreController> logger,
+            IPdfService pdfService,
             BollettiniService bollettiniService,
             ColtureService coltureService,
             ProvinceService provinceService) : base(userService)
@@ -97,7 +100,7 @@ namespace Template.Web.Areas.Agricoltore
         {
             try
             {
-                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                var bulletinDto = await _bollettiniService.Query(new GetBulletinByIdQuery { Id = id });
                 
                 if (bulletinDto == null)
                 {
@@ -115,8 +118,8 @@ namespace Template.Web.Areas.Agricoltore
                     AutoreEmail = bulletinDto.AuthorEmail,
                     DataPubblicazione = bulletinDto.PublishDate,
                     DataScadenza = bulletinDto.ExpireDate,
-                    Province = bulletinDto.ProvinceNames,
-                    Colture = bulletinDto.ColtureNames,
+                    Province = bulletinDto.Provinces,
+                    Colture = bulletinDto.Coltures,
                     Pubblicato = bulletinDto.Published
                 };
 
@@ -134,7 +137,7 @@ namespace Template.Web.Areas.Agricoltore
         {
             try
             {
-                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                var bulletinDto = await _bollettiniService.Query(new GetBulletinByIdQuery { Id = id });
                 
                 if (bulletinDto == null)
                 {
@@ -147,8 +150,8 @@ namespace Template.Web.Areas.Agricoltore
                 var author = $"{bulletinDto.AuthorFirstName} {bulletinDto.AuthorLastName}";
                 var publishDate = bulletinDto.PublishDate ?? DateTime.Now;
                 var expireDate = bulletinDto.ExpireDate;
-                var provinces = bulletinDto.ProvinceNames?.ToList() ?? new List<string>();
-                var coltures = bulletinDto.ColtureNames?.ToList() ?? new List<string>();
+                var provinces = bulletinDto.Provinces?.ToList() ?? new List<string>();
+                var coltures = bulletinDto.Coltures?.ToList() ?? new List<string>();
 
 
                 var pdfBytes = _pdfService.GenerateBulletinPdf(title, content, author, publishDate, expireDate, provinces, coltures);

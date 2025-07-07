@@ -15,10 +15,10 @@ namespace Template.Web
             container.AddScoped<UserService>();
             container.AddScoped<ColtureService>();
             container.AddScoped<ProvinceService>();
+            container.AddScoped<BollettiniService>();
             
             // PDF Service (QuestPDF)
             container.AddScoped<IPdfService, PdfService>();
-            container.AddScoped<BollettiniService>();
         }
     }
 }

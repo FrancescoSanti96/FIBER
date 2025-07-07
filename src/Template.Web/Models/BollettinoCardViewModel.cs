@@ -20,13 +20,13 @@ namespace Template.Web.Models
 
         public BollettinoCardViewModel(BollettinoDto dto) { 
             Id = dto.Id;
-            Titolo = dto.Titolo;
-            Anteprima = dto.Contenuto;
-            Scadenza = dto.Scadenza;
+            Titolo = dto.Summary;
+            Anteprima = dto.Body;
+            Scadenza = dto.ExpireDate;
             EmailTecnico = dto.AuthorEmail;
-            Pubblicato = dto.Pubblicato;
-            Colture = dto.Colture;
-            Province = dto.Province;
+            Pubblicato = dto.Published;
+            Colture = dto.Coltures;
+            Province = dto.Provinces;
         }
     }
 }

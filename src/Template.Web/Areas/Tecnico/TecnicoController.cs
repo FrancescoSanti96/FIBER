@@ -81,11 +81,11 @@ namespace Template.Web.Areas.Tecnico
         }
 
         // GET: Tecnico/Tecnico/BollettinoTecnico
-        public virtual async Task<IActionResult> BollettinoTecnico(int id = 3, bool isDraft = false)
+        public virtual async Task<IActionResult> BollettinoTecnico(int id, bool isDraft)
         {
             try
             {
-                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                var bulletinDto = await _bollettiniService.Query(new GetBulletinByIdQuery { Id = id });
                 
                 if (bulletinDto == null)
                 {
@@ -105,8 +105,8 @@ namespace Template.Web.Areas.Tecnico
                     AutoreEmail = bulletinDto.AuthorEmail,
                     DataPubblicazione = bulletinDto.PublishDate,
                     DataScadenza = bulletinDto.ExpireDate,
-                    Province = bulletinDto.ProvinceNames,
-                    Colture = bulletinDto.ColtureNames,
+                    Province = bulletinDto.Provinces,
+                    Colture = bulletinDto.Coltures,
                     Pubblicato = bulletinDto.Published,
                     IsDraft = !bulletinDto.Published
                 };
@@ -170,7 +170,7 @@ namespace Template.Web.Areas.Tecnico
         {
             try
             {
-                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                var bulletinDto = await _bollettiniService.Query(new GetBulletinByIdQuery { Id = id });
                 
                 if (bulletinDto == null)
                 {
@@ -183,8 +183,8 @@ namespace Template.Web.Areas.Tecnico
                     Title = bulletinDto.Summary ?? "Bollettino senza titolo",
                     Content = bulletinDto.Body ?? "",
                     NomeBollettino = bulletinDto.Summary ?? "Bollettino senza titolo",
-                    CulturaInteresse = string.Join(", ", bulletinDto.ColtureNames ?? new List<string>()),
-                    ZonaInteresse = string.Join(", ", bulletinDto.ProvinceNames ?? new List<string>()),
+                    CulturaInteresse = string.Join(", ", bulletinDto.Coltures ?? new List<string>()),
+                    ZonaInteresse = string.Join(", ", bulletinDto.Provinces ?? new List<string>()),
                     ScadenzaTemporale = bulletinDto.ExpireDate?.ToString("dd/MM/yyyy") ?? ""
                 };
 
@@ -202,7 +202,7 @@ namespace Template.Web.Areas.Tecnico
         {
             try
             {
-                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                var bulletinDto = await _bollettiniService.Query(new GetBulletinByIdQuery { Id = id });
                 
                 if (bulletinDto == null)
                 {
@@ -216,8 +216,8 @@ namespace Template.Web.Areas.Tecnico
                 var author = $"{bulletinDto.AuthorFirstName} {bulletinDto.AuthorLastName}";
                 var publishDate = bulletinDto.PublishDate ?? DateTime.Now;
                 var expireDate = bulletinDto.ExpireDate;
-                var provinces = bulletinDto.ProvinceNames?.ToList() ?? new List<string>();
-                var coltures = bulletinDto.ColtureNames?.ToList() ?? new List<string>();
+                var provinces = bulletinDto.Provinces?.ToList() ?? new List<string>();
+                var coltures = bulletinDto.Coltures?.ToList() ?? new List<string>();
 
                 var pdfBytes = _pdfService.GenerateBulletinPdf(title, content, author, publishDate, expireDate, provinces, coltures);
 
