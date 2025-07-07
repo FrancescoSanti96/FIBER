@@ -13,6 +13,7 @@ namespace Template.Services.Bulletins
     {
         public Expression<Func<Bulletin, bool>> FilterExpression { get; set; }
         public List<int> ColtureFilter { get; set; }
+        public List<int> ProvinceFilter { get; set; }
         public Paging Paging { get; set; }
     }
 
@@ -59,6 +60,11 @@ namespace Template.Services.Bulletins
             if (query.ColtureFilter != null && query.ColtureFilter.Count > 0)
             {
                 querable = querable.Where(x => x.Coltures.Select(c => c.Id).Any(c => query.ColtureFilter.Contains(c)));
+            }
+            
+            if (query.ProvinceFilter != null && query.ProvinceFilter.Count > 0)
+            {
+                querable = querable.Where(x => x.Provinces.Select(p => p.Id).Any(p => query.ProvinceFilter.Contains(p)));
             }
 
             var bulletins = await querable

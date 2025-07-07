@@ -60,6 +60,8 @@ namespace Template.Services.Users
         public async Task<UserDto> SaveUserSettingsAsync(int idUser, IReadOnlyList<int> coltures, IReadOnlyList<int> provinces)
         {
             var user = await _dbContext.Users
+                .Include(x => x.Coltures)
+                .Include(x => x.Provinces)
                 .Where(x => x.Id == idUser)
                 .FirstOrDefaultAsync()
                 ?? throw new System.Exception($"User with id {idUser} not found");

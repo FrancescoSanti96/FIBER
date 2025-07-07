@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Template.EntityModel.Models;
 
@@ -14,6 +15,7 @@ namespace Template.Services.Provinces
         public async Task<List<Province>> Query()
             => await _dbContext.Provinces
                 .AsNoTracking()
+                .OrderBy(x => x.Name)
                 .ToListAsync();
     }
 }

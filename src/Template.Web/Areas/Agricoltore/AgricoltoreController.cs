@@ -9,6 +9,8 @@ using Template.Web.Areas.Agricoltore.Dto;
 using Template.Web.Areas.Agricoltore.ViewModels;
 using Template.Services.Bulletins;
 using Template.Web.Models;
+using Template.Services.Coltures;
+using Template.Services.Provinces;
 
 namespace Template.Web.Areas.Agricoltore
 {
@@ -17,13 +19,19 @@ namespace Template.Web.Areas.Agricoltore
     {
         private readonly ILogger<AgricoltoreController> _logger;
         private readonly BollettiniService _bollettiniService;
+        private readonly ColtureService _coltureService;
+        private readonly ProvinceService _provinceService;
 
         public AgricoltoreController(UserService userService, 
             ILogger<AgricoltoreController> logger,
-            BollettiniService bollettiniService) : base(userService)
+            BollettiniService bollettiniService,
+            ColtureService coltureService,
+            ProvinceService provinceService) : base(userService)
         {
             _logger = logger;
             _bollettiniService = bollettiniService;
+            _coltureService = coltureService;
+            _provinceService = provinceService;
         }
 
         public async Task<IActionResult> BollettiniAgricoltore(BollettiniAgricoltoreViewModel vm)
@@ -41,6 +49,7 @@ namespace Template.Web.Areas.Agricoltore
                 return RedirectToAction("OnboardingStep1", "Agricoltore", new { area = "Agricoltore" });
             }
 
+            var userWithPreferences = await _userService.Query(new GetUserWithPreferencesQuery { Id = user.Id });
             var query = new BollettiniListQuery
             {
                 FilterExpression = x => x.Published == true,
@@ -50,7 +59,9 @@ namespace Template.Web.Areas.Agricoltore
                     OrderByDescending = vm.OrderByDescending,
                     Page = vm.Page,
                     PageSize = vm.PageSize
-                }
+                },
+                ColtureFilter = [.. userWithPreferences.Coltures.Select(c => c.Id)],
+                ProvinceFilter = [.. userWithPreferences.Provinces.Select(p => p.Id)]
             };
 
             var bollettini = (await _bollettiniService.Query(query)).Select(x => new BollettinoCardViewModel(x)).ToList();
@@ -90,7 +101,7 @@ namespace Template.Web.Areas.Agricoltore
         {
             try
             {
-                var provinces = await _userService.Query(new GetAllProvincesQuery());
+                var provinces = await _provinceService.Query();
                 var provinceDtos = provinces.Select(p => new { id = p.Id, name = p.Name }).ToList();
                 return Json(new { success = true, data = provinceDtos });
             }
@@ -107,7 +118,7 @@ namespace Template.Web.Areas.Agricoltore
         {
             try
             {
-                var coltures = await _userService.Query(new GetAllColturesQuery());
+                var coltures = await _coltureService.Query();
                 var coltureDtos = coltures.Select(c => new { id = c.Id, name = c.Name }).ToList();
                 return Json(new { success = true, data = coltureDtos });
             }

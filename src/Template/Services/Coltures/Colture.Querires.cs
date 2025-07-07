@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Template.EntityModel.Models;
 
@@ -14,6 +15,7 @@ namespace Template.Services.Coltures
         public async Task<List<Colture>> Query()
             => await _dbContext.Coltures
                 .AsNoTracking()
+                .OrderBy(x => x.Name)
                 .ToListAsync();
     }
 }
