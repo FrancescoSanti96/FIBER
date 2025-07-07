@@ -2976,7 +2976,7 @@ textarea.form-control-lg {
 .btn {
   --bs-btn-padding-x: 0.75rem;
   --bs-btn-padding-y: 0.375rem;
-  --bs-btn-font-family: ;
+  --bs-btn-font-family: initial;
   --bs-btn-font-size: 1rem;
   --bs-btn-font-weight: 400;
   --bs-btn-line-height: 1.5;
@@ -3703,7 +3703,7 @@ textarea.form-control-lg {
   --bs-dropdown-color: #dee2e6;
   --bs-dropdown-bg: #343a40;
   --bs-dropdown-border-color: var(--bs-border-color-translucent);
-  --bs-dropdown-box-shadow: ;
+  --bs-dropdown-box-shadow: initial;
   --bs-dropdown-link-color: #dee2e6;
   --bs-dropdown-link-hover-color: #FFFFFF;
   --bs-dropdown-divider-bg: var(--bs-border-color-translucent);
@@ -3817,7 +3817,7 @@ textarea.form-control-lg {
 .nav {
   --bs-nav-link-padding-x: 1rem;
   --bs-nav-link-padding-y: 0.5rem;
-  --bs-nav-link-font-weight: ;
+  --bs-nav-link-font-weight: initial;
   --bs-nav-link-color: var(--bs-link-color);
   --bs-nav-link-hover-color: var(--bs-link-hover-color);
   --bs-nav-link-disabled-color: var(--bs-secondary-color);
@@ -4005,7 +4005,7 @@ textarea.form-control-lg {
 .navbar-nav {
   --bs-nav-link-padding-x: 0;
   --bs-nav-link-padding-y: 0.5rem;
-  --bs-nav-link-font-weight: ;
+  --bs-nav-link-font-weight: initial;
   --bs-nav-link-color: var(--bs-navbar-color);
   --bs-nav-link-hover-color: var(--bs-navbar-hover-color);
   --bs-nav-link-disabled-color: var(--bs-navbar-disabled-color);
@@ -4380,19 +4380,19 @@ textarea.form-control-lg {
   --bs-card-spacer-y: 1rem;
   --bs-card-spacer-x: 1rem;
   --bs-card-title-spacer-y: 0.5rem;
-  --bs-card-title-color: ;
-  --bs-card-subtitle-color: ;
+  --bs-card-title-color: initial;
+  --bs-card-subtitle-color: initial;
   --bs-card-border-width: var(--bs-border-width);
   --bs-card-border-color: var(--bs-border-color-translucent);
   --bs-card-border-radius: var(--bs-border-radius);
-  --bs-card-box-shadow: ;
+  --bs-card-box-shadow: initial;
   --bs-card-inner-border-radius: calc(var(--bs-border-radius) - (var(--bs-border-width)));
   --bs-card-cap-padding-y: 0.5rem;
   --bs-card-cap-padding-x: 1rem;
   --bs-card-cap-bg: rgba(var(--bs-body-color-rgb), 0.03);
-  --bs-card-cap-color: ;
-  --bs-card-height: ;
-  --bs-card-color: ;
+  --bs-card-cap-color: initial;
+  --bs-card-height: initial;
+  --bs-card-color: initial;
   --bs-card-bg: var(--bs-body-bg);
   --bs-card-img-overlay-padding: 1rem;
   --bs-card-group-margin: 0.75rem;
@@ -4705,8 +4705,8 @@ textarea.form-control-lg {
   --bs-breadcrumb-padding-x: 0;
   --bs-breadcrumb-padding-y: 0;
   --bs-breadcrumb-margin-bottom: 1rem;
-  --bs-breadcrumb-bg: ;
-  --bs-breadcrumb-border-radius: ;
+  --bs-breadcrumb-bg: initial;
+  --bs-breadcrumb-border-radius: initial;
   --bs-breadcrumb-divider-color: var(--bs-secondary-color);
   --bs-breadcrumb-item-padding-x: 0.5rem;
   --bs-breadcrumb-item-active-color: var(--bs-secondary-color);
@@ -5404,7 +5404,7 @@ textarea.form-control-lg {
   --bs-toast-spacing: 1.5rem;
   --bs-toast-max-width: 350px;
   --bs-toast-font-size: 0.875rem;
-  --bs-toast-color: ;
+  --bs-toast-color: initial;
   --bs-toast-bg: rgba(var(--bs-body-bg-rgb), 0.85);
   --bs-toast-border-width: var(--bs-border-width);
   --bs-toast-border-color: var(--bs-border-color-translucent);
@@ -5469,7 +5469,7 @@ textarea.form-control-lg {
   --bs-modal-width: 500px;
   --bs-modal-padding: 1rem;
   --bs-modal-margin: 0.5rem;
-  --bs-modal-color: ;
+  --bs-modal-color: initial;
   --bs-modal-bg: var(--bs-body-bg);
   --bs-modal-border-color: var(--bs-border-color-translucent);
   --bs-modal-border-width: var(--bs-border-width);
@@ -5483,7 +5483,7 @@ textarea.form-control-lg {
   --bs-modal-header-border-width: var(--bs-border-width);
   --bs-modal-title-line-height: 1.5;
   --bs-modal-footer-gap: 0.5rem;
-  --bs-modal-footer-bg: ;
+  --bs-modal-footer-bg: initial;
   --bs-modal-footer-border-color: var(--bs-border-color);
   --bs-modal-footer-border-width: var(--bs-border-width);
   position: fixed;
@@ -5760,7 +5760,7 @@ textarea.form-control-lg {
   --bs-tooltip-max-width: 200px;
   --bs-tooltip-padding-x: 0.5rem;
   --bs-tooltip-padding-y: 0.25rem;
-  --bs-tooltip-margin: ;
+  --bs-tooltip-margin: initial;
   --bs-tooltip-font-size: 0.875rem;
   --bs-tooltip-color: var(--bs-body-bg);
   --bs-tooltip-bg: var(--bs-emphasis-color);
@@ -20267,6 +20267,107 @@ textarea.form-control-lg {
   content: "爛";
 }
 
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover .user-avatar {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.dropdown-item-form {
+  margin: 0;
+  padding: 0;
+}
+.dropdown-item-form .dropdown-item {
+  border: none;
+  background: none;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+  padding: 0.375rem 1rem;
+  display: flex;
+  align-items: center;
+}
+.dropdown-item-form .dropdown-item:hover {
+  background-color: var(--bs-dropdown-link-hover-bg);
+  color: var(--bs-dropdown-link-hover-color);
+}
+
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    justify-content: center !important;
+  }
+  .navbar-nav .nav-item.dropdown {
+    display: block;
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+  .navbar-nav .nav-item.dropdown .dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    float: none !important;
+    padding: 0.75rem 1rem;
+    width: auto;
+  }
+  .navbar-nav .nav-item.dropdown .dropdown-menu {
+    position: fixed !important;
+    left: 50% !important;
+    top: auto !important;
+    transform: translateX(-50%) !important;
+    min-width: 280px;
+    max-width: 90vw;
+    text-align: left;
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    z-index: 1055;
+  }
+  .navbar-nav .nav-item.dropdown .dropdown-menu .border-bottom {
+    border-bottom: 1px solid #dee2e6 !important;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.75rem !important;
+  }
+  .navbar-nav .nav-item.dropdown .dropdown-menu .user-avatar {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.75rem !important;
+    background-color: #6c757d !important;
+  }
+  .navbar-nav .nav-item.dropdown .dropdown-menu .px-3 {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+  .dropdown-menu .dropdown-item,
+  .dropdown-menu .btn,
+  .dropdown-menu .btn.btn-outline-danger {
+    font-size: 0.95rem !important;
+    padding: 0.5rem 1rem !important;
+    min-width: 120px;
+  }
+  .dropdown-menu .btn {
+    border-radius: 0.3rem;
+  }
+  .dropdown-menu .fa-sign-out-alt {
+    font-size: 1rem !important;
+  }
+}
 .bulletin-card .badge-fragola {
   background-color: #E6FAE6 !important;
   color: #337F33 !important;
@@ -20323,3 +20424,5 @@ textarea.form-control-lg {
   border-top: none;
   border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
 }
+
+/*# sourceMappingURL=site.css.map */

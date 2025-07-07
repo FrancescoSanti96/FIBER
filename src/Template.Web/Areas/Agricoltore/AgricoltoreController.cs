@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Template.Services.Users;
+using Template.Services.Bulletins;
+using Template.Web.Areas.Agricoltore.Dto;
+using Template.Web.Areas.Agricoltore.ViewModels;
+using Template.Web.Models;
+using Template.Web.Infrastructure;
+using Template.Web.Services;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System;
-using System.Collections.Generic;
-using Template.Web.Areas.Agricoltore.Dto;
-using Template.Web.Areas.Agricoltore.ViewModels;
-using Template.Services.Bulletins;
-using Template.Web.Models;
-using Template.Services.Coltures;
-using Template.Services.Provinces;
 
 namespace Template.Web.Areas.Agricoltore
 {
@@ -18,6 +18,7 @@ namespace Template.Web.Areas.Agricoltore
     public class AgricoltoreController : AuthenticatedBaseController
     {
         private readonly ILogger<AgricoltoreController> _logger;
+        private readonly IPdfService _pdfService;
         private readonly BollettiniService _bollettiniService;
         private readonly ColtureService _coltureService;
         private readonly ProvinceService _provinceService;
@@ -29,6 +30,7 @@ namespace Template.Web.Areas.Agricoltore
             ProvinceService provinceService) : base(userService)
         {
             _logger = logger;
+            _pdfService = pdfService;
             _bollettiniService = bollettiniService;
             _coltureService = coltureService;
             _provinceService = provinceService;
@@ -90,9 +92,77 @@ namespace Template.Web.Areas.Agricoltore
             return View();
         }
 
-        public virtual IActionResult Bollettino()
+        // GET: Agricoltore/Agricoltore/Bollettino
+        public virtual async Task<IActionResult> Bollettino(int id)
         {
-            return View();
+            try
+            {
+                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                
+                if (bulletinDto == null)
+                {
+                    Alerts.AddError(this, "Bollettino non trovato");
+                    return RedirectToAction(nameof(BollettiniAgricoltore));
+                }
+
+                var model = new BollettinoAgricoltoreViewModel
+                {
+                    Id = bulletinDto.Id,
+                    Titolo = bulletinDto.Summary ?? "Bollettino senza titolo",
+                    ContenutoHTML = bulletinDto.Body ?? "",
+                    AutoreNome = bulletinDto.AuthorFirstName,
+                    AutoreCognome = bulletinDto.AuthorLastName,
+                    AutoreEmail = bulletinDto.AuthorEmail,
+                    DataPubblicazione = bulletinDto.PublishDate,
+                    DataScadenza = bulletinDto.ExpireDate,
+                    Province = bulletinDto.ProvinceNames,
+                    Colture = bulletinDto.ColtureNames,
+                    Pubblicato = bulletinDto.Published
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Alerts.AddError(this, $"Errore nel caricamento del bollettino: {ex.Message}");
+                return RedirectToAction(nameof(BollettiniAgricoltore));
+            }
+        }
+
+        // GET: Agricoltore/Agricoltore/DownloadBollettino
+        public virtual async Task<IActionResult> DownloadBollettino(int id)
+        {
+            try
+            {
+                var bulletinDto = await _userService.Query(new GetBulletinByIdQuery { Id = id });
+                
+                if (bulletinDto == null)
+                {
+                    Alerts.AddError(this, "Bollettino non trovato");
+                    return RedirectToAction(nameof(BollettiniAgricoltore));
+                }
+
+                var title = bulletinDto.Summary ?? "Bollettino senza titolo";
+                var content = bulletinDto.Body ?? "";
+                var author = $"{bulletinDto.AuthorFirstName} {bulletinDto.AuthorLastName}";
+                var publishDate = bulletinDto.PublishDate ?? DateTime.Now;
+                var expireDate = bulletinDto.ExpireDate;
+                var provinces = bulletinDto.ProvinceNames?.ToList() ?? new List<string>();
+                var coltures = bulletinDto.ColtureNames?.ToList() ?? new List<string>();
+
+
+                var pdfBytes = _pdfService.GenerateBulletinPdf(title, content, author, publishDate, expireDate, provinces, coltures);
+
+                var fileName = $"bollettino_{id}_{DateTime.Now:yyyyMMdd}.pdf";
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERRORE nella generazione PDF: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                Alerts.AddError(this, $"Errore nella generazione del PDF: {ex.Message}");
+                return RedirectToAction(nameof(BollettiniAgricoltore));
+            }
         }
 
         // API endpoint per caricare le province
