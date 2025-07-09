@@ -1,5 +1,18 @@
 # FIBER Project
 
+## Descrizione dell'app
+
+Questa applicazione web consente la **gestione e pubblicazione di bollettini fitosanitari** destinati ad agricoltori e tecnici.
+
+- **Agricoltori**: possono consultare i bollettini disponibili per zona e coltura, iscriversi alle notifiche e scaricare i PDF aggiornati.
+- **Tecnici autorizzati**: accedono a un'area riservata per creare, modificare e pubblicare bollettini, con supporto a formati HTML e PDF.
+
+L'app garantisce una comunicazione efficace e tempestiva tra esperti e agricoltori, con un'interfaccia semplice e responsive.
+
+## Utilizzo
+
+Per poter navigare il sito è necessario accedere. Per questo le utenze disponibili si trovano in src/Template.Web/SolutionItems/Accessi.txt
+
 ## Getting Started
 
 To start working with the FIBER project, follow these steps:
