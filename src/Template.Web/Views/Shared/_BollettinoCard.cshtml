@@ -1,5 +1,8 @@
+@using Template.Web.Areas
 @model Template.Web.Models.BollettinoCardViewModel
 @{
+    var currentUserMail = (ViewData[IdentitaViewModel.VIEWDATA_IDENTITACORRENTE_KEY] as IdentitaViewModel).EmailUtenteCorrente;
+    var currentUserIsAuthor = Model.EmailTecnico == currentUserMail;
     var currentArea = ViewContext.RouteData.Values["Area"]?.ToString();
     var controllerName = currentArea == "Tecnico" ? "Tecnico" : "Agricoltore";
     var visualizzaAction = currentArea == "Tecnico" ? "BollettinoTecnico" : "Bollettino";
@@ -7,28 +10,41 @@
     var downloadAction = currentArea == "Tecnico" ? "DownloadBollettino" : "DownloadBollettino";
 }
 
-<div class="card mb-3">
+<div class="card mb-3 border-2 @(currentUserIsAuthor ? "border-success" : "border-light") position-relative">
     <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start">
-            <h5 class="card-title mb-1 flex-grow-1 text-truncate">@Model.Titolo</h5>
-            <div class="text-end">
-                <small class="text-muted d-block">@Model.Scadenza</small>
-            </div>
+        @if (currentUserIsAuthor)
+        {
+            <span class="badge bg-success position-absolute top-0 end-0 m-2">Creato da te</span>
+        }
+
+        <h5 class="card-title mb-1 text-truncate">@Model.Titolo</h5>
+
+        <div class="mb-2">
+            <small class="text-muted">
+                Scade il: @Model.Scadenza?.ToString("dd/MM/yyyy")
+            </small>
         </div>
-        <div class="d-flex flex-wrap gap-2">
+
+        <div class="d-flex flex-wrap gap-2 mb-2">
             @foreach (var coltura in Model.Colture)
             {
                 <span class="badge bg-success">@coltura</span>
-
             }
             @foreach (var provincia in Model.Province)
             {
                 <span class="badge bg-info">@provincia</span>
             }
         </div>
-        <div class="text-secondary my-3 two-line-limit">@Html.Raw(Model.Anteprima)</div>
+
+        <div class="text-secondary my-3 two-line-limit">
+            @Html.Raw(Model.Anteprima)
+        </div>
+
         <div class="d-flex justify-content-between pt-3 border-top">
-            <a href="@Url.Action(visualizzaAction, controllerName, new { Area = currentArea, id = Model.Id, isDraft = !Model.Pubblicato })" class="btn btn-outline-secondary btn-sm">@(Model.Pubblicato == false ? "Anteprima" : "Visualizza")</a>
+            <a href="@Url.Action(visualizzaAction, controllerName, new { Area = currentArea, id = Model.Id, isDraft = !Model.Pubblicato })" class="btn btn-outline-secondary btn-sm">
+                @(Model.Pubblicato == false ? "Anteprima" : "Visualizza")
+            </a>
+
             @if (!Model.Pubblicato && currentArea == "Tecnico")
             {
                 <a href="@Url.Action(modificaAction, controllerName, new { Area = currentArea, id = Model.Id })" class="btn btn-light btn-sm">Modifica</a>
@@ -40,3 +56,5 @@
         </div>
     </div>
 </div>
+
+

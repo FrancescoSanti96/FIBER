@@ -79,27 +79,5 @@ namespace Template.Services.Users
 
             return new UserDto(user);
         }
-
-        public async Task<int> AddNewBulletinAsync(Bulletin bulletin, IEnumerable<int> provinceIds, IEnumerable<int> coltureIds)
-        {
-            // Associa le province
-            var provinces = await _dbContext.Provinces
-                .Where(p => provinceIds.Contains(p.Id))
-                .ToListAsync();
-
-            // Associa le colture
-            var coltures = await _dbContext.Coltures
-                .Where(c => coltureIds.Contains(c.Id))
-                .ToListAsync();
-
-            bulletin.Provinces = provinces;
-            bulletin.Coltures = coltures;
-            bulletin.PublishDate = bulletin.Published ? DateTime.Now : null;
-
-            _dbContext.Bulletins.Add(bulletin);
-            await _dbContext.SaveChangesAsync();
-
-            return bulletin.Id;
-        }
     }
 }

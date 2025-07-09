@@ -41,7 +41,11 @@
         <div class="col-md-4">
             @if (!string.IsNullOrEmpty(Model.DataPubblicazioneFormattata))
             {
-                <p class="text-secondary mb-1">@Model.DataPubblicazioneFormattata Redatto dal: @Model.NomeCompletoAutore</p>
+                <p class="text-secondary mb-1">@Model.DataPubblicazioneFormattata Pubblicato da: @Model.NomeCompletoAutore</p>
+            }
+            @if (string.IsNullOrEmpty(Model.DataPubblicazioneFormattata))
+            {
+                <p class="text-secondary mb-1">@Model.DataPubblicazioneFormattata Modificato da: @Model.NomeCompletoAutore</p>
             }
             @if (!string.IsNullOrEmpty(Model.AutoreEmail))
             {

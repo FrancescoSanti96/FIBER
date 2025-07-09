@@ -154,7 +154,7 @@ namespace Template.Web.Areas.Tecnico
                         ExpireDate = model.Scadenza
                     };
 
-                    var newBulletinId = await _userService.AddNewBulletinAsync(bulletin, provinceIds: model.IdProvinceSelezionate, coltureIds: model.IdColtureSelezionate);
+                    var newBulletinId = await _bollettiniService.AddNewBulletinAsync(bulletin, provinceIds: model.IdProvinceSelezionate, coltureIds: model.IdColtureSelezionate);
                     return RedirectToAction(nameof(BollettinoTecnico), new { Id = newBulletinId });
                 }
             }
@@ -166,10 +166,11 @@ namespace Template.Web.Areas.Tecnico
         }
 
         // GET: Tecnico/Tecnico/ModificaBollettino
-        public virtual async Task<IActionResult> ModificaBollettino(int id)
+        public async Task<IActionResult> ModificaBollettino(int id)
         {
             try
             {
+                var vm = await GetModificaBollettinoViewModel();
                 var bulletinDto = await _bollettiniService.Query(new GetBulletinByIdQuery { Id = id });
                 
                 if (bulletinDto == null)
@@ -178,17 +179,15 @@ namespace Template.Web.Areas.Tecnico
                     return RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze });
                 }
 
-                var model = new ModificaBollettinoViewModel
-                {
-                    Title = bulletinDto.Summary ?? "Bollettino senza titolo",
-                    Content = bulletinDto.Body ?? "",
-                    NomeBollettino = bulletinDto.Summary ?? "Bollettino senza titolo",
-                    CulturaInteresse = string.Join(", ", bulletinDto.Coltures ?? new List<string>()),
-                    ZonaInteresse = string.Join(", ", bulletinDto.Provinces ?? new List<string>()),
-                    ScadenzaTemporale = bulletinDto.ExpireDate?.ToString("dd/MM/yyyy") ?? ""
-                };
+                vm.Id = bulletinDto.Id;
+                vm.IdColtureSelezionate = [.. bulletinDto.Coltures.Select(c => int.Parse(vm.OpzioniColture.FirstOrDefault(x => x.Text == c).Value))];
+                vm.IdProvinceSelezionate = [.. bulletinDto.Provinces.Select(p => int.Parse(vm.OpzioniProvince.FirstOrDefault(x => x.Text == p).Value))];
+                vm.ContenutoBollettino = bulletinDto.Body;
+                vm.TitoloBollettino = bulletinDto.Summary;
+                vm.Scadenza = bulletinDto.ExpireDate;
+                vm.Pubblicato = bulletinDto.Published;
 
-                return View(model);
+                return View(vm);
             }
             catch (Exception ex)
             {
@@ -197,8 +196,49 @@ namespace Template.Web.Areas.Tecnico
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ModificaBollettino(ModificaBollettinoViewModel model)
+        {
+            var baseVm = await GetModificaBollettinoViewModel();
+            model.OpzioniColture = baseVm.OpzioniColture;
+            model.OpzioniProvince = baseVm.OpzioniProvince;
+            try
+            {
+                if (model.Pubblicato is true && !ModelState.IsValid)
+                {
+                    var validationMessages = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    Alerts.AddError(this, string.Join(", ", validationMessages));
+                    return View(model);
+                }
+                else
+                {
+                    var currentUser = await GetCurrentUserAsync()
+                       ?? throw new InvalidOperationException("Utente non trovato");
+
+                    var updatedBulletinId = await _bollettiniService.UpdateBulletinAsync(new UpdateBulletinDto
+                    {
+                        Id = model.Id,
+                        IdUser = currentUser.Id,
+                        Body = model.ContenutoBollettino,
+                        Published = model.Pubblicato,
+                        ColtureIds = model.IdColtureSelezionate,
+                        ProvinceIds = model.IdProvinceSelezionate,
+                        ExpireDate = model.Scadenza,
+                        Summary = model.TitoloBollettino
+                    });
+
+                    return RedirectToAction(nameof(BollettinoTecnico), new { Id = updatedBulletinId });
+                }
+            }
+            catch (Exception ex)
+            {
+                Alerts.AddError(this, ex.Message);
+                return View(model);
+            }
+        }
+
         // GET: Tecnico/Tecnico/DownloadBollettino
-        public virtual async Task<IActionResult> DownloadBollettino(int id)
+        public async Task<IActionResult> DownloadBollettino(int id)
         {
             try
             {
@@ -253,6 +293,15 @@ namespace Template.Web.Areas.Tecnico
             };
 
             return vm;
+        }
+        private async Task<ModificaBollettinoViewModel> GetModificaBollettinoViewModel()
+        {
+            var vm = await GetNuovoBollettinoViewModel();
+            return new ModificaBollettinoViewModel
+            {
+                OpzioniColture = vm.OpzioniColture,
+                OpzioniProvince = vm.OpzioniProvince,
+            };
         }
         #endregion
     }
