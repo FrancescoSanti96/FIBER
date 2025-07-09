@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
+using System.Linq;
 using Template.EntityModel.Models;
+using Template.Services.Bulletins;
 using Template.Web.Infrastructure;
 using Template.Web.Models;
 
@@ -26,6 +28,12 @@ namespace Template.Web.Areas.Agricoltore.ViewModels
                 { "OrderBy", OrderBy },
                 { "OrderByDescending", OrderByDescending }
             };
+        }
+
+        internal void SetBollettini(BulletinListDto listDto)
+        {
+            Bollettini = [.. listDto.Bulletins.Select(b => new BollettinoCardViewModel(b))];
+            TotalItems = listDto.Count;
         }
     }
 }

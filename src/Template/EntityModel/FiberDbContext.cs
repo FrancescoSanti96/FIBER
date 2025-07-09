@@ -146,6 +146,28 @@ namespace Template.EntityModel
                     RoleId = 3,
                     OnboardingComplete = true,
                     LastLoggedAt = null
+                },
+                new User
+                {
+                    Id = 5,
+                    FirstName = "Lucia",
+                    LastName = "Bianchi",
+                    Email = "lucia.bianchi@agricoltura.com",
+                    Password = "$2a$11$Tk41lFb7J1t5I0rcl10d5utQNO49K.gfarkT7uOVJzT.wIwysk/bO",
+                    RoleId = 2,
+                    OnboardingComplete = false,
+                    LastLoggedAt = null
+                },
+                new User
+                {
+                    Id = 6,
+                    FirstName = "Mario",
+                    LastName = "Rossi",
+                    Email = "mario.rossi@agricoltura.com",
+                    Password = "$2a$11$7/CgbqmDVvAdwTYnbMlpyupUrQUPVFCZJbAd5W0.aSelJRaN.TWx6",
+                    RoleId = 3,
+                    OnboardingComplete = true,
+                    LastLoggedAt = null
                 }
             );
 

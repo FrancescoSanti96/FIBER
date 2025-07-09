@@ -19,11 +19,14 @@
 
         <h5 class="card-title mb-1 text-truncate">@Model.Titolo</h5>
 
-        <div class="mb-2">
-            <small class="text-muted">
-                Scade il: @Model.Scadenza?.ToString("dd/MM/yyyy")
-            </small>
-        </div>
+        @if (Model.Scadenza != null)
+        {
+            <div class="mb-2">
+                <small class="text-muted">
+                    Scade il: @Model.Scadenza?.ToString("dd/MM/yyyy")
+                </small>
+            </div>
+        }
 
         <div class="d-flex flex-wrap gap-2 mb-2">
             @foreach (var coltura in Model.Colture)
@@ -36,9 +39,7 @@
             }
         </div>
 
-        <div class="text-secondary my-3 two-line-limit">
-            @Html.Raw(Model.Anteprima)
-        </div>
+        <div class="text-secondary my-3">@Model.Anteprima</div>
 
         <div class="d-flex justify-content-between pt-3 border-top">
             <a href="@Url.Action(visualizzaAction, controllerName, new { Area = currentArea, id = Model.Id, isDraft = !Model.Pubblicato })" class="btn btn-outline-secondary btn-sm">

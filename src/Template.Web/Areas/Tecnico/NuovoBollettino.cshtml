@@ -45,7 +45,7 @@
                     @* campi extra: nascosti su sm, visibili su md *@
                     <div class="extra-inputs d-none d-md-block">
                         <div class="mb-3">
-                            <sl-select name="@nameof(Model.IdColtureSelezionate)" label="Colture di interesse" value="@string.Join(',', Model.IdColtureSelezionate)" multiple clearable>
+                            <sl-select name="@nameof(Model.IdColtureSelezionate)" label="Colture di interesse" value="@string.Join(' ', Model.IdColtureSelezionate)" multiple clearable>
                                 @foreach (var option in Model.OpzioniColture)
                                 {
                                     <sl-option value="@option.Value">@option.Text</sl-option>
@@ -54,7 +54,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <sl-select name="@nameof(Model.IdProvinceSelezionate)" label="Zone di interesse" value="@string.Join(',', Model.IdProvinceSelezionate)" multiple clearable>
+                            <sl-select name="@nameof(Model.IdProvinceSelezionate)" label="Zone di interesse" value="@string.Join(' ', Model.IdProvinceSelezionate)" multiple clearable>
                                 @foreach (var option in Model.OpzioniProvince)
                                 {
                                     <sl-option value="@option.Value">@option.Text</sl-option>
@@ -83,7 +83,7 @@
 
             @* azioni *@
             <div class="d-flex justify-content-between  my-4 col-md-4 offset-md-8">
-                <button type="button" class="btn btn-outline-secondary">Annulla</button>
+                <a href="@Url.Action("HomeTecnico", "Tecnico")" class="btn btn-outline-secondary">Annulla</a>
                 <button type="submit" id="pubblicaBtn" class="btn btn-success @(Model.Pubblicato ? "d-block" : "d-none")">Pubblica</button>
                 <button type="submit" id="salvaBtn" class="btn btn-success @(!Model.Pubblicato ? "d-block" : "d-none")">Salva per dopo</button>
             </div>

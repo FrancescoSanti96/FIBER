@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
+using System.Linq;
 using Template.EntityModel.Models;
 using Template.Services.Bulletins;
 using Template.Services.Users;
@@ -38,6 +39,12 @@ namespace Template.Web.Areas.Tecnico.ViewModels
                 { "OrderBy", OrderBy },
                 { "OrderByDescending", OrderByDescending }
             };
+        }
+
+        internal void SetBollettini(BulletinListDto listDto)
+        {
+            Bollettini = [.. listDto.Bulletins.Select(b => new BollettinoCardViewModel(b))];
+            TotalItems = listDto.Count;
         }
 
     }

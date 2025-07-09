@@ -55,7 +55,7 @@ namespace Template.Web.Areas.Agricoltore
             }
 
             var userWithPreferences = await _userService.Query(new GetUserWithPreferencesQuery { Id = user.Id });
-            var query = new BollettiniListQuery
+            var queryDto = new BulletinListQuery
             {
                 FilterExpression = x => x.Published == true,
                 Paging = new Template.Infrastructure.Paging
@@ -69,10 +69,8 @@ namespace Template.Web.Areas.Agricoltore
                 ProvinceFilter = [.. userWithPreferences.Provinces.Select(p => p.Id)]
             };
 
-            var bollettini = (await _bollettiniService.Query(query)).Select(x => new BollettinoCardViewModel(x)).ToList();
-
-            vm.Bollettini = bollettini;
-            vm.TotalItems = bollettini.Count;
+            var bulletins = await _bollettiniService.Query(queryDto);
+            vm.SetBollettini(bulletins);
 
             return View(vm);
         }

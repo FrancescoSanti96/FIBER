@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Template.Services.Bulletins;
+using Template.Web.Utils;
 
 namespace Template.Web.Models
 {
@@ -18,10 +19,10 @@ namespace Template.Web.Models
 
         public BollettinoCardViewModel() { }
 
-        public BollettinoCardViewModel(BollettinoDto dto) { 
+        public BollettinoCardViewModel(BulletinDto dto) { 
             Id = dto.Id;
             Titolo = dto.Summary;
-            Anteprima = dto.Body;
+            Anteprima = HtmlUtils.StripHtml(dto.Body, maxLength: 50);
             Scadenza = dto.ExpireDate;
             EmailTecnico = dto.AuthorEmail;
             Pubblicato = dto.Published;

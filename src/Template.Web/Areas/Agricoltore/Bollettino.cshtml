@@ -12,11 +12,11 @@
             <h1 class="mb-0">@Model.Titolo</h1>
             <p class="mt-1 mb-0">
                 <div class="d-flex gap-2">
-                    @foreach (var coltura in Model.Colture.Take(3))
+                    @foreach (var coltura in Model.Colture)
                     {
                         <span class="badge bg-success">@coltura</span>
                     }
-                    @foreach (var provincia in Model.Province.Take(2))
+                    @foreach (var provincia in Model.Province)
                     {
                         <span class="badge bg-info">@provincia</span>
                     }
@@ -35,7 +35,7 @@
         <div class="col-md-4">
             @if (!string.IsNullOrEmpty(Model.DataPubblicazioneFormattata))
             {
-                <p class="text-secondary mb-1">@Model.DataPubblicazioneFormattata Redatto dal: @Model.NomeCompletoAutore</p>
+                <p class="text-secondary mb-1">@Model.DataPubblicazioneFormattata Pubblicato da: @Model.NomeCompletoAutore</p>
             }
             @if (!string.IsNullOrEmpty(Model.AutoreEmail))
             {

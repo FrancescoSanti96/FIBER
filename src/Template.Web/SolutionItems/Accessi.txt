@@ -1,0 +1,35 @@
+﻿Agricoltori
+
+FirstName = "Giuseppe",
+LastName = "Verdi",
+Email = "giuseppe.verdi@agricoltura.com",
+Password = "agri123"
+
+FirstName = "Anna",
+LastName = "Ferrari",
+Email = "anna.ferrari@agricoltura.com",
+Password = "agri456"
+
+FirstName = "Lucia",
+LastName = "Bianchi",
+Email = "lucia.bianchi@agricoltura.com",
+Password = "agr!321"
+
+---------------------------------------------
+Tecnici
+
+FirstName = "Marco",
+LastName = "Romano",
+Email = "marco.romano@agricoltura.com",
+Password = “tech123”
+
+FirstName = "Sara",
+LastName = "Conti",
+Email = "sara.conti@agricoltura.com",
+Password = “tech456”
+
+FirstName = "Mario",
+LastName = "Rossi",
+Email = "mario.rossi@agricoltura.com",
+Password = "t3ch321"
+

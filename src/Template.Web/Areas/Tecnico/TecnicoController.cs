@@ -51,7 +51,7 @@ namespace Template.Web.Areas.Tecnico
 
                 })];
 
-                var queryDto = new BollettiniListQuery
+                var queryDto = new BulletinListQuery
                 {
                     Paging = new Template.Infrastructure.Paging
                     {
@@ -66,10 +66,8 @@ namespace Template.Web.Areas.Tecnico
                     ColtureFilter = vm.IdColtureSelezionate
                 };
 
-                var bollettini = (await _bollettiniService.Query(queryDto)).Select(x => new BollettinoCardViewModel(x)).ToList();
-
-                vm.Bollettini = bollettini;
-                vm.TotalItems = bollettini.Count;
+                var bulletins = await _bollettiniService.Query(queryDto);
+                vm.SetBollettini(bulletins);
 
                 return View(vm);
             }

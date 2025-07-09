@@ -10,7 +10,7 @@ using Template.Services.Users;
 
 namespace Template.Services.Bulletins
 {
-    public class BollettiniListQuery
+    public class BulletinListQuery
     {
         public Expression<Func<Bulletin, bool>> FilterExpression { get; set; }
         public List<int> ColtureFilter { get; set; }
@@ -18,7 +18,7 @@ namespace Template.Services.Bulletins
         public Paging Paging { get; set; }
     }
 
-    public class BollettinoDto(Bulletin entity)
+    public class BulletinDto(Bulletin entity)
     {
         public int Id { get; init; } = entity.Id;
         public string AuthorFirstName { get; init; } = entity.User.FirstName;
@@ -33,6 +33,12 @@ namespace Template.Services.Bulletins
         public List<string> Provinces { get; init; } = [.. entity.Provinces.Select(x => x.Name)];
     }
 
+    public class BulletinListDto
+    {
+        public IEnumerable<BulletinDto> Bulletins {  get; init; }
+        public int Count { get; init; }
+    }
+
     public class GetBulletinByIdQuery
     {
         public int Id { get; set; }
@@ -40,7 +46,7 @@ namespace Template.Services.Bulletins
 
     public partial class BollettiniService
     {
-        public async Task<IEnumerable<BollettinoDto>> Query(BollettiniListQuery query)
+        public async Task<BulletinListDto> Query(BulletinListQuery query)
         {
             var querable = _dbContext.Bulletins
                 .AsNoTracking();
@@ -60,14 +66,16 @@ namespace Template.Services.Bulletins
                 querable = querable.Where(x => x.Provinces.Select(p => p.Id).Any(p => query.ProvinceFilter.Contains(p)));
             }
 
-            var bulletins = await querable
+            return new BulletinListDto
+            {
+                Bulletins = await querable
                 .Include(b => b.User)
                 .Include(b => b.Coltures)
                 .Include(b => b.Provinces)
                 .ApplyPaging(query.Paging)
-                .Select(x => new BollettinoDto(x)).ToListAsync();
-
-            return bulletins;
+                .Select(x => new BulletinDto(x)).ToListAsync(),
+                Count = await querable.CountAsync()
+            };
         }
 
         /// <summary>
@@ -75,7 +83,7 @@ namespace Template.Services.Bulletins
         /// </summary>
         /// <param name="qry"></param>
         /// <returns></returns>
-        public async Task<BollettinoDto> Query(GetBulletinByIdQuery qry)
+        public async Task<BulletinDto> Query(GetBulletinByIdQuery qry)
         {
             var bulletin = await _dbContext.Bulletins
                 .Include(b => b.User)
@@ -87,7 +95,7 @@ namespace Template.Services.Bulletins
             if (bulletin == null)
                 return null;
 
-            return new BollettinoDto(bulletin);
+            return new BulletinDto(bulletin);
         }
     }
 }
