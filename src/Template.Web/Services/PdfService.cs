@@ -88,7 +88,7 @@ namespace Template.Web.Services
             htmlContent = Regex.Replace(htmlContent, "<br ?/?>", "\n", RegexOptions.IgnoreCase);
 
             // Parser HTML semplice per blocchi principali
-            var blockRegex = new Regex(@"(<h1>.*?</h1>|<h2>.*?</h2>|<h3>.*?</h3>|<ol>.*?</ol>|<ul>.*?</ul>|<p>.*?</p>|<li>.*?</li>)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            var blockRegex = new Regex(@"(<h1>.*?</h1>|<h2>.*?</h2>|<h3>.*?</h3>|<h4>.*?</h4>|<ol>.*?</ol>|<ul>.*?</ul>|<p>.*?</p>|<li>.*?</li>)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
             var blocks = blockRegex.Split(htmlContent).Where(b => !string.IsNullOrWhiteSpace(b)).ToList();
             int olCounter = 1;
             
@@ -108,6 +108,11 @@ namespace Template.Web.Services
                 {
                     var text = StripTag(block, "h3");
                     col.Item().PaddingTop(6).PaddingBottom(4).Text(t => t.Span(text).FontSize(14).Bold());
+                }
+                else if (Regex.IsMatch(block, "^<h4>", RegexOptions.IgnoreCase))
+                {
+                    var text = StripTag(block, "h4");
+                    col.Item().PaddingTop(4).PaddingBottom(2).Text(t => t.Span(text).FontSize(12).Bold());
                 }
                 else if (Regex.IsMatch(block, "^<ol>", RegexOptions.IgnoreCase))
                 {
