@@ -152,6 +152,17 @@ $bootstrap-icons-font-dir: '../fonts/bootstrap-icons';
     }
 }
 
+.bulletin-card-fixed {
+  height: 280px;
+  position: relative;
+}
+
+.badge-top-right {
+  top: 1px;
+  right: 1px;
+  z-index: 10;
+}
+
 // Custom toast error styling
 .onit-toastify-error {
     background: #dc3545 !important; /* Red background for errors */
