@@ -17,6 +17,25 @@
     </div>
 
     <div class="mt-4">
+     <!-- Notifica informativa collassabile sui stati del bollettino -->
+        <div class="alert alert-secondary border-0 p-3 mb-3" style="background-color: #f8f9fa; cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#infoStatiCollapse" aria-expanded="false" aria-controls="infoStatiCollapse">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle me-2 text-muted"></i>
+                <span class="text-muted small">
+                    <strong>Informazioni sui stati del bollettino</strong>
+                    <i class="bi bi-chevron-down ms-2" id="chevronIcon"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="collapse" id="infoStatiCollapse">
+            <div class="card card-body bg-light border-0 mb-3">
+                <ul class="mb-0 small text-muted">
+                    <li class="mb-2"><strong>Bozza:</strong> Il bollettino verrà salvato ma non sarà visibile agli agricoltori. Potrai modificarlo in seguito.</li>
+                    <li><strong>Pubblicato:</strong> Il bollettino sarà immediatamente visibile a tutti gli agricoltori interessati alle colture e zone selezionate.</li>
+                </ul>
+            </div>
+        </div>
         @using (Html.BeginForm("ModificaBollettino", "Tecnico", FormMethod.Post))
         {
             <input type="hidden" name="@nameof(Model.Id)" value="@Model.Id" />
