@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using System.Web;
 
 namespace Template.Web.Utils
 {
@@ -15,6 +16,9 @@ namespace Template.Web.Utils
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
             var text = doc.DocumentNode.InnerText.Trim();
+            
+            // Decodifica le entità HTML come &nbsp;, &amp;, etc.
+            text = HttpUtility.HtmlDecode(text);
             
             if (maxLength.HasValue)
             {
