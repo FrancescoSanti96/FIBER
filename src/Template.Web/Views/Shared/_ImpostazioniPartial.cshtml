@@ -1,7 +1,31 @@
 <h1 class="text-center mt-3">@ViewData["Title"]</h1>
-<p class="text-center text-success" style="margin-bottom: 70px !important;">Modifica le preferenze, per cambiare i bollettini consigliati</p>
+<p class="text-center text-success" style="margin-bottom: 0px !important;">Modifica le preferenze, per cambiare i bollettini consigliati</p>
 
 @Html.AntiForgeryToken()
+
+<!-- Notifica informativa collassabile sulle impostazioni -->
+<div class="container d-flex justify-content-center mt-3">
+    <div class="col-md-4">
+        <div class="alert alert-secondary border-0 p-3 mb-3" style="background-color: #f8f9fa; cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#infoImpostazioniCollapse" aria-expanded="false" aria-controls="infoImpostazioniCollapse">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-gear me-2 text-muted"></i>
+                <span class="text-muted small">
+                    <strong>Come funzionano le impostazioni</strong> 
+                    <i class="bi bi-chevron-down ms-2" id="chevronIconSettings"></i>
+                </span>
+            </div>
+        </div>
+        
+        <div class="collapse" id="infoImpostazioniCollapse">
+            <div class="card card-body bg-light border-0 mb-3">
+                <ul class="mb-0 small text-muted">
+                    <li class="mb-2"><strong>Zone di interesse:</strong> Seleziona le province dove coltivi per ricevere bollettini specifici per quelle aree.</li>
+                    <li><strong>Colture di interesse:</strong> Scegli le colture che coltivi per visualizzare solo i bollettini rilevanti per te.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container d-flex justify-content-center mt-4">
     <div class="col-md-4">
@@ -216,7 +240,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             
             if (result.success) {
-                showAlert(result.message, 'success');
+                if (result.redirect) {
+                    // Reindirizza per mostrare la notifica del controller
+                    window.location.href = result.url;
+                } else {
+                    showAlert(result.message, 'success');
+                }
             } else {
                 showAlert(result.message || 'Errore nel salvataggio', 'danger');
             }
@@ -229,6 +258,15 @@ document.addEventListener('DOMContentLoaded', function() {
             btnLoading.style.display = 'none';
             updateButtonState();
         }
+    });
+
+    // Script per animare l'icona chevron della sezione informativa impostazioni
+    $('#infoImpostazioniCollapse').on('show.bs.collapse', function () {
+        $('#chevronIconSettings').removeClass('bi-chevron-down').addClass('bi-chevron-up');
+    });
+    
+    $('#infoImpostazioniCollapse').on('hide.bs.collapse', function () {
+        $('#chevronIconSettings').removeClass('bi-chevron-up').addClass('bi-chevron-down');
     });
 
     // Inizializza i dati

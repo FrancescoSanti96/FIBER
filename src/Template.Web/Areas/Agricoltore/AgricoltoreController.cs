@@ -54,6 +54,12 @@ namespace Template.Web.Areas.Agricoltore
                 return RedirectToAction("OnboardingStep1", "Agricoltore", new { area = "Agricoltore" });
             }
 
+            // Controlla se l'onboarding è appena stato completato e mostra la notifica
+            if (TempData["OnboardingCompleted"] != null && (bool)TempData["OnboardingCompleted"])
+            {
+                Alerts.AddSuccess(this, "🎉 Benvenuto! Il tuo profilo è stato configurato con successo. Ora puoi visualizzare bollettini personalizzati per le tue colture e zone di interesse.", 6000);
+            }
+
             var userWithPreferences = await _userService.Query(new GetUserWithPreferencesQuery { Id = user.Id });
             var queryDto = new BulletinListQuery
             {
@@ -88,6 +94,12 @@ namespace Template.Web.Areas.Agricoltore
             {
                 // Reindirizza all'onboarding se non l'ha completato
                 return RedirectToAction("OnboardingStep1", "Agricoltore", new { area = "Agricoltore" });
+            }
+
+            // Controlla se le impostazioni sono state appena aggiornate e mostra la notifica
+            if (TempData["SettingsUpdated"] != null && (bool)TempData["SettingsUpdated"])
+            {
+                Alerts.AddSuccess(this, "Preferenze aggiornate con successo! I tuoi bollettini personalizzati sono ora disponibili.", 5000);
             }
 
             return View();
@@ -296,6 +308,9 @@ namespace Template.Web.Areas.Agricoltore
 
             var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
 
+            // Usa TempData per passare la notifica attraverso il redirect JavaScript
+            TempData["OnboardingCompleted"] = true;
+
             // Dopo aver salvato le preferenze, reindirizza alla home dell'agricoltore
             return Json(new { success = true, redirectUrl = Url.Action("BollettiniAgricoltore", "Agricoltore", new { area = "Agricoltore" }) });
         }
@@ -310,6 +325,9 @@ namespace Template.Web.Areas.Agricoltore
             }
 
             var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
+
+            // Aggiungi notifica di successo per il salvataggio delle impostazioni
+            Alerts.AddSuccess(this, "Le tue preferenze sono state aggiornate con successo! I bollettini mostrati saranno personalizzati in base alle tue nuove impostazioni.", 5000);
 
             return RedirectToAction("ImpostazioniAgricoltore", "Agricoltore", new { area = "Agricoltore" });
         }
@@ -330,7 +348,10 @@ namespace Template.Web.Areas.Agricoltore
 
                 var saved = await _userService.SaveUserSettingsAsync(user.Id, dto.Coltures, dto.Provinces);
 
-                return Json(new { success = true, message = "Preferenze salvate con successo!" });
+                // Usa TempData per passare la notifica attraverso il redirect JavaScript
+                TempData["SettingsUpdated"] = true;
+
+                return Json(new { success = true, redirect = true, url = Url.Action("ImpostazioniAgricoltore", "Agricoltore", new { area = "Agricoltore" }) });
             }
             catch (Exception ex)
             {

@@ -153,6 +153,17 @@ namespace Template.Web.Areas.Tecnico
                     };
 
                     var newBulletinId = await _bollettiniService.AddNewBulletinAsync(bulletin, provinceIds: model.IdProvinceSelezionate, coltureIds: model.IdColtureSelezionate);
+                    
+                    // Aggiungi notifica di successo basata sullo stato del bollettino
+                    if (model.Pubblicato)
+                    {
+                        Alerts.AddSuccess(this, "Bollettino pubblicato con successo! È ora visibile agli agricoltori.", 4000);
+                    }
+                    else
+                    {
+                        Alerts.AddSuccess(this, "Bollettino salvato come bozza. Potrai modificarlo e pubblicarlo in seguito.", 4000);
+                    }
+                    
                     return RedirectToAction(nameof(BollettinoTecnico), new { Id = newBulletinId });
                 }
             }
@@ -224,6 +235,16 @@ namespace Template.Web.Areas.Tecnico
                         ExpireDate = model.Scadenza,
                         Summary = model.TitoloBollettino
                     });
+
+                    // Aggiungi notifica di successo per la modifica
+                    if (model.Pubblicato)
+                    {
+                        Alerts.AddSuccess(this, "Bollettino modificato e pubblicato con successo! Le modifiche sono ora visibili agli agricoltori.", 5000);
+                    }
+                    else
+                    {
+                        Alerts.AddSuccess(this, "Bollettino modificato e salvato come bozza. Ricorda di pubblicarlo quando pronto.", 4000);
+                    }
 
                     return RedirectToAction(nameof(BollettinoTecnico), new { Id = updatedBulletinId });
                 }
