@@ -21,12 +21,12 @@
             <div class="d-flex align-items-center">
                 <i class="bi bi-info-circle me-2 text-muted"></i>
                 <span class="text-muted small">
-                    <strong>Informazioni sui stati del bollettino</strong> 
+                    <strong>Informazioni sui stati del bollettino</strong>
                     <i class="bi bi-chevron-down ms-2" id="chevronIcon"></i>
                 </span>
             </div>
         </div>
-        
+
         <div class="collapse" id="infoStatiCollapse">
             <div class="card card-body bg-light border-0 mb-3">
                 <ul class="mb-0 small text-muted">
@@ -41,7 +41,7 @@
             <div class="d-flex flex-column-reverse flex-md-row gap-md-5">
                 @* editor wysiwyg *@
                 <div class="flex-grow-1">
-                    @* <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label> *@
+                    <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label>
                     <textarea id="editor" name="@nameof(Model.ContenutoBollettino)">
                         @Model.ContenutoBollettino
                             </textarea>
@@ -127,21 +127,27 @@
 
     <script>
         const pubblicatoSelect = document.querySelector('sl-select[name=@nameof(Model.Pubblicato)]');
+        const coltureMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdColtureSelezionate)]');
+        const provinceMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdProvinceSelezionate)]');
+        const scadenzaPicker = document.querySelector('sl-input[name=@nameof(Model.Scadenza)]');
         const pubblicaBtn = document.getElementById('pubblicaBtn');
         const salvaBtn = document.getElementById('salvaBtn');
+
         pubblicatoSelect.addEventListener('sl-change', event => {
             const isBozza = event.target.value === "False";
             if (isBozza) {
+                coltureMultiselect.removeAttribute("required");
+                scadenzaPicker.removeAttribute("required");
                 salvaBtn.classList.remove('d-none');
                 pubblicaBtn.classList.add('d-none');
             } else {
+                coltureMultiselect.setAttribute("required", true);
+                scadenzaPicker.setAttribute("required", true);
                 pubblicaBtn.classList.remove('d-none');
                 salvaBtn.classList.add('d-none');
             }
         })
 
-        const coltureMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdColtureSelezionate)]');
-        const provinceMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdProvinceSelezionate)]');
         const summaryInput = document.querySelector('sl-input[name=@nameof(Model.TitoloBollettino)]');
 
         var allColtures = @Html.Raw(Json.Serialize(coltureDict));
@@ -187,7 +193,7 @@
         $('#infoStatiCollapse').on('show.bs.collapse', function () {
             $('#chevronIcon').removeClass('bi-chevron-down').addClass('bi-chevron-up');
         });
-        
+
         $('#infoStatiCollapse').on('hide.bs.collapse', function () {
             $('#chevronIcon').removeClass('bi-chevron-up').addClass('bi-chevron-down');
         });

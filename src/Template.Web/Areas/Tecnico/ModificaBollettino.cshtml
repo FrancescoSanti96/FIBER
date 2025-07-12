@@ -24,7 +24,7 @@
             <div class="d-flex flex-column-reverse flex-md-row gap-md-5">
                 @* editor wysiwyg *@
                 <div class="flex-grow-1">
-                    @* <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label> *@
+                    <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label>
                     <textarea id="editor" name="@nameof(Model.ContenutoBollettino)">
                         @Model.ContenutoBollettino
                     </textarea>
@@ -110,21 +110,28 @@
 
     <script>
         const pubblicatoSelect = document.querySelector('sl-select[name=@nameof(Model.Pubblicato)]');
+        const coltureMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdColtureSelezionate)]');
+        const provinceMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdProvinceSelezionate)]');
+        const scadenzaPicker = document.querySelector('sl-input[name=@nameof(Model.Scadenza)]');
         const pubblicaBtn = document.getElementById('pubblicaBtn');
         const salvaBtn = document.getElementById('salvaBtn');
+
         pubblicatoSelect.addEventListener('sl-change', event => {
             const isBozza = event.target.value === "False";
             if (isBozza) {
+                coltureMultiselect.removeAttribute("required");
+                scadenzaPicker.removeAttribute("required");
                 salvaBtn.classList.remove('d-none');
                 pubblicaBtn.classList.add('d-none');
             } else {
+                coltureMultiselect.setAttribute("required", true);
+                scadenzaPicker.setAttribute("required", true);
                 pubblicaBtn.classList.remove('d-none');
                 salvaBtn.classList.add('d-none');
             }
         })
 
-        const coltureMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdColtureSelezionate)]');
-        const provinceMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdProvinceSelezionate)]');
+
         const summaryInput = document.querySelector('sl-input[name=@nameof(Model.TitoloBollettino)]');
 
         var allColtures = @Html.Raw(Json.Serialize(coltureDict));
