@@ -20310,6 +20310,17 @@ textarea.form-control-lg {
   color: #212529;
 }
 
+.bulletin-card-fixed {
+  height: 280px;
+  position: relative;
+}
+
+.badge-top-right {
+  top: 1px;
+  right: 1px;
+  z-index: 10;
+}
+
 .onit-toastify-error {
   background: #dc3545 !important; /* Red background for errors */
   color: #ffffff !important; /* White text */
