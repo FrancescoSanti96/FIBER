@@ -8,6 +8,11 @@ using System.Linq;
 
 namespace Template.Web.Services
 {
+    /// <summary>
+    /// Servizio per la generazione di PDF dei bollettini.
+    /// Converte contenuto HTML in PDF mantenendo formattazione base (titoli, paragrafi, liste, grassetto, corsivo).
+    /// Gestisce tag con attributi (es. class="text-muted") e rimuove tag non supportati (es. small).
+    /// </summary>
     public interface IPdfService
     {
         byte[] GenerateBulletinPdf(string title, string content, string author, DateTime? publishDate, DateOnly? expireDate, List<string> provinces, List<string> coltures);
@@ -88,7 +93,7 @@ namespace Template.Web.Services
             htmlContent = Regex.Replace(htmlContent, "<br ?/?>", "\n", RegexOptions.IgnoreCase);
 
             // Parser HTML semplice per blocchi principali
-            var blockRegex = new Regex(@"(<h1>.*?</h1>|<h2>.*?</h2>|<h3>.*?</h3>|<h4>.*?</h4>|<ol>.*?</ol>|<ul>.*?</ul>|<p>.*?</p>|<li>.*?</li>)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            var blockRegex = new Regex(@"(<h1>.*?</h1>|<h2>.*?</h2>|<h3>.*?</h3>|<h4>.*?</h4>|<ol>.*?</ol>|<ul>.*?</ul>|<p[^>]*>.*?</p>|<li>.*?</li>)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
             var blocks = blockRegex.Split(htmlContent).Where(b => !string.IsNullOrWhiteSpace(b)).ToList();
             int olCounter = 1;
             
@@ -161,7 +166,7 @@ namespace Template.Web.Services
                     var text = StripTag(block, "li");
                     col.Item().Text(text);
                 }
-                else if (Regex.IsMatch(block, "^<p>", RegexOptions.IgnoreCase))
+                else if (Regex.IsMatch(block, "^<p", RegexOptions.IgnoreCase))
                 {
                     var text = StripTag(block, "p");
                     var lines = text.Split('\n');
@@ -204,11 +209,20 @@ namespace Template.Web.Services
 
         private string StripTag(string html, string tag)
         {
-            var result = Regex.Replace(html, $"</?{tag}>", "", RegexOptions.IgnoreCase).Trim();
-            return NormalizeSpaces(result);
+            // Per il tag p, gestisci anche attributi
+            if (tag == "p")
+            {
+                var result = Regex.Replace(html, $"</?{tag}[^>]*>", "", RegexOptions.IgnoreCase).Trim();
+                return NormalizeSpaces(result);
+            }
+            else
+            {
+                var result = Regex.Replace(html, $"</?{tag}>", "", RegexOptions.IgnoreCase).Trim();
+                return NormalizeSpaces(result);
+            }
         }
 
-        // Gestione grassetto/corsivo inline
+        // Gestione grassetto/corsivo inline e titoli
         private void RenderFormattedLine(IContainer container, string htmlLine)
         {
             if (string.IsNullOrWhiteSpace(htmlLine))
@@ -216,11 +230,67 @@ namespace Template.Web.Services
                 container.Text("");
                 return;
             }
+            
+            // Rimuovi tag <small> e mantieni solo il contenuto
+            htmlLine = Regex.Replace(htmlLine, @"</?small[^>]*>", "", RegexOptions.IgnoreCase);
+            
+            // Controlla se contiene titoli e gestiscili
+            if (Regex.IsMatch(htmlLine, @"<h[1-4][^>]*>", RegexOptions.IgnoreCase))
+            {
+                RenderHeadingText(container, htmlLine);
+            }
+            else
+            {
+                // Nessun titolo, gestisci come testo normale con formattazione
+                RenderFormattedText(container, htmlLine);
+            }
+        }
+        
+        // Gestione dei titoli
+        private void RenderHeadingText(IContainer container, string htmlLine)
+        {
+            // Gestisci titoli H1-H4 dentro il testo
+            var h1Match = Regex.Match(htmlLine, @"<h1[^>]*>(.*?)</h1>", RegexOptions.IgnoreCase);
+            var h2Match = Regex.Match(htmlLine, @"<h2[^>]*>(.*?)</h2>", RegexOptions.IgnoreCase);
+            var h3Match = Regex.Match(htmlLine, @"<h3[^>]*>(.*?)</h3>", RegexOptions.IgnoreCase);
+            var h4Match = Regex.Match(htmlLine, @"<h4[^>]*>(.*?)</h4>", RegexOptions.IgnoreCase);
+            
+            if (h1Match.Success)
+            {
+                var text = h1Match.Groups[1].Value;
+                container.Text(t => t.Span(text).FontSize(18).Bold());
+            }
+            else if (h2Match.Success)
+            {
+                var text = h2Match.Groups[1].Value;
+                container.Text(t => t.Span(text).FontSize(15).Bold());
+            }
+            else if (h3Match.Success)
+            {
+                var text = h3Match.Groups[1].Value;
+                container.Text(t => t.Span(text).FontSize(13).Bold());
+            }
+            else if (h4Match.Success)
+            {
+                var text = h4Match.Groups[1].Value;
+                container.Text(t => t.Span(text).FontSize(12).Bold());
+            }
+            else
+            {
+                // Fallback al testo normale se non trovato
+                RenderFormattedText(container, htmlLine);
+            }
+        }
+        
+        // Gestione del testo con grassetto/corsivo
+        private void RenderFormattedText(IContainer container, string htmlLine)
+        {
             var tagRegex = new Regex(@"(<(/?)(strong|b|i|em)>)", RegexOptions.IgnoreCase);
             var matches = tagRegex.Matches(htmlLine);
             var segments = new List<(string text, bool bold, bool italic)>();
             int lastIndex = 0;
             bool bold = false, italic = false;
+            
             foreach (Match match in matches)
             {
                 if (match.Index > lastIndex)
@@ -235,8 +305,10 @@ namespace Template.Web.Services
                     italic = !isClosing;
                 lastIndex = match.Index + match.Length;
             }
+            
             if (lastIndex < htmlLine.Length)
                 segments.Add((htmlLine.Substring(lastIndex), bold, italic));
+                
             container.Text(text =>
             {
                 foreach (var seg in segments)
