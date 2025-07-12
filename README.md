@@ -11,7 +11,15 @@ L'app garantisce una comunicazione efficace e tempestiva tra esperti e agricolto
 
 ## Utilizzo
 
-Per poter navigare il sito è necessario accedere. Per questo le utenze disponibili si trovano in src/Template.Web/SolutionItems/Accessi.txt
+Per poter navigare il sito Ã¨ necessario accedere. Per questo le utenze disponibili si trovano in src/Template.Web/SolutionItems/Accessi.txt
+
+## Processo creativo interfaccia
+
+- (User personas)[https://docs.google.com/spreadsheets/d/1sWZ8q3GJARVO8cwjBEAvXAA2qrboUyiYCCeoHIXVNg0/edit?gid=0#gid=0]
+- (Storyboard)[https://www.figma.com/board/xhrCsLonvW0UH8i0yNir1o/FIBER--Storyboards?node-id=0-1&p=f&t=JzSaVqZw8bFMorZT-0]
+- (Customer Journey)[https://docs.google.com/document/d/1IiFVUiXB2ZVjXqT0PAuTxd5pX4wPDQMQTuM7A-tmAVo/edit?tab=t.0#heading=h.sct0rnuudlvj]
+- (Sketch)[https://trello.com/c/54qbxvpG/11-sketch]
+- (Mockup)[https://www.figma.com/design/aPurKMiKOyJv935xo4DNpT/Fiber?node-id=5494-1723&p=f&t=VxK1qcu19DGtII69-0]
 
 ## Getting Started
 
