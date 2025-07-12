@@ -105,7 +105,7 @@
 
             @* azioni *@
             <div class="d-flex justify-content-between  my-4 col-md-4 offset-md-8">
-                <button type="button" class="btn btn-outline-secondary">Annulla</button>
+                <a href="@Url.Action("HomeTecnico", "Tecnico")" class="btn btn-outline-secondary">Annulla</a>
                 <button type="submit" id="pubblicaBtn" class="btn btn-success @(Model.Pubblicato ? "d-block" : "d-none")">Pubblica</button>
                 <button type="submit" id="salvaBtn" class="btn btn-success @(!Model.Pubblicato ? "d-block" : "d-none")">Salva per dopo</button>
             </div>
