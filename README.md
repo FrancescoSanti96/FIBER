@@ -21,6 +21,9 @@ Per poter navigare il sito è necessario accedere. Per questo le utenze disponib
 - [Customer Journey](https://docs.google.com/document/d/1IiFVUiXB2ZVjXqT0PAuTxd5pX4wPDQMQTuM7A-tmAVo/edit?tab=t.0#heading=h.sct0rnuudlvj)
 - [Mockup](https://www.figma.com/design/aPurKMiKOyJv935xo4DNpT/Fiber?node-id=5494-1723&p=f&t=VxK1qcu19DGtII69-0)
 
+## User Test
+- [User Test](https://docs.google.com/document/d/1poOp8OeUP29iWNNoXeo2Eigt9iUD98WxU-Gh2dekEyw/edit?usp=sharing)
+
 ## Getting Started
 
 To start working with the FIBER project, follow these steps:
