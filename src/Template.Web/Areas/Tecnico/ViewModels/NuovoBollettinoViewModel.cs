@@ -30,6 +30,7 @@ namespace Template.Web.Areas.Tecnico.ViewModels
         public DateOnly? Scadenza { get; set; } = null;
 
         public bool Pubblicato { get; set; } = false;
+        public bool TornaAiBollettini { get; set; } = false;
         #endregion
     }
 }

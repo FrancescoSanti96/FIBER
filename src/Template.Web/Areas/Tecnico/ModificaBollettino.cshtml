@@ -9,10 +9,31 @@
 <div class="container-fluid mt-4 px-3 px-md-5">
     <div class="row mb-3 align-items-center">
         <div class="col-auto me-3">
-            <a href="@Url.Action("HomeTecnico", "Tecnico", new { Area = "Tecnico", Tab = Model.Pubblicato ? TabBollettini.Caricati : TabBollettini.Bozze })" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini</a>
+            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#lockInModal">&leftarrow; Torna ai bollettini</button>
         </div>
         <div class="col">
             <h1 class="mb-0">Modifica Bollettino</h1>
+        </div>
+    </div>
+
+    <div class="modal" id="lockInModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Salvare il bollettino nelle bozze?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Prima di tornare indietro vuoi salvare il bollettino come bozza per poterlo modificare in un secondo momento?
+                        Puoi sempre completarlo e pubblicarlo più tardi dalla sezione Bozze.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="backWithoutSaving()">Torna senza salvare</button>
+                    <button type="button" class="btn btn-success" onclick="backWithSaving()">Salva bozza</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -36,9 +57,10 @@
                 </ul>
             </div>
         </div>
-        @using (Html.BeginForm("ModificaBollettino", "Tecnico", FormMethod.Post))
+        @using (Html.BeginForm("ModificaBollettino", "Tecnico", FormMethod.Post, new { Id = "formModificaBollettino" }))
         {
             <input type="hidden" name="@nameof(Model.Id)" value="@Model.Id" />
+            <input type="hidden" name="@nameof(Model.TornaAiBollettini)" value="False" />
 
             <div class="d-flex flex-column-reverse flex-md-row gap-md-5">
                 @* editor wysiwyg *@
@@ -169,9 +191,7 @@
             const summaryOgValue = summaryInput.value;
             summaryInput.value = (summaryOgValue.split(' - ')[0] || "") + " - " + selectedProvinceNames;
         })
-    </script>
 
-    <script>
         $(function () {
             $('.toggle-extra-btn').on('click', function () {
                 var $btn = $(this);
@@ -191,6 +211,16 @@
                 }
             });
         });
+
+        function backWithoutSaving() {
+            window.location.href = "@Url.Action("HomeTecnico", "Tecnico", new { Tab = TabBollettini.Bozze })";
+        }
+
+        function backWithSaving() {
+            pubblicatoSelect.setAttribute("value", "False");
+            $("input[name=@nameof(Model.TornaAiBollettini)]").val("True");
+            $("#formModificaBollettino").submit();
+        }
     </script>
 }
 

@@ -163,8 +163,10 @@ namespace Template.Web.Areas.Tecnico
                     {
                         Alerts.AddSuccess(this, "Bollettino salvato come bozza. Potrai modificarlo e pubblicarlo in seguito.", 4000);
                     }
-                    
-                    return RedirectToAction(nameof(BollettinoTecnico), new { Id = newBulletinId });
+
+                    return model.TornaAiBollettini
+                        ? RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze })
+                        : RedirectToAction(nameof(BollettinoTecnico), new { Id = newBulletinId });
                 }
             }
             catch (Exception ex)
@@ -246,7 +248,9 @@ namespace Template.Web.Areas.Tecnico
                         Alerts.AddSuccess(this, "Bollettino modificato e salvato come bozza. Ricorda di pubblicarlo quando pronto.", 4000);
                     }
 
-                    return RedirectToAction(nameof(BollettinoTecnico), new { Id = updatedBulletinId });
+                    return model.TornaAiBollettini
+                        ? RedirectToAction(nameof(HomeTecnico), new { Tab = TabBollettini.Bozze })
+                        : RedirectToAction(nameof(BollettinoTecnico), new { Id = updatedBulletinId });
                 }
             }
             catch (Exception ex)
