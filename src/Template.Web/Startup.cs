@@ -10,9 +10,9 @@ using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Template.Services;
+using Template.EntityModel;
 using Template.Web.Infrastructure;
-using Template.Web.SignalR.Hubs;
+using QuestPDF.Infrastructure;
 
 namespace Template.Web
 {
@@ -30,12 +30,24 @@ namespace Template.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+            
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
-            services.AddDbContext<TemplateDbContext>(options =>
+            services.AddDbContext<FiberDbContext>(options =>
             {
-                options.UseInMemoryDatabase(databaseName: "Template");
+                var contextStateFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "SolutionItems", "FiberDbState");
+                if (!Directory.Exists(contextStateFolderPath))
+                {
+                    Directory.CreateDirectory(contextStateFolderPath);
+                }
+                var dbPath = Path.Combine(contextStateFolderPath, "fiber.db");
+                options.UseSqlite($"Data Source={dbPath}");
             });
+
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true);
 
             // SERVICES FOR AUTHENTICATION
             services.AddSession();
@@ -60,6 +72,7 @@ namespace Template.Web
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.AreaViewLocationFormats.Clear();
+                options.AreaViewLocationFormats.Add("/Areas/{2}/{0}.cshtml");
                 options.AreaViewLocationFormats.Add("/Areas/{2}/{1}/{0}.cshtml");
                 options.AreaViewLocationFormats.Add("/Areas/{2}/Views/{1}/{0}.cshtml");
                 options.AreaViewLocationFormats.Add("/Areas/{2}/Views/Shared/{0}.cshtml");
@@ -72,15 +85,18 @@ namespace Template.Web
                 options.ViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
             });
 
-            // SIGNALR FOR COLLABORATIVE PAGES
-            services.AddSignalR();
-
             // CONTAINER FOR ALL EXTRA CUSTOM SERVICES
             Container.RegisterTypes(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<FiberDbContext>();
+                context.Database.EnsureCreated();
+            }
+
             // Configure the HTTP request pipeline.
             if (!env.IsDevelopment())
             {
@@ -109,10 +125,8 @@ namespace Template.Web
 
             app.UseEndpoints(endpoints =>
             {
-                // ROUTING PER HUB
-                endpoints.MapHub<TemplateHub>("/templateHub");
-
-                endpoints.MapAreaControllerRoute("Example", "Example", "Example/{controller=Users}/{action=Index}/{id?}");
+                endpoints.MapAreaControllerRoute("Agricoltore", "Agricoltore", "Agricoltore/{controller=Agricoltore}/{action=BollettiniAgricoltore}/{id?}");
+                endpoints.MapAreaControllerRoute("Tecnico", "Tecnico", "Tecnico/{controller=Tecnico}/{action=HomeTecnico}/{id?}");
                 endpoints.MapControllerRoute("default", "{controller=Login}/{action=Login}");
             });
         }

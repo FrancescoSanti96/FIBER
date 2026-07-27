@@ -1,6 +1,9 @@
-﻿using Template.Services.Shared;
+﻿using Template.Services.Users;
 using Microsoft.Extensions.DependencyInjection;
-using Template.Web.SignalR;
+using Template.Services.Coltures;
+using Template.Services.Provinces;
+using Template.Web.Services;
+using Template.Services.Bulletins;
 
 namespace Template.Web
 {
@@ -9,10 +12,13 @@ namespace Template.Web
         public static void RegisterTypes(IServiceCollection container)
         {
             // Registration of all the database services you have
-            container.AddScoped<SharedService>();
-
-            // Registration of SignalR events
-            container.AddScoped<IPublishDomainEvents, SignalrPublishDomainEvents>();
+            container.AddScoped<UserService>();
+            container.AddScoped<ColtureService>();
+            container.AddScoped<ProvinceService>();
+            container.AddScoped<BollettiniService>();
+            
+            // PDF Service (QuestPDF)
+            container.AddScoped<IPdfService, PdfService>();
         }
     }
 }

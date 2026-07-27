@@ -1,0 +1,226 @@
+@using Template.Web.Areas.Tecnico.Enums
+@model Template.Web.Areas.Tecnico.ViewModels.ModificaBollettinoViewModel
+@{
+    ViewData["Title"] = "Modifica Bollettino";
+    var coltureDict = Model.OpzioniColture.ToDictionary(x => x.Value, x => x.Text);
+    var provinceDict = Model.OpzioniProvince.ToDictionary(x => x.Value, x => x.Text);
+}
+
+<div class="container-fluid mt-4 px-3 px-md-5">
+    <div class="row mb-3 align-items-center">
+        <div class="col-auto me-3">
+            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#lockInModal">&leftarrow; Torna ai bollettini</button>
+        </div>
+        <div class="col">
+            <h1 class="mb-0">Modifica Bollettino</h1>
+        </div>
+    </div>
+
+    <div class="modal" id="lockInModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Salvare il bollettino nelle bozze?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Prima di tornare indietro vuoi salvare il bollettino come bozza per poterlo modificare in un secondo momento?
+                        Puoi sempre completarlo e pubblicarlo più tardi dalla sezione Bozze.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="backWithoutSaving()">Torna senza salvare</button>
+                    <button type="button" class="btn btn-success" onclick="backWithSaving()">Salva bozza</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+     <!-- Notifica informativa collassabile sui stati del bollettino -->
+        <div class="alert alert-secondary border-0 p-3 mb-3" style="background-color: #f8f9fa; cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#infoStatiCollapse" aria-expanded="false" aria-controls="infoStatiCollapse">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle me-2 text-muted"></i>
+                <span class="text-muted small">
+                    <strong>Informazioni sui stati del bollettino</strong>
+                    <i class="bi bi-chevron-down ms-2" id="chevronIcon"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="collapse" id="infoStatiCollapse">
+            <div class="card card-body bg-light border-0 mb-3">
+                <ul class="mb-0 small text-muted">
+                    <li class="mb-2"><strong>Bozza:</strong> Il bollettino verrà salvato ma non sarà visibile agli agricoltori. Potrai modificarlo in seguito.</li>
+                    <li><strong>Pubblicato:</strong> Il bollettino sarà immediatamente visibile a tutti gli agricoltori interessati alle colture e zone selezionate.</li>
+                </ul>
+            </div>
+        </div>
+        @using (Html.BeginForm("ModificaBollettino", "Tecnico", FormMethod.Post, new { Id = "formModificaBollettino" }))
+        {
+            <input type="hidden" name="@nameof(Model.Id)" value="@Model.Id" />
+            <input type="hidden" name="@nameof(Model.TornaAiBollettini)" value="False" />
+
+            <div class="d-flex flex-column-reverse flex-md-row gap-md-5">
+                @* editor wysiwyg *@
+                <div class="flex-grow-1">
+                    <label for="contenutoBollettino" class="form-label">Inserisci il contenuto</label>
+                    <textarea id="editor" name="@nameof(Model.ContenutoBollettino)">
+                        @Model.ContenutoBollettino
+                    </textarea>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    @* primo campo: sempre visibile *@
+                    <div class="mb-3">
+                        <sl-select name="@nameof(Model.Pubblicato)" label="Stato documento" value="@Model.Pubblicato.ToString()">
+                            <sl-option value="False">
+                                <sl-icon slot="prefix" name="clock"></sl-icon>
+                                Bozza
+                            </sl-option>
+                            <sl-option value="True">
+                                <sl-icon slot="prefix" name="check2-circle"></sl-icon>
+                                Pubblicato
+                            </sl-option>
+                        </sl-select>
+                    </div>
+
+                    @* campi extra: nascosti su sm, visibili su md *@
+                    <div class="extra-inputs d-none d-md-block">
+                        <div class="mb-3">
+                            <sl-select name="@nameof(Model.IdColtureSelezionate)" label="Colture di interesse" value="@string.Join(' ', Model.IdColtureSelezionate)" multiple clearable>
+                                @foreach (var option in Model.OpzioniColture)
+                                {
+                                    <sl-option value="@option.Value">@option.Text</sl-option>
+                                }
+                            </sl-select>
+                        </div>
+
+                        <div class="mb-3">
+                            <sl-select name="@nameof(Model.IdProvinceSelezionate)" label="Zone di interesse" value="@string.Join(' ', Model.IdProvinceSelezionate)" multiple clearable>
+                                @foreach (var option in Model.OpzioniProvince)
+                                {
+                                    <sl-option value="@option.Value">@option.Text</sl-option>
+                                }
+                            </sl-select>
+                        </div>
+
+                        <div class="mb-3">
+                            <sl-input type="date" label="Scadenza" name="@nameof(Model.Scadenza)" value="@(Model.Scadenza.HasValue? Model.Scadenza.Value.ToString("yyyy-MM-dd") : "")" placeholder="Date"></sl-input>
+                        </div>
+
+                        <div class="mb-3">
+                            <sl-input label="Nome Bollettino" name="@nameof(Model.TitoloBollettino)" value="@Model.TitoloBollettino" clearable></sl-input>
+                        </div>
+                    </div>
+
+                    @* Bottone espandi/riduci solo su sm *@
+                    <div class="d-md-none mb-2">
+                        <button type="button" class="btn btn-sm btn-link p-0 d-flex align-items-center gap-1 toggle-extra-btn mx-auto">
+                            <span class="toggle-text">Espandi</span>
+                            <i class="bi bi-chevron-down toggle-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @* azioni *@
+            <div class="d-flex justify-content-between  my-4 col-md-4 offset-md-8">
+                <a href="@Url.Action("HomeTecnico", "Tecnico")" class="btn btn-outline-secondary">Annulla</a>
+                <button type="submit" id="pubblicaBtn" class="btn btn-success @(Model.Pubblicato ? "d-block" : "d-none")">Pubblica</button>
+                <button type="submit" id="salvaBtn" class="btn btn-success @(!Model.Pubblicato ? "d-block" : "d-none")">Salva per dopo</button>
+            </div>
+
+
+        }
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <script src="~/js/nuovobollettino-ckeditor.js"></script>
+
+    <script>
+        const pubblicatoSelect = document.querySelector('sl-select[name=@nameof(Model.Pubblicato)]');
+        const coltureMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdColtureSelezionate)]');
+        const provinceMultiselect = document.querySelector('sl-select[name=@nameof(Model.IdProvinceSelezionate)]');
+        const scadenzaPicker = document.querySelector('sl-input[name=@nameof(Model.Scadenza)]');
+        const pubblicaBtn = document.getElementById('pubblicaBtn');
+        const salvaBtn = document.getElementById('salvaBtn');
+
+        pubblicatoSelect.addEventListener('sl-change', event => {
+            const isBozza = event.target.value === "False";
+            if (isBozza) {
+                coltureMultiselect.removeAttribute("required");
+                scadenzaPicker.removeAttribute("required");
+                salvaBtn.classList.remove('d-none');
+                pubblicaBtn.classList.add('d-none');
+            } else {
+                coltureMultiselect.setAttribute("required", true);
+                scadenzaPicker.setAttribute("required", true);
+                pubblicaBtn.classList.remove('d-none');
+                salvaBtn.classList.add('d-none');
+            }
+        })
+
+
+        const summaryInput = document.querySelector('sl-input[name=@nameof(Model.TitoloBollettino)]');
+
+        var allColtures = @Html.Raw(Json.Serialize(coltureDict));
+        var allProvinces = @Html.Raw(Json.Serialize(provinceDict));
+
+        coltureMultiselect.addEventListener('sl-change', event => {
+            const values = event.target.value;
+            const selectedColtureNames = values.map(v => allColtures[v])?.join(', ');
+            const summaryOgValue = summaryInput.value;
+            summaryInput.value = selectedColtureNames + " - " + (summaryOgValue.split(' - ')[1] || "");
+        })
+
+        provinceMultiselect.addEventListener('sl-change', event => {
+            const values = event.target.value;
+            const selectedProvinceNames = values.map(v => allProvinces[v])?.join(', ');
+            const summaryOgValue = summaryInput.value;
+            summaryInput.value = (summaryOgValue.split(' - ')[0] || "") + " - " + selectedProvinceNames;
+        })
+
+        $(function () {
+            $('.toggle-extra-btn').on('click', function () {
+                var $btn = $(this);
+                var $container = $btn.closest('.col-12');
+                var $extra = $container.find('.extra-inputs');
+                var $text = $btn.find('.toggle-text');
+                var $icon = $btn.find('.toggle-icon');
+
+                if ($extra.hasClass('d-none')) {
+                    $extra.removeClass('d-none');
+                    $text.text('Riduci');
+                    $icon.addClass('rotate-180');
+                } else {
+                    $extra.addClass('d-none');
+                    $text.text('Espandi');
+                    $icon.removeClass('rotate-180');
+                }
+            });
+        });
+
+        function backWithoutSaving() {
+            window.location.href = "@Url.Action("HomeTecnico", "Tecnico", new { Tab = TabBollettini.Bozze })";
+        }
+
+        function backWithSaving() {
+            pubblicatoSelect.setAttribute("value", "False");
+            $("input[name=@nameof(Model.TornaAiBollettini)]").val("True");
+            $("#formModificaBollettino").submit();
+        }
+    </script>
+}
+

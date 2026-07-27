@@ -4,12 +4,12 @@ namespace Template.Web.Features.Login
 {
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Il campo Email è obbligatorio.")]
         [Display(Name = "Email")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Il campo Password è obbligatorio.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }

@@ -1,0 +1,88 @@
+﻿@inject IHtmlLocalizer<Template.Web.SharedResource> SharedLocalizer
+@inject Microsoft.Extensions.Options.IOptions<AppSettings> appSettings
+@{
+    Layout = "_LayoutHtml";
+    var version = System.Reflection.Assembly.GetAssembly(typeof(Startup)).GetName().Version;
+
+    var identitaCorrente = (Template.Web.Areas.IdentitaViewModel)ViewData[Template.Web.Areas.IdentitaViewModel.VIEWDATA_IDENTITACORRENTE_KEY];
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+@section metas{
+    @RenderSection("metas", false)
+}
+@section styles{
+    @RenderSection("styles", false)
+}
+<div id="pageId" class="onit-page d-flex flex-column min-vh-100">
+    <div class="onit-page-sticky-top" id="onit-page-sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-success onit-page-menu">
+    <div class="container d-flex justify-content-between align-items-center">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav m-auto mb-2 mb-lg-0 align-items-center">
+                <a class="navbar-brand" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">FIBER</a>
+                <li class="nav-item">
+                    <a class="nav-link @(currentAction == "BollettiniAgricoltore" && currentController == "Agricoltore" ? "active" : "")" href="/Agricoltore/Agricoltore/BollettiniAgricoltore">Bollettini</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(currentAction == "ImpostazioniAgricoltore" && currentController == "Agricoltore" ? "active" : "")" href="/Agricoltore/Agricoltore/ImpostazioniAgricoltore">Impostazioni</a>
+                </li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar me-2">@identitaCorrente.Initials</div>
+                            <span class="d-none d-md-inline">@identitaCorrente.FullName</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li class="px-3 py-2 text-muted small d-md-none border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2" style="background-color: #6c757d;">@identitaCorrente.Initials</div>
+                                    @identitaCorrente.FullName
+                                </div>
+                            </li>
+                            <li>
+                                <form method="post" action="/Login/Logout" class="dropdown-item-form">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fa-solid fa-sign-out-alt me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Login/Login">Login</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav> 
+        @RenderSection("pageTitle", false)
+    </div>
+    @RenderSection("pageSubtitle", false)
+    @RenderBody()
+    <partial name="~/Views/Shared/_FooterPartial.cshtml" />
+</div>
+@section googlehead{
+    @*<script async src="https://www.googletagmanager.com/gtag/js?id=UA-"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'UA-', { 'anonymize_ip': true });    // Ricordarsi di anonimizzare per fare ricadere il cookie tra quelli tecnici ed evitare l'obbligo del banner
+    </script>*@
+    }
+@section scripts{
+    <script type="text/javascript">
+        @this.RenderAlertsWithToastify()
+    </script>
+
+    @RenderSection("scripts", false)
+}

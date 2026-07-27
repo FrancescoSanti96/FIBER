@@ -3,10 +3,23 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewData["Title"] - OnModuli</title>
+    <title>@ViewData["Title"] - Fiber</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico">
     <meta name="description" content="@ViewData["Description"]">
     @RenderSection("googlehead", false)
     @RenderSection("metas", false)
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Shoelace -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif !important;
+        }
+    </style>
     <link href="~/node_modules/@@fortawesome/fontawesome-free/css/all.min.css" asp-append-version="true" rel="stylesheet" />
     <link href="~/css/bundle-global.min.css" asp-append-version="true" rel="stylesheet" />
     @RenderSection("styles", false)
@@ -14,6 +27,13 @@
 <body>
     @RenderSection("googlebody", false)
     @RenderBody()
+
+    <!-- JQuery-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- Shoelace -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@@shoelace-style/shoelace@2.20.1/cdn/shoelace.js"></script>
+
     <script type="text/javascript">
         var clientLocale = '@this.CurrentCulture().Name';
     </script>

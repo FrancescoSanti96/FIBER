@@ -4,14 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "sass wwwroot/css/site.scss wwwroot/css/site.css && sed -i '' 's/: ;/: initial;/g' wwwroot/css/site.css"
   },
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.77.6"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-free": "6.7.1",
     "@microsoft/signalr": "8.0.7",
     "bootstrap": "5.3.3",
+    "bootstrap-icons": "^1.13.1",
     "toastify-js": "1.12.0",
     "vue": "2.6.14",
     "vue-multiselect": "2.1.9"

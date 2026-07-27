@@ -1,0 +1,86 @@
+@*
+    Questa vista è stata copiata da src/Template.Web/Areas/Agricoltore/Views/Agricoltore/Bollettino.cshtml
+    e adattata per l'area Tecnico. Sarà la base per la visualizzazione e modifica dei bollettini da parte del tecnico.
+*@
+@using Template.Web.Areas.Tecnico.Enums
+@model Template.Web.Models.BollettinoTecnicoViewModel
+@{
+    ViewData["Title"] = $"Bollettino - {Model.Titolo}";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3 align-items-center">
+        <div class="col-auto me-3">
+            <a href="@Url.Action("HomeTecnico", "Tecnico", new { Area = "Tecnico", Tab = Model.IsDraft ? TabBollettini.Bozze : TabBollettini.Caricati })" class="btn btn-outline-secondary">&leftarrow; Torna ai bollettini @(Model.IsDraft ? "bozze" : "caricati")</a>
+        </div>
+        <div class="col">
+            <h1 class="mb-0">@Model.Titolo</h1>
+            <p class="mt-1 mb-0">
+                <div class="d-flex gap-2">
+                    <span class="badge @Model.StatoBadgeClass">@Model.StatoBadge</span>
+                    @foreach (var coltura in Model.Colture.Take(3))
+                    {
+                        <span class="badge bg-success">@coltura</span>
+                    }
+                    @foreach (var provincia in Model.Province.Take(2))
+                    {
+                        <span class="badge bg-info">@provincia</span>
+                    }
+                </div>
+            </p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="ckeditor-content-display">
+                @Html.Raw(Model.ContenutoHTML)
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            @if (!string.IsNullOrEmpty(Model.DataScadenzaFormattata))
+            {
+                <div class="mb-3">
+                    <div class="text-uppercase text-muted small fw-semibold">Scadenza</div>
+                    <div class="fs-4 fw-bold text-danger">@Model.DataScadenzaFormattata</div>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.DataPubblicazioneFormattata))
+            {
+                <p class="text-secondary mb-1">
+                    <span class="fw-semibold">Pubblicato da:</span> @Model.NomeCompletoAutore<br />
+                    <small class="text-muted">il @Model.DataPubblicazioneFormattata</small>
+                </p>
+            }
+            else
+            {
+                <p class="text-secondary mb-1">
+                    <span class="fw-semibold">Modificato da:</span> @Model.NomeCompletoAutore
+                </p>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.AutoreEmail))
+            {
+                <div class="mb-4">
+                    <div class="text-secondary fw-semibold">Contatto</div>
+                    <a href="mailto:@Model.AutoreEmail" class="text-decoration-none">@Model.AutoreEmail</a>
+                </div>
+            }
+
+            @if (!Model.Pubblicato || Model.IsDraft)
+            {
+                <div class="card shadow-sm p-3 mb-4">
+                    <h3 class="h6 card-title">Modifica Bollettino</h3>
+                    <a href="@Url.Action("ModificaBollettino", "Tecnico", new { Area = "Tecnico", id = Model.Id })" class="btn btn-light w-100">Modifica</a>
+                </div>
+            }
+
+            <div class="card shadow-sm p-3 mb-4">
+                <h3 class="h6 card-title">Download</h3>
+                <a href="@Url.Action("DownloadBollettino", "Tecnico", new { Area = "Tecnico", id = Model.Id })" class="btn btn-light w-100">Scarica PDF</a>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,6 +1,195 @@
 ﻿@import "site.variables.scss";
 
+$bootstrap-icons-font-dir: '../fonts/bootstrap-icons';
+
 // Import bootstrap to be able to customize it with scss variables
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../node_modules/bootstrap-icons/font/bootstrap-icons.scss";
+
 
 @import "site.layout.scss";
+
+// User avatar styling
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover .user-avatar {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.dropdown-item-form {
+  margin: 0;
+  padding: 0;
+  
+  .dropdown-item {
+    border: none;
+    background: none;
+    color: inherit;
+    text-align: left;
+    width: 100%;
+    padding: 0.375rem 1rem;
+    display: flex;
+    align-items: center;
+    
+    &:hover {
+      background-color: var(--bs-dropdown-link-hover-bg);
+      color: var(--bs-dropdown-link-hover-color);
+    }
+  }
+}
+
+// Centra avatar e dropdown su mobile
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    justify-content: center !important;
+    
+    .nav-item.dropdown {
+      display: block;
+      text-align: center;
+      margin: 0.5rem 0;
+      
+      .dropdown-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        float: none !important;
+        padding: 0.75rem 1rem;
+        width: auto;
+      }
+      
+      .dropdown-menu {
+        position: fixed !important;
+        left: 50% !important;
+        top: auto !important;
+        transform: translateX(-50%) !important;
+        min-width: 280px;
+        max-width: 90vw;
+        text-align: left;
+        margin-top: 0.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        z-index: 1055;
+        
+        .border-bottom {
+          border-bottom: 1px solid #dee2e6 !important;
+          margin-bottom: 0.5rem;
+          padding-bottom: 0.75rem !important;
+        }
+        
+        .user-avatar {
+          width: 24px !important;
+          height: 24px !important;
+          font-size: 0.75rem !important;
+          background-color: #6c757d !important;
+        }
+        
+        .px-3 {
+          justify-content: flex-start !important;
+          text-align: left !important;
+        }
+      }
+    }
+  }
+  .dropdown-menu .dropdown-item,
+  .dropdown-menu .btn,
+  .dropdown-menu .btn.btn-outline-danger {
+    font-size: 0.95rem !important;
+    padding: 0.5rem 1rem !important;
+    min-width: 120px;
+  }
+  .dropdown-menu .btn {
+    border-radius: 0.3rem;
+  }
+  .dropdown-menu .fa-sign-out-alt {
+    font-size: 1rem !important;
+  }
+}
+
+// Custom styles for Agricoltore area
+.bulletin-card {
+    .badge-fragola {
+        background-color: $badge-fragola-bg !important;
+        color: $badge-fragola-color !important;
+    }
+    .badge-modena {
+        background-color: $badge-modena-bg !important;
+        color: $badge-modena-color !important;
+    }
+    .btn-outline-secondary {
+        border-color: #dee2e6; /* Light gray border for Visualizza button */
+        color: #6c757d; /* Darker gray text */
+        &:hover {
+            background-color: #e2e6ea; /* Lighter background on hover */
+            border-color: #dae0e5;
+            color: #6c757d;
+        }
+    }
+    .btn-light {
+        background-color: #f8f9fa; /* Light background for Scarica pdf button */
+        border-color: #f8f9fa;
+        color: #212529; /* Dark text */
+        &:hover {
+            background-color: #e2e6ea;
+            border-color: #e2e6ea;
+            color: #212529;
+        }
+    }
+}
+
+.bulletin-card-fixed {
+  height: 280px;
+  position: relative;
+}
+
+.badge-top-right {
+  top: 1px;
+  right: 1px;
+  z-index: 10;
+}
+
+// Custom toast error styling
+.onit-toastify-error {
+    background: #dc3545 !important; /* Red background for errors */
+    color: #ffffff !important; /* White text */
+}
+
+// Custom navigation active link styling
+.navbar-nav .nav-item .nav-link.active {
+    color: white; /* Colore del testo per il link attivo */
+    font-weight: bold; /* Rende il testo in grassetto */
+    text-decoration: underline; /* Aggiunge un underline */
+}
+
+.ck-content {
+    height: 360px;
+    overflow-y: auto;  /* Abilita la scrollbar verticale se il contenuto supera max-height */
+}
+
+/* Regole CSS specifiche per lo stile della toolbar, se necessario */
+.ck.ck-toolbar {
+    border: 1px solid var(--bs-border-color);
+    border-bottom: none;
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+}
+
+.ck.ck-editor__main > .ck-editor__editable {
+    border: 1px solid var(--bs-border-color);
+    border-top: none;
+    border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+}
